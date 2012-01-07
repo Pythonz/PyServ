@@ -214,7 +214,7 @@ class Services:
 
 	def flag(self, target):
 		for data in self.db.execute("select user from temp_nick where nick = '%s'" % target):
-			for flag in self.db.execute("select flag,channel from channel where user = '%s'" % str(data[0])):
+			for flag in self.db.execute("select flag,channel from channels where user = '%s'" % str(data[0])):
 				if str(flag[0]) == "n":
 					self.mode(str(flag[1]), "+q %s" % target)
 				elif str(flag[0]) == "Y":
