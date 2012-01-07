@@ -71,6 +71,8 @@ class Services:
 						if data.split()[1] == "FJOIN":
 							fjoin_chan = data.split()[2]
 							fjoin_nick = data.split()[5][1:]
+							if fjoin_nick.startswith(","):
+								fjoin_nick = fjoin_nick[1:]
 							fjoin_user = self.auth(fjoin_nick)
 							for flag in self.db.execute("select flag from channels where channel = '%s' and user = '%s'" % (fjoin_chan, fjoin_user)):
 								if str(flag[0]) == "n":
