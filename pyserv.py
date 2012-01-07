@@ -25,6 +25,7 @@ class Services:
 		self.db.isolation_level = None
 
 	def run(self):
+		self.db.execute("delete from temp_nick")
 		self.con = socket.socket()
 		self.con.connect((self.server_address, int(self.server_port)))
 		self.send("SERVER %s %s 0 %s :%s" % (self.services_name, self.server_password, self.services_id, self.services_description))
@@ -40,11 +41,14 @@ class Services:
 						self.db.execute("delete from temp_nick")
 						self.con.close()
 					if len(data.split()) != 0:
+						if data.split()[1] == "ERROR":
+							self.db.execute("delete from temp_nick")
+							self.con.close()
 						if data.split()[1] == "PING":
 							self.send(":%s PONG %s %s" % (self.services_id, self.services_id, data.split()[2]))
 							self.send(":%s PING %s %s" % (self.services_id, self.services_id, data.split()[2]))
 						if data.split()[1] == "ENDBURST":
-							self.send(":%s UID %s %s Q %s %s TheQBot 0.0.0.0 %s +IO :The Q Bot" % (self.services_id, self.bot, time.time(), self.services_name, self.services_name, time.time()))
+							self.send(":%s UID %s %s Q %s %s TheQBot 0.0.0.0 %s +I :The Q Bot" % (self.services_id, self.bot, time.time(), self.services_name, self.services_name, time.time()))
 							self.join("#opers")
 							for channel in self.db.execute("select name from chanlist"):
 								self.join(str(channel[0]))
