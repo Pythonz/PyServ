@@ -21,11 +21,13 @@ class Services:
 		self.services_description = config.get("SERVICES", "description")
 		self.debug = config.get("OTHER", "debug")
 		self.bot = "%sAAAAAA" % self.services_id
+		self.obot = "%sAAAAAB" % self.services_id
 		self.db = sqlite3.connect("data.db")
 		self.db.isolation_level = None
 
 	def run(self):
 		self.db.execute("delete from temp_nick")
+		self.db.execute("delete from opers")
 		self.con = socket.socket()
 		self.con.connect((self.server_address, int(self.server_port)))
 		self.send("SERVER %s %s 0 %s :%s" % (self.services_name, self.server_password, self.services_id, self.services_description))
@@ -49,13 +51,23 @@ class Services:
 							self.send(":%s PING %s %s" % (self.services_id, self.services_id, data.split()[2]))
 						if data.split()[1] == "ENDBURST":
 							self.send(":%s UID %s %s Q %s %s TheQBot 0.0.0.0 %s +I :The Q Bot" % (self.services_id, self.bot, time.time(), self.services_name, self.services_name, time.time()))
+							self.send(":%s OPERTYPE IRC" % self.bot)
 							self.join("#opers")
+							self.mode("#opers", "+q %s" % self.bot)
+							self.meta(self.bot, "accountname", "Q")
+							self.send(":%s UID %s %s O %s %s TheOBot 0.0.0.0 %s +I :The O Bot" % (self.services_id, self.obot, time.time(), self.services_name, self.services_name, time.time()))
+							self.send(":%s OPERTYPE IRC" % self.obot)
+							self.ojoin("#opers")
+							self.omode("#opers", "+q %s" % self.obot)
+							self.meta(self.obot, "accountname", "O")
+							self.omsg("$*", "Services are back online. Have a nice day :)")
 							for channel in self.db.execute("select name from chanlist"):
 								self.join(str(channel[0]))
-							self.mode("#opers", "+q %s %s" % (self.bot, self.bot))
-							self.meta(self.bot, "accountname", "Q")
-						if data.split()[1] == "PRIVMSG" and data.split()[2] == self.bot:
-							self.message(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
+						if data.split()[1] == "PRIVMSG":
+							if data.split()[2] == self.bot:
+								self.message(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
+							if data.split()[2] == self.obot:
+								self.omessage(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
 						if data.split()[1] == "QUIT":
 							self.db.execute("delete from temp_nick where nick = '%s'" % str(data.split()[0])[1:])
 						if data.split()[1] == "FMODE":
@@ -81,6 +93,57 @@ class Services:
 									pass
 								else:
 									self.mode(fjoin_chan, "+%s %s" % (str(flag[0]), fjoin_nick))
+						if data.split()[1] == "OPERTYPE":
+							uid = data.split()[0][1:]
+							self.db.execute("insert into opers values ('%s')" % uid)
+						if data.split()[1] == "METADATA":
+							uid = data.split()[2]
+							string = data.split()[3]
+							content = ' '.join(data.split()[4:])[1:]
+							self.metadata(uid, string, content)
+
+	def metadata(self, uid, string, content):
+		if string == "accountname":
+			self.db.execute("delete from temp_nick where nick = '%s' or user = '%s'" % (uid, content))
+			self.db.execute("insert into temp_nick values ('%s','%s')" % (uid, content))
+			self.msg(uid, "You are now logged in as %s" % content)
+			self.vhost(uid)
+			self.flag(uid)
+
+	def omessage(self, source, text):
+		try:
+			cmd = text.lower().split()[0]
+			arg = text.split()[1:]
+			args = ' '.join(text.split()[1:])
+			if self.isoper(source):
+				if cmd == "help":
+					self.omsg(source, "VHOST \37{LIST|ACTIVATE|REJECT}\37 USER")
+					self.omsg(source, "GLOBAL \37\2MESSAGE\2\37")
+				elif cmd == "vhost":
+					if arg[0].lower() == "list":
+						for data in self.db.execute("select user,vhost from vhosts where active = '0'"):
+							self.omsg(source, "User: %s\t|\tRequested vHost: %s" % (str(data[0]), str(data[1])))
+					if arg[0].lower() == "activate":
+						for data in self.db.execute("select user from vhosts where active = '0'"):
+							if arg[1].lower() == str(data[0]).lower():
+								self.db.execute("update vhosts set active = '1' where user = '%s'" % str(data[0]))
+								for user in self.db.execute("select nick from temp_nick where user = '%s'" % str(data[0])):
+									for vhost in self.db.execute("select vhost from vhosts where user = '%s' and active = '1'" % str(data[0])):
+										self.send(":%s CHGHOST %s %s" % (self.bot, str(user[0]), str(vhost[0])))
+										self.msg(str(user[0]), "Your vhost\2 %s\2 has been activated" % str(vhost[0]))
+								self.omsg(source, "vHost for user \2%s\2 has been activated" % str(data[0]))
+					if arg[0].lower() == "reject":
+						for data in self.db.execute("select user from vhosts where active = '0'"):
+							if arg[1].lower() == str(data[0]).lower():
+								self.db.execute("delete from vhosts where user = '%s'" % str(data[0]))
+								self.omsg(source, "vHost for user \2%s\2 has been rejected" % str(data[0]))
+				elif cmd == "global":
+					self.omsg("$*", args)
+				else:
+					self.omsg(source, "Unknown command. Use 'HELP' for more information")
+			else:
+				self.omsg(source, "I'm the Operators Service. Only IRC Operators can use me.")
+		except Exception,e: print(e)
 
 	def message(self, source, text):
 		arg = text.split()
@@ -194,8 +257,14 @@ class Services:
 	def msg(self, target, text):
 		self.send(":%s NOTICE %s :%s" % (self.bot, target, text))
 
+	def omsg(self, target, text):
+		self.send(":%s NOTICE %s :%s" % (self.obot, target, text))
+
 	def mode(self, target, mode):
-		self.send(":%s MODE %s %s" % (self.bot, target, mode))
+		self.send(":%s SVSMODE %s %s" % (self.bot, target, mode))
+
+	def omode(self, target, mode):
+		self.send(":%s SVSMODE %s %s" % (self.obot, target, mode))
 
 	def meta(self, target, meta, content):
 		self.send(":%s METADATA %s %s :%s" % (self.services_id, target, meta, content))
@@ -209,8 +278,12 @@ class Services:
 		self.send(":%s JOIN %s" % (self.bot, channel))
 		self.mode(channel, "+q %s" % self.bot)
 
+	def ojoin(self, channel):
+		self.send(":%s JOIN %s" % (self.obot, channel))
+		self.omode(channel, "+q %s" % self.obot)
+
 	def vhost(self, target):
-		for data in self.db.execute("select vhost from vhosts where user = '%s'" % self.auth(target)):
+		for data in self.db.execute("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(target)):
 			self.send(":%s CHGHOST %s %s" % (self.bot, target, str(data[0])))
 			self.msg(target, "Your vhost\2 %s\2 has been activated" % str(data[0]))
 
@@ -224,4 +297,12 @@ class Services:
 				else:
 					self.mode(str(flag[1]), "+%s %s" % (str(flag[0]), target))
 
-Services().run()
+	def isoper(self, target):
+		isoper = False
+		for data in self.db.execute("select * from opers where uid = '%s'" % target):
+			isoper = True 
+		return isoper
+try:
+	Services().run()
+except Exception,e: print(e)
+except KeyboardInterrupt: print("Aborting ... STRG +C")
