@@ -147,8 +147,8 @@ class Services:
 
 	def message(self, source, text):
 		arg = text.split()
-		if text.lower().split()[0] == "showcommands":
-			self.msg(source, "SHOWCOMMANDS - Shows information about all commands that are available to you")
+		if text.lower().split()[0] == "help":
+			self.msg(source, "HELP - Shows information about all commands that are available to you")
 			self.msg(source, "AUTH - Authes you")
 			self.msg(source, "HELLO - Creates a account")
 			self.msg(source, "VHOST - Request your vHost")
