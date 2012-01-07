@@ -120,6 +120,7 @@ class Services:
 								self.msg(source, "You are now logged in as %s" % str(data[0]))
 								self.meta(source, "accountname", str(data[0]))
 								self.vhost(source)
+								self.flag(source)
 									
 					if not exists:
 						self.msg(source, "Wrong username or invalid password.")
@@ -210,5 +211,15 @@ class Services:
 		for data in self.db.execute("select vhost from vhosts where user = '%s'" % self.auth(target)):
 			self.send(":%s CHGHOST %s %s" % (self.bot, target, str(data[0])))
 			self.msg(target, "Your vhost\2 %s\2 has been activated" % str(data[0]))
+
+	def flag(self, target):
+		for data in self.db.execute("select user from temp_nick where nick = '%s'" % target):
+			for flag in self.db.execute("select flag from channel where user = '%s'" % str(data[0]))
+				if str(flag[0]) == "n":
+					self.mode(data.split()[2], "+q %s" % user)
+				elif str(flag[0]) == "Y":
+					pass
+				else:
+					self.mode(data.split()[2], "+%s %s" % (str(flag[0]), user))
 
 Services().run()
