@@ -145,15 +145,15 @@ class Services:
 						self.omsg(source, "Following users sent a feedback:")
 						for data in self.db.execute("select user from feedback"):
 							self.omsg(source, str(data[0]))
-						self.omsg(source, "To read a feedback: \2FEEDBACK \37READ user\37")
+						self.omsg(source, "To read a feedback: \2FEEDBACK \37USER\37")
 					else:
 						entry = False
 						for data in self.db.execute("select user,text from feedback"):
 							if arg[0].lower() == str(data[0]).lower():
 								entry = True
 								self.omsg(source, "\2[FEEDBACK]\2")
-								self.omsg(source, "\37FROM\37:\2 %s\2" % str(data[0]))
-								self.omsg(source, "\37MESSAGE\37: %s" % str(data[1]))
+								self.omsg(source, "\2FROM\2: %s" % str(data[0]))
+								self.omsg(source, "\2MESSAGE\2: %s" % str(data[1]))
 								self.db.execute("delete from feedback where user = '%s'" % str(data[0]))
 						if not entry:
 							self.omsg(source, "There is no feedback from\2 %s\2" % arg[0])
@@ -266,13 +266,15 @@ class Services:
 			else: self.msg(source, "You are not authed")
 		elif arg[0].lower() == "feedback":
 			if self.auth(source) != 0:
-				if len(arg) > 0:
+				if len(arg) > 1:
 					entry = False
 					for data in self.db.execute("select text from feedback where user = '%s'" % self.auth(source)):
 						entry = True
 					if not entry:
-						self.db.execute("insert into feedback values ('%s','%s')" % (self.auth(source), arg))
+						self.db.execute("insert into feedback values('%s','%s')" % (self.auth(source), ' '.join(arg[1:])))
 						self.msg(source, "Feedback added to queue.")
+						for op in self.db.execute("select uid from opers"):
+							self.omsg(str(op[0]), "New feedback from\2 %s\2" % self.auth(source))
 					else:
 						self.msg(source, "You already sent a feedback. Please wait until an operator read it.")
 				else:
@@ -298,6 +300,9 @@ class Services:
 	def omode(self, target, mode):
 		self.send(":%s SVSMODE %s %s" % (self.obot, target, mode))
 
+	def smode(self, target, mode):
+		self.send(":%s SVSMODE %s %s" % (self.services_id, target, mode))
+
 	def meta(self, target, meta, content):
 		self.send(":%s METADATA %s %s :%s" % (self.services_id, target, meta, content))
 
@@ -308,11 +313,11 @@ class Services:
 
 	def join(self, channel):
 		self.send(":%s JOIN %s" % (self.bot, channel))
-		self.mode(channel, "+q %s" % self.bot)
+		self.smode(channel, "+q %s" % self.bot)
 
 	def ojoin(self, channel):
 		self.send(":%s JOIN %s" % (self.obot, channel))
-		self.omode(channel, "+q %s" % self.obot)
+		self.smode(channel, "+q %s" % self.obot)
 
 	def vhost(self, target):
 		for data in self.db.execute("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(target)):
