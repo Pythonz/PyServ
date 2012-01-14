@@ -142,7 +142,7 @@ class Services:
 					self.omsg("$*", args)
 				elif cmd == "feedback":
 					if len(args) == 0:
-						self.omsg(source, "Following users sent a feedback:"
+						self.omsg(source, "Following users sent a feedback:")
 						for data in self.db.execute("select user from feedback"):
 							self.omsg(source, str(data[0]))
 						self.omsg(source, "To read a feedback: \2FEEDBACK \37READ user\37")
@@ -272,15 +272,15 @@ class Services:
 						entry = True
 					if not entry:
 						self.db.execute("insert into feedback values ('%s','%s')" % (self.auth(source), arg))
-						self.msg(source, "Feedback added to queue."
+						self.msg(source, "Feedback added to queue.")
 					else:
-						self.msg(source, "You already sent a feedback. Please wait until an operator read it."
+						self.msg(source, "You already sent a feedback. Please wait until an operator read it.")
 				else:
 					self.msg(source, "\2FEEDBACK\2 \37TEXT\37")
 			else:
 				self.msg(source, "You have to be logged in to use this function")
 		else:
-			self.msg(source, "Unknown command. Please try 'SHOWCOMMANDS' for more information.")
+			self.msg(source, "Unknown command. Please try 'HELP' for more information.")
 
 	def send(self, text):
 		self.con.send(text+"\n")
