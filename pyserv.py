@@ -119,6 +119,7 @@ class Services:
 				if cmd == "help":
 					self.omsg(source, "VHOST \37{LIST|ACTIVATE|REJECT}\37 USER")
 					self.omsg(source, "GLOBAL \37\2MESSAGE\2\37")
+					self.omsg(source, "FEEDBACK [READ \37user\37]")
 				elif cmd == "vhost":
 					if arg[0].lower() == "list":
 						for data in self.db.execute("select user,vhost from vhosts where active = '0'"):
@@ -139,6 +140,23 @@ class Services:
 								self.omsg(source, "vHost for user \2%s\2 has been rejected" % str(data[0]))
 				elif cmd == "global":
 					self.omsg("$*", args)
+				elif cmd == "feedback":
+					if len(args) == 0:
+						self.omsg(source, "Following users sent a feedback:"
+						for data in self.db.execute("select user from feedback"):
+							self.omsg(source, str(data[0]))
+						self.omsg(source, "To read a feedback: \2FEEDBACK \37READ user\37")
+					else:
+						entry = False
+						for data in self.db.execute("select user,text from feedback"):
+							if arg[0].lower() == str(data[0]).lower():
+								entry = True
+								self.omsg(source, "\2[FEEDBACK]\2")
+								self.omsg(source, "\37FROM\37:\2 %s\2" % str(data[0]))
+								self.omsg(source, "\37MESSAGE\37: %s" % str(data[1]))
+								self.db.execute("delete from feedback where user = '%s'" % str(data[0]))
+						if not entry:
+							self.omsg(source, "There is no feedback from\2 %s\2" % arg[0])
 				else:
 					self.omsg(source, "Unknown command. Use 'HELP' for more information")
 			else:
@@ -154,6 +172,7 @@ class Services:
 			self.msg(source, "VHOST - Request your vHost")
 			self.msg(source, "REQUEST - Request for a channel")
 			self.msg(source, "CHANLEV - Edits your channel records")
+			self.msg(source, "FEEDBACK - Sends your feedback to us")
 		elif text.lower().split()[0] == "hello":
 			if len(text.split()) == 3:
 				exists = False
@@ -186,7 +205,6 @@ class Services:
 								self.meta(source, "accountname", str(data[0]))
 								self.vhost(source)
 								self.flag(source)
-									
 					if not exists:
 						self.msg(source, "Wrong username or invalid password.")
 				else:
@@ -246,7 +264,21 @@ class Services:
 						else: self.msg(source, "An error has happened")
 					else: self.msg(source, "An error has happened")
 			else: self.msg(source, "You are not authed")
-							
+		elif arg[0].lower() == "feedback":
+			if self.auth(source) != 0:
+				if len(arg) > 0:
+					entry = False
+					for data in self.db.execute("select text from feedback where user = '%s'" % self.auth(source)):
+						entry = True
+					if not entry:
+						self.db.execute("insert into feedback values ('%s','%s')" % (self.auth(source), arg))
+						self.msg(source, "Feedback added to queue."
+					else:
+						self.msg(source, "You already sent a feedback. Please wait until an operator read it."
+				else:
+					self.msg(source, "\2FEEDBACK\2 \37TEXT\37")
+			else:
+				self.msg(source, "You have to be logged in to use this function")
 		else:
 			self.msg(source, "Unknown command. Please try 'SHOWCOMMANDS' for more information.")
 
