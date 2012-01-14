@@ -119,7 +119,7 @@ class Services:
 				if cmd == "help":
 					self.omsg(source, "VHOST \37{LIST|ACTIVATE|REJECT}\37 USER")
 					self.omsg(source, "GLOBAL \37\2MESSAGE\2\37")
-					self.omsg(source, "FEEDBACK [READ \37user\37]")
+					self.omsg(source, "FEEDBACK [\37USER\37]")
 				elif cmd == "vhost":
 					if arg[0].lower() == "list":
 						for data in self.db.execute("select user,vhost from vhosts where active = '0'"):
@@ -271,10 +271,13 @@ class Services:
 					for data in self.db.execute("select text from feedback where user = '%s'" % self.auth(source)):
 						entry = True
 					if not entry:
-						self.db.execute("insert into feedback values('%s','%s')" % (self.auth(source), ' '.join(arg[1:])))
-						self.msg(source, "Feedback added to queue.")
-						for op in self.db.execute("select uid from opers"):
-							self.omsg(str(op[0]), "New feedback from\2 %s\2" % self.auth(source))
+						try:
+							self.db.execute("""insert into feedback values('%s','%s')""" % (self.auth(source), ' '.join(arg[1:])))
+							self.msg(source, "Feedback added to queue.")
+							for op in self.db.execute("select uid from opers"):
+								self.omsg(str(op[0]), "New feedback from\2 %s\2" % self.auth(source))
+						except Exception,e:
+							self.msg(source, e)
 					else:
 						self.msg(source, "You already sent a feedback. Please wait until an operator read it.")
 				else:
