@@ -120,6 +120,7 @@ class Services:
 					self.omsg(source, "VHOST \37{LIST|ACTIVATE|REJECT}\37 USER")
 					self.omsg(source, "GLOBAL \37\2MESSAGE\2\37")
 					self.omsg(source, "FEEDBACK [\37USER\37]")
+					self.omsg(source, "KILL \37NICK\37")
 				elif cmd == "vhost":
 					if arg[0].lower() == "list":
 						for data in self.db.execute("select user,vhost from vhosts where active = '0'"):
@@ -157,6 +158,13 @@ class Services:
 								self.db.execute("delete from feedback where user = '%s'" % str(data[0]))
 						if not entry:
 							self.omsg(source, "There is no feedback from\2 %s\2" % arg[0])
+				elif cmd == "kill":
+					if len(arg) == 1:
+						self.kill(arg[0], "You're violation network rules")
+					elif len(arg) > 1:
+						self.kill(arg[0], ' '.join(arg[1:]))
+					else:
+						self.omsg(source, "Syntax: \2KILL \37NICK\37\2")
 				else:
 					self.omsg(source, "Unknown command. Use 'HELP' for more information")
 			else:
@@ -321,6 +329,10 @@ class Services:
 	def ojoin(self, channel):
 		self.send(":%s JOIN %s" % (self.obot, channel))
 		self.smode(channel, "+q %s" % self.obot)
+
+	def kill(self, target, reason):
+		if target.lower() != "o" and target.lower() != "q":
+			self.send(":%s KILL %s :Killed (%s (%s))" % (self.obot, target, self.services_name, reason))
 
 	def vhost(self, target):
 		for data in self.db.execute("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(target)):
