@@ -9,7 +9,7 @@ def this_line_is_useless(line):
         'COMMIT',
         'sqlite_sequence',
         'CREATE UNIQUE INDEX',
-	'PRAGMA',
+	'PRAGMA',            
         ]
     for useless in useless_es:
         if re.search(useless, line):
@@ -63,6 +63,9 @@ for line in fileinput.input():
 
     if re.match(r"CREATE INDEX", line):
         line = re.sub('"', '`', line)
+
+    if re.match(r"INSERT INTO", line):
+	line = re.sub('`', "'", line)
 
     print line,
 
