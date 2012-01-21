@@ -199,7 +199,7 @@ class Services:
 				self.msg(source, "CHANLEV - Edits your channel records")
 				self.msg(source, "FEEDBACK - Sends your feedback to us")
 		elif arg[0].lower() == "newpass" and self.auth(source) != 0:
-			if len(arg) == 1:
+			if len(arg) == 2:
 				self.query("update users set pass = '%s' where name = '%s'" % (self.hash(arg[1]), self.auth(source)))
 				self.msg(source, """Your new password is "%s". Remember it!""" % arg[1])
 			else:
@@ -227,7 +227,7 @@ class Services:
 					self.msg(source, "The account %s already exists or your email %s is used!" % (text.split()[2],arg[1]))
 			else:
 				self.msg(source, "Syntax: HELLO \37email\37 \37account\37")
-		elif text.lower().split()[0] == "auth":
+		elif text.lower().split()[0] == "auth" and self.auth(source) == 0:
 			if len(text.split()) == 3:
 				exists = False
 				for data in self.query("select name,pass from users where name = '%s'" % text.split()[1]):
@@ -243,8 +243,8 @@ class Services:
 					self.flag(source)
 				if not exists:
 					self.msg(source, "Wrong username or invalid password.")
-				else:
-					self.msg(source, "Syntax: AUTH \37account\37 \37password\37")
+			else:
+				self.msg(source, "Syntax: AUTH \37account\37 \37password\37")
 		elif text.lower().split()[0] == "vhost" and self.auth(source) != 0:
 			if len(text.split()) == 2:
 				self.query("delete from vhosts where user = '%s'" % self.auth(source))
