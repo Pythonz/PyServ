@@ -1,5 +1,5 @@
 DROP TABLE IF EXISTS users;
-CREATE TABLE IF NOT EXISTS `users`(name text, pass text);
+CREATE TABLE IF NOT EXISTS `users`(name text, pass text, email text);
 DROP TABLE IF EXISTS channels;
 CREATE TABLE IF NOT EXISTS `channels`(channel text, user text, flag text);
 DROP TABLE IF EXISTS chanlist;
