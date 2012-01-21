@@ -1,3 +1,17 @@
+Installing PyServ:
+  1. login into root
+  2. run "setup.py"
+  3. login into a normal user
+  4. open "pyserv.conf" and change values
+  5. create mysql database
+  6. insert sql/base/struct.sql into the database
+  7. run "pyserv.py" as normal user or "start" in a screen
+
+Updating PyServ:
+  1. insert the sqls in sql/updates into the mysql database
+  2. delete this sqls to be shure that you didnt insert the sqls at next update
+  3. run "pyserv.py" as normal user or "start" in a screen
+
 Converting your Database from SQLite3 to MySQL:
 
   1. move your data.db into the tools directory
