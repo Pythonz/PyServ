@@ -189,13 +189,15 @@ class Services:
 		arg = text.split()
 		if text.lower().split()[0] == "help":
 			self.msg(source, "HELP - Shows information about all commands that are available to you")
-			self.msg(source, "AUTH - Authes you")
-			self.msg(source, "HELLO - Creates a account")
-			self.msg(source, "NEWPASS - Changes your password")
-			self.msg(source, "VHOST - Request your vHost")
-			self.msg(source, "REQUEST - Request for a channel")
-			self.msg(source, "CHANLEV - Edits your channel records")
-			self.msg(source, "FEEDBACK - Sends your feedback to us")
+			if self.auth(source) == 0:
+				self.msg(source, "AUTH - Authes you")
+				self.msg(source, "HELLO - Creates a account")
+			else:
+				self.msg(source, "NEWPASS - Changes your password")
+				self.msg(source, "VHOST - Request your vHost")
+				self.msg(source, "REQUEST - Request for a channel")
+				self.msg(source, "CHANLEV - Edits your channel records")
+				self.msg(source, "FEEDBACK - Sends your feedback to us")
 		elif arg[0].lower() == "newpass" and self.auth(source) != 0:
 			if len(arg) == 1:
 				self.query("update users set pass = '%s' where name = '%s'" % (self.hash(arg[1]), self.auth(source)))
@@ -215,7 +217,7 @@ class Services:
 						receivers = ['%s' % arg[1]]
 						if self.regmail == "1":
 							self.msg(source, "An email had been send to you with your password!")
-							self.mail(arg[1], """%s <%s>\nTo: %s <%s>\nSubject: Your account on %s\n\nWelcome to %s\nYour account data:\n\nUser: %s\nPassword: %s\n\nAuth via "/msg Q auth %s %s"\nChange your password as soon as possible with "/msg Q newpass NEWPASS"!""" % (self.services_description, self.email, arg[2], arg[1], self.services_description, self.services_description, arg[2], hash(arg[1]), arg[2], hash(arg[1])))
+							self.mail(arg[1], """From: %s <%s>\nTo: %s <%s>\nSubject: Your account on %s\n\nWelcome to %s\nYour account data:\n\nUser: %s\nPassword: %s\n\nAuth via "/msg Q auth %s %s"\nChange your password as soon as possible with "/msg Q newpass NEWPASS"!""" % (self.services_description, self.email, arg[2], arg[1], self.services_description, self.services_description, arg[2], hash(arg[1]), arg[2], hash(arg[1])))
 						else:
 							self.msg(source, """Use "/msg Q auth %s %s" to auth""" % (arg[2], hash(arg[1])))
 							self.msg(source, "Change your password as soon as possible!")
@@ -378,11 +380,11 @@ class Services:
 
 	def hash(self, string):
 		sha1 = hashlib.sha1()
-		sha1.update(string)
+		sha1.update(str(string))
 		return str(sha1.hexdigest())
 
 	def query(self, string):
-		self.db.query(string)
+		self.db.query(str(string))
 		result = self.db.store_result()
 		try:
 			return result.fetch_row(maxrows=0)
