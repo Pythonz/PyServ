@@ -19,7 +19,7 @@ def debug(text):
 class Services:
 	def __init__(self):
 		self.mysql_host = config.get("MYSQL", "host")
-		self.mysql_port = config.get("MYSQL", "port")
+		self.mysql_port = config.getint("MYSQL", "port")
 		self.mysql_name = config.get("MYSQL", "name")
 		self.mysql_user = config.get("MYSQL", "user")
 		self.mysql_passwd = config.get("MYSQL", "passwd")
