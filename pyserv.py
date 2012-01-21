@@ -6,6 +6,7 @@ import os
 import thread
 import ConfigParser
 import time
+import hashlib
 import _mysql
 
 config = ConfigParser.RawConfigParser()
@@ -199,7 +200,7 @@ class Services:
 						exists = True
 				if not exists:
 					if len(text.split()[2]) > 5:
-						self.db.query("insert into users values ('%s','%s')" % (text.split()[1], text.split()[2]))
+						self.db.query("insert into users values ('%s','%s')" % (text.split()[1], self.hash(text.split()[2])))
 						self.msg(source, "The account %s has been created successfully. You can login now with /msg Q auth account password" % text.split()[1])
 					else:
 						self.msg(source, "Your password is too short!")
@@ -213,7 +214,7 @@ class Services:
 					exists = False
 					for data in self.db.query("select name,pass from users"):
 						if str(text.split()[1]).lower() == str(data[0]).lower():
-							if str(text.split()[2]) == str(data[1]):
+							if self.hash(text.split()[2]) == str(data[1]):
 								exists = True
 								for user in self.db.query("select nick from temp_nick where user = '%s'" % str(data[0])):
 									self.msg(str(user[0]), "Someone else has authed with your account")
@@ -364,6 +365,12 @@ class Services:
 		for data in self.db.query("select * from opers where uid = '%s'" % target):
 			isoper = True 
 		return isoper
+
+	def hash(self, string):
+		sha1 = hashlib.sha1()
+		sha1.update(string)
+		return str(sha1.hexdigest())
+
 try:
 	Services().run()
 except Exception,e: print(e)
