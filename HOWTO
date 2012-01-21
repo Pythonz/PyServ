@@ -1,0 +1,7 @@
+Converting your Database from SQLite3 to MySQL:
+
+  1. move your data.db into the tools directory
+  2. run "sqlite3 data.db .dump | python convert.py > data.sql"
+  3. create a database in mysql
+  4. insert the data.sql into your mysql database
+  5. if there is an error, remove the first line from data.sql an try again
