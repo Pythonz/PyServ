@@ -8,7 +8,8 @@ def this_line_is_useless(line):
         'BEGIN TRANSACTION',
         'COMMIT',
         'sqlite_sequence',
-        'CREATE UNIQUE INDEX',            
+        'CREATE UNIQUE INDEX',
+	'PRAGMA',
         ]
     for useless in useless_es:
         if re.search(useless, line):
