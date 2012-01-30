@@ -9,7 +9,13 @@ import time
 import hashlib
 import smtplib
 import _mysql
+import git
 
+repo = git.Repo(".")
+i = 1
+while len(repo.commits("master", max_count=i)) == i:
+	i += 1
+__version__ = "PyServ v%s, running since %s" % (len(repo.commits("master", max_count=i)), time.strftime("%m-%d-%Y %H:%M", time.gmtime()))
 config = ConfigParser.RawConfigParser()
 config.read("pyserv.conf")
 
@@ -136,6 +142,7 @@ class Services:
 					self.omsg(source, "FEEDBACK [\37USER\37]")
 					self.omsg(source, "KILL \37NICK\37")
 					self.omsg(source, "RESTART [\37{UPGRADE} / REASON\37]")
+					self.omsg(source, "VERSION")
 				elif cmd == "vhost":
 					if arg[0].lower() == "list":
 						for data in self.query("select user,vhost from vhosts where active = '0'"):
@@ -198,6 +205,8 @@ class Services:
 						self.send(":%s QUIT :%s" % (self.obot, args))
 					self.con.close()
 					sys.exit(2)
+				elif cmd == "version":
+					self.omsg(source, __version__)
 				else:
 					self.omsg(source, "Unknown command. Use 'HELP' for more information")
 			else:
@@ -217,6 +226,7 @@ class Services:
 				self.msg(source, "REQUEST - Request for a channel")
 				self.msg(source, "CHANLEV - Edits your channel records")
 				self.msg(source, "FEEDBACK - Sends your feedback to us")
+			self.msg(source, "VERSION - Shows version of services")
 		elif arg[0].lower() == "newpass" and self.auth(source) != 0:
 			if len(arg) == 2:
 				self.query("update users set pass = '%s' where name = '%s'" % (self.hash(arg[1]), self.auth(source)))
@@ -334,6 +344,8 @@ class Services:
 					self.msg(source, "You already sent a feedback. Please wait until an operator read it.")
 			else:
 				self.msg(source, "\2FEEDBACK\2 \37TEXT\37")
+		elif arg[0].lower() == "version":
+			self.omsg(source, __version__)
 		else:
 			self.msg(source, "Unknown command. Please try 'HELP' for more information.")
 

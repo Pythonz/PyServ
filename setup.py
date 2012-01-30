@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
-import subprocess
+from subprocess import Popen
 
-subprocess.Popen("python setup.py build", shell=True, cwd="deps/mysql").wait()
-subprocess.Popen("python setup.py install", shell=True, cwd="deps/mysql").wait()
-
+Popen("python setup.py build", cwd="deps/mysql").wait()
+Popen("python setup.py install", cwd="deps/mysql").wait()
+Popen("python setup.py build", cwd="deps/git-python").wait()
+Popen("python setup.py install", cwd="deps/git-python").wait()
