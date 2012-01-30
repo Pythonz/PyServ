@@ -345,7 +345,7 @@ class Services:
 			else:
 				self.msg(source, "\2FEEDBACK\2 \37TEXT\37")
 		elif arg[0].lower() == "version":
-			self.omsg(source, __version__)
+			self.msg(source, __version__)
 		else:
 			self.msg(source, "Unknown command. Please try 'HELP' for more information.")
 
