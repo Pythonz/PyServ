@@ -15,7 +15,7 @@ repo = git.Repo(".")
 i = 1
 while len(repo.commits("master", max_count=i)) == i:
 	i += 1
-__version__ = "PyServ v%s, running since %s" % (len(repo.commits("master", max_count=i)), time.strftime("%m-%d-%Y %H:%M", time.gmtime()))
+__version__ = "PyServ v%s, running since %s" % (len(repo.commits("master", max_count=i)), time.strftime("%m/%d/%y %H:%M:%S", time.gmtime()))
 config = ConfigParser.RawConfigParser()
 config.read("pyserv.conf")
 
