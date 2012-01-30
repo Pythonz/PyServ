@@ -132,9 +132,10 @@ class Services:
 			if self.isoper(source):
 				if cmd == "help":
 					self.omsg(source, "VHOST \37{LIST|ACTIVATE|REJECT}\37 USER")
-					self.omsg(source, "GLOBAL \37\2MESSAGE\2\37")
+					self.omsg(source, "GLOBAL \37MESSAGE\37")
 					self.omsg(source, "FEEDBACK [\37USER\37]")
 					self.omsg(source, "KILL \37NICK\37")
+					self.omsg(source, "RESTART [\37{UPGRADE} / REASON\37]")
 				elif cmd == "vhost":
 					if arg[0].lower() == "list":
 						for data in self.query("select user,vhost from vhosts where active = '0'"):
@@ -179,6 +180,24 @@ class Services:
 						self.kill(arg[0], ' '.join(arg[1:]))
 					else:
 						self.omsg(source, "Syntax: \2KILL \37NICK\37\2")
+				elif cmd == "restart":
+					if len(arg) == 0:
+						msg = "services are now restarting ... we are back in a minute!"
+						self.send(":%s QUIT :%s" % (self.bot, msg))
+						self.send(":%s QUIT :%s" % (self.obot, msg))
+					elif len(arg) == 1:
+						if args.lower() == "upgrade":
+							msg = "we are going down for an upgrade. we are back as soon as it is finished!"
+							self.send(":%s QUIT :%s" % (self.bot, msg))
+							self.send(":%s QUIT :%s" % (self.obot, msg))
+						else:
+							self.send(":%s QUIT :%s" % (self.bot, args))
+							self.send(":%s QUIT :%s" % (self.obot, args))
+					else:
+						self.send(":%s QUIT :%s" % (self.bot, args))
+						self.send(":%s QUIT :%s" % (self.obot, args))
+					self.con.close()
+					sys.exit(2)
 				else:
 					self.omsg(source, "Unknown command. Use 'HELP' for more information")
 			else:
@@ -395,7 +414,8 @@ class Services:
 		mail.sendmail(self.email, ['%s' % receiver], message)
 		mail.quit()
 
-try:
-	Services().run()
-except Exception,e: print(e)
-except KeyboardInterrupt: print("Aborting ... STRG +C")
+if __name__ == "__main__":
+	try:
+		Services().run()
+	except Exception,e: print(e)
+	except KeyboardInterrupt: print("Aborting ... STRG +C")
