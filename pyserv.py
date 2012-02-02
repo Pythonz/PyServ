@@ -57,75 +57,79 @@ class Services:
 			
 			while 1:
 				recv = self.con.recv(5120)
-				if recv != "":
-					for data in recv.rstrip().split("\n"):
-						debug("<< %s" % data)
-						if data.startswith("ERROR :"):
+				if not recv:
+					self.reconnect()
+					return 0
+				for data in recv.rstrip().split("\n"):
+					debug("<< %s" % data)
+					if len(data.split()) != 0:
+						if data.split()[1] == "ERROR":
 							self.query("delete from temp_nick")
 							self.con.close()
-						if len(data.split()) != 0:
-							if data.split()[1] == "ERROR":
-								self.query("delete from temp_nick")
-								self.con.close()
-							if data.split()[1] == "PING":
-								self.send(":%s PONG %s %s" % (self.services_id, self.services_id, data.split()[2]))
-								self.send(":%s PING %s %s" % (self.services_id, self.services_id, data.split()[2]))
-							if data.split()[1] == "ENDBURST":
-								self.send(":%s UID %s %s Q %s %s TheQBot 0.0.0.0 %s +I :The Q Bot" % (self.services_id, self.bot, time.time(), self.services_name, self.services_name, time.time()))
-								self.send(":%s OPERTYPE IRC" % self.bot)
-								self.join("#opers")
-								self.join("#services")
-								self.meta(self.bot, "accountname", "Q")
-								self.send(":%s UID %s %s O %s %s TheOBot 0.0.0.0 %s +I :The O Bot" % (self.services_id, self.obot, time.time(), self.services_name, self.services_name, time.time()))
-								self.send(":%s OPERTYPE IRC" % self.obot)
-								self.ojoin("#opers")
-								self.ojoin("#services")
-								self.meta(self.obot, "accountname", "O")
-								self.omsg("$*", "Services are back online. Have a nice day :)")
-								for channel in self.query("select name from chanlist"):
-									self.join(str(channel[0]))
-							if data.split()[1] == "PRIVMSG":
-								if data.split()[2] == self.bot:
-									self.message(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
-								if data.split()[2] == self.obot:
-									self.omessage(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
-							if data.split()[1] == "QUIT":
-								self.query("delete from temp_nick where nick = '%s'" % str(data.split()[0])[1:])
-							if data.split()[1] == "FMODE":
-								if len(data.split()) > 5:
-									for user in data.split()[6:]:
-										for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (data.split()[2], self.auth(user))):
-											if str(flag[0]) == "n":
-												self.mode(data.split()[2], "+q %s" % user)
-											elif str(flag[0]) == "Y":
-												pass
-											else:
-												self.mode(data.split()[2], "+%s %s" % (str(flag[0]), user))
-							if data.split()[1] == "FJOIN":
-								fjoin_chan = data.split()[2]
-								fjoin_nick = data.split()[5][1:]
-								if fjoin_nick.startswith(","):
-									fjoin_nick = fjoin_nick[1:]
-								fjoin_user = self.auth(fjoin_nick)
-								for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (fjoin_chan, fjoin_user)):
-									if str(flag[0]) == "n":
-										self.mode(fjoin_chan, "+q %s" % fjoin_nick)
-									elif str(flag[0]) == "Y":
-										pass
-									else:
-										self.mode(fjoin_chan, "+%s %s" % (str(flag[0]), fjoin_nick))
-							if data.split()[1] == "OPERTYPE":
-								uid = data.split()[0][1:]
-								self.query("insert into opers values ('%s')" % uid)
-							if data.split()[1] == "METADATA":
-								uid = data.split()[2]
-								string = data.split()[3]
-								content = ' '.join(data.split()[4:])[1:]
-								self.metadata(uid, string, content)
-		except socket.error:
-			self.con.close()
-			self.run()
+						if data.split()[1] == "PING":
+							self.send(":%s PONG %s %s" % (self.services_id, self.services_id, data.split()[2]))
+							self.send(":%s PING %s %s" % (self.services_id, self.services_id, data.split()[2]))
+						if data.split()[1] == "ENDBURST":
+							self.send(":%s UID %s %s Q %s %s TheQBot 0.0.0.0 %s +I :The Q Bot" % (self.services_id, self.bot, time.time(), self.services_name, self.services_name, time.time()))
+							self.send(":%s OPERTYPE IRC" % self.bot)
+							self.join("#opers")
+							self.join("#services")
+							self.meta(self.bot, "accountname", "Q")
+							self.send(":%s UID %s %s O %s %s TheOBot 0.0.0.0 %s +I :The O Bot" % (self.services_id, self.obot, time.time(), self.services_name, self.services_name, time.time()))
+							self.send(":%s OPERTYPE IRC" % self.obot)
+							self.ojoin("#opers")
+							self.ojoin("#services")
+							self.meta(self.obot, "accountname", "O")
+							self.omsg("$*", "Services are back online. Have a nice day :)")
+							for channel in self.query("select name from chanlist"):
+								self.join(str(channel[0]))
+						if data.split()[1] == "PRIVMSG":
+							if data.split()[2] == self.bot:
+								self.message(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
+							if data.split()[2] == self.obot:
+								self.omessage(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
+						if data.split()[1] == "QUIT":
+							self.query("delete from temp_nick where nick = '%s'" % str(data.split()[0])[1:])
+						if data.split()[1] == "FMODE":
+							if len(data.split()) > 5:
+								for user in data.split()[6:]:
+									for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (data.split()[2], self.auth(user))):
+										if str(flag[0]) == "n":
+											self.mode(data.split()[2], "+q %s" % user)
+										elif str(flag[0]) == "Y":
+											pass
+										else:
+											self.mode(data.split()[2], "+%s %s" % (str(flag[0]), user))
+						if data.split()[1] == "FJOIN":
+							fjoin_chan = data.split()[2]
+							fjoin_nick = data.split()[5][1:]
+							if fjoin_nick.startswith(","):
+								fjoin_nick = fjoin_nick[1:]
+							fjoin_user = self.auth(fjoin_nick)
+							for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (fjoin_chan, fjoin_user)):
+								if str(flag[0]) == "n":
+									self.mode(fjoin_chan, "+q %s" % fjoin_nick)
+								elif str(flag[0]) == "Y":
+									pass
+								else:
+									self.mode(fjoin_chan, "+%s %s" % (str(flag[0]), fjoin_nick))
+						if data.split()[1] == "OPERTYPE":
+							uid = data.split()[0][1:]
+							self.query("insert into opers values ('%s')" % uid)
+						if data.split()[1] == "METADATA":
+							uid = data.split()[2]
+							string = data.split()[3]
+							content = ' '.join(data.split()[4:])[1:]
+							self.metadata(uid, string, content)
 		except Exception,e: pass
+
+	def reconnect(self):
+		self.con.close()
+		self.run()
+
+	def restart(self):
+		script = open("pyserv.py")
+		exec(script.read())
 
 	def metadata(self, uid, string, content):
 		if string == "accountname":
@@ -146,7 +150,7 @@ class Services:
 					self.omsg(source, "GLOBAL \37MESSAGE\37")
 					self.omsg(source, "FEEDBACK [\37USER\37]")
 					self.omsg(source, "KILL \37NICK\37")
-					self.omsg(source, "RESTART [\37{UPGRADE} / REASON\37]")
+					self.omsg(source, "QUIT [\37{UPGRADE} / REASON\37]")
 					self.omsg(source, "VERSION")
 				elif cmd == "vhost":
 					if arg[0].lower() == "list":
@@ -192,7 +196,7 @@ class Services:
 						self.kill(arg[0], ' '.join(arg[1:]))
 					else:
 						self.omsg(source, "Syntax: \2KILL \37NICK\37\2")
-				elif cmd == "restart":
+				elif cmd == "quit":
 					if len(arg) == 0:
 						msg = "services are now restarting ... we are back in a minute!"
 						self.send(":%s QUIT :%s" % (self.bot, msg))
