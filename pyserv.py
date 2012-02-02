@@ -120,7 +120,7 @@ class Services:
 							string = data.split()[3]
 							content = ' '.join(data.split()[4:])[1:]
 							self.metadata(uid, string, content)
-		except Exception,e: print("<<ERROR>> %s" % e)
+		except Exception,e: debug("<<ERROR>> %s" % e)
 
 	def reconnect(self):
 		self.con.close()
