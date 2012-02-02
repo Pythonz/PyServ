@@ -190,7 +190,7 @@ class Services:
 						self.omsg(source, "Syntax: \2KILL \37NICK\37\2")
 				elif cmd == "quit":
 					if len(arg) == 0:
-						msg = "services are now restarting ... we are back in a minute!"
+						msg = "services shutdown"
 						self.send(":%s QUIT :%s" % (self.bot, msg))
 						self.send(":%s QUIT :%s" % (self.obot, msg))
 					elif len(arg) == 1:
