@@ -395,8 +395,8 @@ class Services:
 			self.msg(target, "Your vhost\2 %s\2 has been activated" % str(data[0]))
 
 	def version(self, source, target):
-		self.send(":%s NOTICE %s: %s" % (source, target, __version__))
-		self.send(":%s NOTICE %s: Running on: %s %s %s" % (source, target, os.uname()[0], os.uname()[2], os.uname()[-1]))
+		self.send(":%s NOTICE %s :%s" % (source, target, __version__))
+		self.send(":%s NOTICE %s :Running on: %s %s %s" % (source, target, os.uname()[0], os.uname()[2], os.uname()[-1]))
 
 	def flag(self, target):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
