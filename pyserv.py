@@ -16,7 +16,7 @@ i = 1
 while len(repo.commits("master", max_count=i)) == i:
 	i += 1
 __version__ = (len(repo.commits("master", max_count=i)))
-_started = time.clock()
+_started = time.gmtime()
 config = ConfigParser.RawConfigParser()
 config.read("pyserv.conf")
 
@@ -397,7 +397,7 @@ class Services:
 
 	def version(self, source, target):
 		self.send(":%s NOTICE %s :PyServ v%s" % (source, target, __version__))
-		self.send(":%s NOTICE %s :Uptime: %s" % (source, target, self.convert_timestamp(time.clock() - _started)))
+		self.send(":%s NOTICE %s :Uptime: %s" % (source, target, self.convert_timestamp(time.gmtime() - _started)))
 		self.send(":%s NOTICE %s :Running on: %s %s %s" % (source, target, os.uname()[0], os.uname()[2], os.uname()[-1]))
 
 	def flag(self, target):
