@@ -397,7 +397,7 @@ class Services:
 
 	def version(self, source, target):
 		self.send(":%s NOTICE %s :PyServ v%s" % (source, target, __version__))
-		self.send(":%s NOTICE %s :Uptime: %s" % (source, target, self.convert_timestamp(_startup - time.clock())))
+		self.send(":%s NOTICE %s :Uptime: %s" % (source, target, self.convert_timestamp(int(_startup) - time.clock())))
 		self.send(":%s NOTICE %s :Running on: %s %s %s" % (source, target, os.uname()[0], os.uname()[2], os.uname()[-1]))
 
 	def flag(self, target):
