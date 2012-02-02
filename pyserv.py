@@ -433,7 +433,7 @@ class Services:
 		mail.sendmail(self.email, ['%s' % receiver], message)
 		mail.quit()
 
-	def convert_timestamp(timestamp):
+	def convert_timestamp(self, timestamp):
 		dif = timestamp
 		days = 0
 		hours = 0
