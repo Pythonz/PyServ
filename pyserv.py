@@ -120,7 +120,7 @@ class Services:
 							uid = data.split()[0][1:]
 							self.query("insert into opers values ('%s')" % uid)
 						if data.split()[1] == "METADATA":
-							if len(data.split()) > 5:
+							if len(data.split()) == 5 and len(data.split()[4]) != 1:
 								uid = data.split()[2]
 								string = data.split()[3]
 								content = ' '.join(data.split()[4:])[1:]
