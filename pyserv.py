@@ -127,10 +127,6 @@ class Services:
 		self.con.close()
 		self.run()
 
-	def restart(self):
-		script = open("pyserv.py")
-		exec(script.read())
-
 	def metadata(self, uid, string, content):
 		if string == "accountname":
 			self.query("delete from temp_nick where nick = '%s' or user = '%s'" % (uid, content))
