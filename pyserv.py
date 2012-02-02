@@ -62,7 +62,7 @@ class Services:
 					return 0
 				for data in recv.rstrip().split("\n"):
 					debug("<< %s" % data)
-					if data:
+					if data.rstrip() != "":
 						if data.split()[1] == "PING":
 							self.send(":%s PONG %s %s" % (self.services_id, self.services_id, data.split()[2]))
 							self.send(":%s PING %s %s" % (self.services_id, self.services_id, data.split()[2]))
@@ -78,8 +78,7 @@ class Services:
 							self.ojoin("#services")
 							self.meta(self.obot, "accountname", "O")
 							self.omsg("$*", "Services are now back online. Have a nice day :)")
-							self.omsg("$*", __version__)
-							self.omsg(source, "Running on: %s" % ' '.join(os.uname()))
+							self.version(self.obot, "$*")
 							for channel in self.query("select name from chanlist"):
 								self.join(str(channel[0]))
 						if data.split()[1] == "PRIVMSG":
@@ -209,9 +208,7 @@ class Services:
 						self.send(":%s QUIT :%s" % (self.obot, args))
 					self.con.close()
 					sys.exit(2)
-				elif cmd == "version":
-					self.omsg(source, __version__)
-					self.omsg(source, "Running on: %s" % ' '.join(os.uname()))
+				elif cmd == "version": self.version(self.obot, source)
 				else:
 					self.omsg(source, "Unknown command. Use 'HELP' for more information")
 			else:
@@ -349,9 +346,7 @@ class Services:
 					self.msg(source, "You already sent a feedback. Please wait until an operator read it.")
 			else:
 				self.msg(source, "\2FEEDBACK\2 \37TEXT\37")
-		elif arg[0].lower() == "version":
-			self.msg(source, __version__)
-			self.msg(source, "Running on: %s" % ' '.join(os.uname()))
+		elif arg[0].lower() == "version": self.version(self.bot, source)
 		else:
 			self.msg(source, "Unknown command. Please try 'HELP' for more information.")
 
@@ -398,6 +393,10 @@ class Services:
 		for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(target)):
 			self.send(":%s CHGHOST %s %s" % (self.bot, target, str(data[0])))
 			self.msg(target, "Your vhost\2 %s\2 has been activated" % str(data[0]))
+
+	def version(self, source, target):
+		self.send(":%s NOTICE %s: %s" % (source, target, __version__))
+		self.send(":%s NOTICE %s: Running on: %s %s %s" % (source, target, os.uname()[0], os.uname()[2], os.uname()[-1]))
 
 	def flag(self, target):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
