@@ -76,7 +76,9 @@ class Services:
 						self.ojoin("#opers")
 						self.ojoin("#services")
 						self.meta(self.obot, "accountname", "O")
-						self.omsg("$*", "Services are back online. Have a nice day :)")
+						self.omsg("$*", "Services are now back online. Have a nice day :)")
+						self.omsg("$*", __version__)
+						self.omsg(source, "Running on: %s" % ' '.join(os.uname()))
 						for channel in self.query("select name from chanlist"):
 							self.join(str(channel[0]))
 					if data.split()[1] == "PRIVMSG":
@@ -208,6 +210,7 @@ class Services:
 					sys.exit(2)
 				elif cmd == "version":
 					self.omsg(source, __version__)
+					self.omsg(source, "Running on: %s" % ' '.join(os.uname()))
 				else:
 					self.omsg(source, "Unknown command. Use 'HELP' for more information")
 			else:
@@ -347,6 +350,7 @@ class Services:
 				self.msg(source, "\2FEEDBACK\2 \37TEXT\37")
 		elif arg[0].lower() == "version":
 			self.msg(source, __version__)
+			self.msg(source, "Running on: %s" % ' '.join(os.uname()))
 		else:
 			self.msg(source, "Unknown command. Please try 'HELP' for more information.")
 
