@@ -434,7 +434,7 @@ class Services:
 		mail.quit()
 
 	def convert_timestamp(self, timestamp):
-		dif = timestamp
+		dif = int(timestamp)
 		days = 0
 		hours = 0
 		minutes = 0
