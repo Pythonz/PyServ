@@ -175,7 +175,7 @@ class Services:
 						for data in self.query("select user from vhosts where active = '0'"):
 							if arg[1].lower() == str(data[0]).lower():
 								self.query("delete from vhosts where user = '%s'" % str(data[0]))
-								self.omsg(source, "vHost for user \2%s\2 has been rejected" % str(data[0]))
+								self.omsg(source, "vHost for user\2 %s\2 has been rejected" % str(data[0]))
 				elif cmd == "global":
 					self.omsg("$*", "[%s] " % self.nick(source) + args)
 				elif cmd == "feedback":
@@ -183,7 +183,7 @@ class Services:
 						self.omsg(source, "Following users sent a feedback:")
 						for data in self.query("select user from feedback"):
 							self.omsg(source, str(data[0]))
-						self.omsg(source, "To read a feedback: \2FEEDBACK \37USER\37")
+						self.omsg(source, "To read a feedback: \2FEEDBACK \37USER\37\2")
 					else:
 						entry = False
 						for data in self.query("select user,text from feedback"):
@@ -191,7 +191,7 @@ class Services:
 								entry = True
 								self.omsg(source, "\2[FEEDBACK]\2")
 								self.omsg(source, "\2FROM\2: %s" % str(data[0]))
-								self.omsg(source, "\2MESSAGE\2: %s" % str(data[1]))
+								self.omsg(source, "\2MESSAGE\2: " + str(data[1]))
 								self.query("delete from feedback where user = '%s'" % str(data[0]))
 						if not entry:
 							self.omsg(source, "There is no feedback from\2 %s\2" % arg[0])
@@ -348,7 +348,7 @@ class Services:
 					entry = True
 				if not entry:
 					try:
-						self.query("""insert into feedback values('%s','%s')""" % (self.auth(source), ' '.join(arg[1:])))
+						self.query("insert into feedback values('"+self.auth(source)+"','"+' '.join(arg[1:])+"')")
 						self.msg(source, "Feedback added to queue.")
 						for op in self.query("select uid from opers"):
 							self.omsg(str(op[0]), "New feedback from\2 %s\2" % self.auth(source))
