@@ -50,6 +50,7 @@ class Services:
 		try:
 			self.query("delete from temp_nick")
 			self.query("delete from opers")
+			self.query("delete from online")
 			self.con = socket.socket()
 			self.con.connect((self.server_address, int(self.server_port)))
 			self.send("SERVER %s %s 0 %s :%s" % (self.services_name, self.server_password, self.services_id, self.services_description))
@@ -87,11 +88,14 @@ class Services:
 								self.message(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
 							if data.split()[2] == self.obot:
 								self.omessage(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
+						if data.split()[1] == "NICK":
+							self.query("update online set nick = '%s' where uid = '%s'" % (data.split()[2], str(data.split()[0])[1:]))
 						if data.split()[1] == "QUIT":
 							self.query("delete from temp_nick where nick = '%s'" % str(data.split()[0])[1:])
+							self.query("delete from online where uid = '%s'" % str(data.split()[0])[1:])
 						if data.split()[1] == "FMODE":
-							if len(data.split()) > 5:
-								for user in data.split()[6:]:
+							if len(data.split()) > 6:
+								for user in data.split()[5:]:
 									for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (data.split()[2], self.auth(user))):
 										if str(flag[0]) == "n":
 											self.mode(data.split()[2], "+q %s" % user)
@@ -116,18 +120,21 @@ class Services:
 							uid = data.split()[0][1:]
 							self.query("insert into opers values ('%s')" % uid)
 						if data.split()[1] == "METADATA":
-							uid = data.split()[2]
-							string = data.split()[3]
-							content = ' '.join(data.split()[4:])[1:]
-							self.metadata(uid, string, content)
-		except socket.error,e:
-			debug("<<SOCKET-ERROR>> %s" % e)
-			self.reconnect()
+							if len(data.split()) > 5:
+								uid = data.split()[2]
+								string = data.split()[3]
+								content = ' '.join(data.split()[4:])[1:]
+								self.metadata(uid, string, content)
+						if data.split()[1] == "UID":
+							self.query("insert into online values ('%s','%s')" % (data.split()[2], data.split()[4]))
 		except Exception,e:
-			debug("<<ERROR>> %s" % e)
+			debug("<<ERROR>> " + e)
+			self.reconnect()
 
 	def reconnect(self):
-		self.con.close()
+		try:
+			self.con.close()
+		except: pass
 		self.run()
 
 	def metadata(self, uid, string, content):
@@ -170,7 +177,7 @@ class Services:
 								self.query("delete from vhosts where user = '%s'" % str(data[0]))
 								self.omsg(source, "vHost for user \2%s\2 has been rejected" % str(data[0]))
 				elif cmd == "global":
-					self.omsg("$*", args)
+					self.omsg("$*", "[%s] " % self.nick(source) + args)
 				elif cmd == "feedback":
 					if len(args) == 0:
 						self.omsg(source, "Following users sent a feedback:")
@@ -243,26 +250,26 @@ class Services:
 		elif arg[0].lower() == "hello" and self.auth(source) == 0:
 			if len(arg) == 3:
 				exists = False
-				for data in self.query("select name from users where email = '%s' or name = '%s'" % (arg[1], arg[2])):
+				for data in self.query("select name from users where email = '%s' or name = '%s'" % (arg[1], self.nick(source))):
 						exists = True
 				if not exists:
-					if arg[1].find("@") != -1 and arg[1].find(".") != -1:
-						self.query("insert into users values ('%s','%s','%s')" % (arg[2], self.hash(hash(arg[1])), arg[1]))
-						self.msg(source, "The account %s has been created successfully. You can login now with /msg Q auth account password" % text.split()[2])
+					if arg[1].find("@") != -1 and arg[1].find(".") != -1 and arg[1].lower() == arg[2].lower():
+						self.query("insert into users values ('%s','%s','%s')" % (self.nick(source), self.hash(hash(arg[1])), arg[1]))
+						self.msg(source, "The account %s has been created successfully. You can login now with /msg Q auth account password" % self.nick(source))
 						sender = self.email
 						receivers = ['%s' % arg[1]]
 						if self.regmail == "1":
 							self.msg(source, "An email had been send to you with your password!")
-							self.mail(arg[1], """From: %s <%s>\nTo: %s <%s>\nSubject: Your account on %s\n\nWelcome to %s\nYour account data:\n\nUser: %s\nPassword: %s\n\nAuth via "/msg Q auth %s %s"\nChange your password as soon as possible with "/msg Q newpass NEWPASS"!""" % (self.services_description, self.email, arg[2], arg[1], self.services_description, self.services_description, arg[2], hash(arg[1]), arg[2], hash(arg[1])))
+							self.mail(arg[1], """From: %s <%s>\nTo: %s <%s>\nSubject: Your account on %s\n\nWelcome to %s\nYour account data:\n\nUser: %s\nPassword: %s\n\nAuth via "/msg Q auth %s %s"\nChange your password as soon as possible with "/msg Q newpass NEWPASS"!""" % (self.services_description, self.email, self.nick(source), arg[1], self.services_description, self.services_description, self.nick(source), hash(arg[1]), self.nick(source), hash(arg[1])))
 						else:
-							self.msg(source, """Use "/msg Q auth %s %s" to auth""" % (arg[2], hash(arg[1])))
+							self.msg(source, """Use "/msg Q auth %s %s" to auth""" % (self.nick(source), hash(arg[1])))
 							self.msg(source, "Change your password as soon as possible!")
 					else:
 						self.msg(source, "Invalid email %s!" % arg[1])
 				else:
-					self.msg(source, "The account %s already exists or your email %s is used!" % (text.split()[2],arg[1]))
+					self.msg(source, "The account %s already exists or your email %s is used!" % (self.nick(source),arg[1]))
 			else:
-				self.msg(source, "Syntax: HELLO \37email\37 \37account\37")
+				self.msg(source, "Syntax: HELLO \37email\37 \37email\37")
 		elif text.lower().split()[0] == "auth" and self.auth(source) == 0:
 			if len(text.split()) == 3:
 				exists = False
@@ -354,6 +361,10 @@ class Services:
 		elif arg[0].lower() == "version": self.version(self.bot, source)
 		else:
 			self.msg(source, "Unknown command. Please try 'HELP' for more information.")
+
+	def nick (self, source):
+		for data in self.query("select nick from online where uid = '%s'" % source):
+			return str(data[0])
 
 	def send(self, text):
 		self.con.send(text+"\n")
