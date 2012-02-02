@@ -63,9 +63,6 @@ class Services:
 				for data in recv.rstrip().split("\n"):
 					debug("<< %s" % data)
 					if len(data.split()) != 0:
-						if data.split()[1] == "ERROR":
-							self.query("delete from temp_nick")
-							self.con.close()
 						if data.split()[1] == "PING":
 							self.send(":%s PONG %s %s" % (self.services_id, self.services_id, data.split()[2]))
 							self.send(":%s PING %s %s" % (self.services_id, self.services_id, data.split()[2]))
