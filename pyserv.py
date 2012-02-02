@@ -15,7 +15,8 @@ repo = git.Repo(".")
 i = 1
 while len(repo.commits("master", max_count=i)) == i:
 	i += 1
-__version__ = "PyServ v%s, running since %s" % (len(repo.commits("master", max_count=i)), time.strftime("%m/%d/%y %H:%M:%S", time.gmtime()))
+__version__ = (len(repo.commits("master", max_count=i)))
+_started = time.clock()
 config = ConfigParser.RawConfigParser()
 config.read("pyserv.conf")
 
@@ -395,7 +396,8 @@ class Services:
 			self.msg(target, "Your vhost\2 %s\2 has been activated" % str(data[0]))
 
 	def version(self, source, target):
-		self.send(":%s NOTICE %s :%s" % (source, target, __version__))
+		self.send(":%s NOTICE %s :PyServ v%s" % (source, target, __version__))
+		self.send(":%s NOTICE %s :Uptime: %s" % (source, target, self.convert_timestamp(_startup - time.clock())))
 		self.send(":%s NOTICE %s :Running on: %s %s %s" % (source, target, os.uname()[0], os.uname()[2], os.uname()[-1]))
 
 	def flag(self, target):
@@ -430,6 +432,27 @@ class Services:
 		mail = smtplib.SMTP('127.0.0.1', 25)
 		mail.sendmail(self.email, ['%s' % receiver], message)
 		mail.quit()
+
+	def convert_timestamp(timestamp):
+		dif = timestamp
+		days = 0
+		hours = 0
+		minutes = 0
+		seconds = 0
+		if dif == 86400 or dif > 86400:
+			days = int(dif)/86400
+			dif = int(dif)-int(days)*86400
+		if dif == 3600 or dif > 3600:
+			hours = int(dif)/3600
+			dif = int(dif)-int(hours)*3600
+		if dif == 60 or dif > 60:
+			minutes = int(dif)/60
+			dif = int(dif)-int(minutes)*60
+		seconds = dif
+		if days > 0: return "%s days %s hours %s minutes %s seconds" % (days, hours, minutes, seconds)
+		if hours > 0: return "%s hours %s minutes %s seconds" % (hours, minutes, seconds)
+		if minutes > 0: return "%s minutes %s seconds" % (minutes, seconds)
+		return "%s seconds" % seconds
 
 if __name__ == "__main__":
 	try:
