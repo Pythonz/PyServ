@@ -94,7 +94,7 @@ class Services:
 							self.query("delete from temp_nick where nick = '%s'" % str(data.split()[0])[1:])
 							self.query("delete from online where uid = '%s'" % str(data.split()[0])[1:])
 						if data.split()[1] == "FMODE":
-							if len(data.split()) > 6:
+							if len(data.split()) > 5:
 								for user in data.split()[5:]:
 									for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (data.split()[2], self.auth(user))):
 										if str(flag[0]) == "n":
@@ -116,6 +116,9 @@ class Services:
 									pass
 								else:
 									self.mode(fjoin_chan, "+%s %s" % (str(flag[0]), fjoin_nick))
+							if self.isoper(fjoin_nick) and self.chanexist(fjoin_chan):
+								self.send(":%s NOTICE %s :Operator %s has joined" % (self.services_id, fjoin_chan, self.nick(fjoin_nick)))
+								self.send(":%s PRIVMSG %s :ACTION goes down on his knee and prays to %s." % (self.bot, fjoin_chan, self.nick(fjoin_nick)))
 						if data.split()[1] == "OPERTYPE":
 							uid = data.split()[0][1:]
 							self.query("insert into opers values ('%s')" % uid)
@@ -128,7 +131,7 @@ class Services:
 						if data.split()[1] == "UID":
 							self.query("insert into online values ('%s','%s')" % (data.split()[2], data.split()[4]))
 		except Exception,e:
-			debug("<<ERROR>> " + e)
+			debug("<<ERROR>> " + str(e))
 			self.reconnect()
 
 	def reconnect(self):
@@ -392,6 +395,11 @@ class Services:
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
 			return str(data[0])
 		return 0
+
+	def chanexist(self, channel):
+		for data in self.query("select name from chanlist where name = '%s'" % channel):
+			return True
+		return False
 
 	def join(self, channel):
 		self.send(":%s JOIN %s" % (self.bot, channel))
