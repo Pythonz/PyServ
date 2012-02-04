@@ -295,16 +295,16 @@ class Services:
 		elif arg[0].lower() == "cauth" and self.auth(source) == 0:
 			if len(arg) == 2:
 				exists = False
-				for data in self.query("select pass from users where name = '%s'" % arg[1].split(":")[0]):
+				for data in self.query("select name,pass from users where name = '%s'" % arg[1].split(":")[0]):
 					md5 = hashlib.md5()
-					md5.update(str(data[0]))
+					md5.update(str(data[1]))
 					if str(md5.hexdigest()) == arg[1].split(":")[1]:
 						exists = True
-						for user in self.query("select nick from temp_nick where user = '%s'" % arg[1].split(":")[0]):
+						for user in self.query("select nick from temp_nick where user = '%s'" % str(data[0])):
 							self.msg(str(user[0]), "Someone else has authed with your account")
-						self.query("insert into temp_nick values ('%s','%s')" % (source, arg[1].split(":")[0]))
-						self.msg(source, "You are now logged in as %s" % arg[1].split(":")[0])
-						self.meta(source, "accountname", arg[1].split(":")[0])
+						self.query("insert into temp_nick values ('%s','%s')" % (source, str(data[0])))
+						self.msg(source, "You are now logged in as %s" % str(data[0]))
+						self.meta(source, "accountname", str(data[0]))
 						self.vhost(source)
 						self.flag(source)
 				if not exists:
