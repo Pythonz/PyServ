@@ -70,12 +70,12 @@ class Services:
 							self.send(":%s PING %s %s" % (self.services_id, self.services_id, data.split()[2]))
 						if data.split()[1] == "ENDBURST":
 							self.send(":%s UID %s %s Q %s %s TheQBot 0.0.0.0 %s +I :The Q Bot" % (self.services_id, self.bot, time.time(), self.services_name, self.services_name, time.time()))
-							self.send(":%s OPERTYPE IRC" % self.bot)
+							self.send(":%s OPERTYPE Service" % self.bot)
 							self.join("#opers")
 							self.join("#services")
 							self.meta(self.bot, "accountname", "Q")
 							self.send(":%s UID %s %s O %s %s TheOBot 0.0.0.0 %s +I :The O Bot" % (self.services_id, self.obot, time.time(), self.services_name, self.services_name, time.time()))
-							self.send(":%s OPERTYPE IRC" % self.obot)
+							self.send(":%s OPERTYPE Service" % self.obot)
 							self.ojoin("#opers")
 							self.ojoin("#services")
 							self.meta(self.obot, "accountname", "O")
@@ -156,12 +156,12 @@ class Services:
 			args = ' '.join(text.split()[1:])
 			if self.isoper(source):
 				if cmd == "help":
-					self.omsg(source, "VHOST \37{LIST|ACTIVATE|REJECT}\37 USER")
-					self.omsg(source, "GLOBAL \37MESSAGE\37")
-					self.omsg(source, "FEEDBACK [\37USER\37]")
-					self.omsg(source, "KILL \37NICK\37")
-					self.omsg(source, "QUIT [\37{UPGRADE} / REASON\37]")
-					self.omsg(source, "VERSION")
+					self.ohelp(source, "VHOST", "{LIST|ACTIVATE|REJECT} USER")
+					self.ohelp(source, "GLOBAL", "MESSAGE")
+					self.ohelp(source, "FEEDBACK", "[USER]")
+					self.ohelp(source, "KILL", "NICK")
+					self.ohelp(source, "QUIT", "[{UPGRADE} / REASON]")
+					self.ohelp(source, "VERSION")
 				elif cmd == "vhost":
 					if arg[0].lower() == "list":
 						for data in self.query("select user,vhost from vhosts where active = '0'"):
@@ -226,7 +226,7 @@ class Services:
 					sys.exit(2)
 				elif cmd == "version": self.version(self.obot, source)
 				else:
-					self.omsg(source, "Unknown command. Use 'HELP' for more information")
+					self.omsg(source, "Unknown command {0}. Use HELP for more information".format(cmd.upper()))
 			else:
 				self.omsg(source, "I'm the Operators Service. Only IRC Operators can use me.")
 		except Exception,e: print(e)
@@ -234,18 +234,19 @@ class Services:
 	def message(self, source, text):
 		arg = text.split()
 		if text.lower().split()[0] == "help":
-			self.msg(source, "HELP - Shows information about all commands that are available to you")
+			self.help(source, "HELP", "Shows information about all commands that are available to you")
 			if self.auth(source) == 0 or self.isoper(source):
-				self.msg(source, "AUTH - Authes you")
-				self.msg(source, "CAUTH - Authes you with crypted data")
-				self.msg(source, "HELLO - Creates a account")
+				self.help(source, "AUTH", "Authes you")
+				self.help(source, "CAUTH", "Authes you with crypted data")
+				self.help(source, "HELLO", "Creates an account")
 			if self.auth(source) != 0 or self.isoper(source):
-				self.msg(source, "NEWPASS - Changes your password")
-				self.msg(source, "VHOST - Request your vHost")
-				self.msg(source, "REQUEST - Request for a channel")
-				self.msg(source, "CHANLEV - Edits your channel records")
-				self.msg(source, "FEEDBACK - Sends your feedback to us")
-			self.msg(source, "VERSION - Shows version of services")
+				self.help(source, "NEWPASS", "Changes your password")
+				self.help(source, "VHOST", "Requests a vHost for your Account")
+				self.help(source, "REQUEST", "Request for a channel")
+				self.help(source, "CHANLEV", "Edits your channel records")
+				self.help(source, "FEEDBACK", "Sends a feedback to us")
+				self.help(source, "WHOIS", "Shows information about a user")
+			self.help(source, "VERSION", "Shows version of services")
 		elif arg[0].lower() == "newpass" and self.auth(source) != 0:
 			if len(arg) == 2:
 				self.query("update users set pass = '%s' where name = '%s'" % (self.hash(arg[1]), self.auth(source)))
@@ -335,7 +336,7 @@ class Services:
 					self.msg(source, "Channel \2%s\2 is already registered" % text.split()[1])
 			else:
 				self.msg(source, "An error has happened while registering channel \2%s\2 for you, %s." % (text.split()[1], self.auth(source)))
-		elif arg[0].lower() == "chanlev":
+		elif arg[0].lower() == "chanlev" and self.auth(source) != 0:
 			if len(arg) == 2:
 				channel = text.split()[1]
 				for data in self.query("select * from channels"):
@@ -344,28 +345,26 @@ class Services:
 					flag = str(data[2])
 					if channel.lower() == content.lower():
 						self.msg(source, "[%s] User: %s\t||\tFlag: %s" % (content, user, flag))
-			if self.auth(source) != 0:
-				if len(arg) == 4:
-					channel = text.split()[1]
-					entry = False
-					for channels in self.query("select channel from channels where user = '%s' and flag = 'n'" % self.auth(source)):
-						if channel.lower() == str(channels[0]).lower():
-							entry = True
-							channel = str(channels[0])
-					if entry:
-						user = False
-						for data in self.query("select name from users"):
-							if text.lower().split()[2] == str(data[0]).lower():
-								username = str(data[0])
-								user = True
-						if user and str(self.auth(source)).lower() != username.lower():
-							self.query("delete from channels where channel = '%s' and user = '%s'" % (channel, username))
-							self.query("insert into channels values ('%s','%s','%s')" % (channel, username, text.split()[3]))
-							self.msg(source, "[%s] %s has been with mode +%s" % (channel, username, text.split()[3]))
-						else: self.msg(source, "An error has happened")
+			if len(arg) == 4:
+				channel = text.split()[1]
+				entry = False
+				for channels in self.query("select channel from channels where user = '%s' and flag = 'n'" % self.auth(source)):
+					if channel.lower() == str(channels[0]).lower():
+						entry = True
+						channel = str(channels[0])
+				if entry:
+					user = False
+					for data in self.query("select name from users"):
+						if text.lower().split()[2] == str(data[0]).lower():
+							username = str(data[0])
+							user = True
+					if user and str(self.auth(source)).lower() != username.lower():
+						self.query("delete from channels where channel = '%s' and user = '%s'" % (channel, username))
+						self.query("insert into channels values ('%s','%s','%s')" % (channel, username, text.split()[3]))
+						self.msg(source, "[%s] %s has been with mode +%s" % (channel, username, text.split()[3]))
 					else: self.msg(source, "An error has happened")
-			else: self.msg(source, "You are not authed")
-		elif arg[0].lower() == "feedback":
+				else: self.msg(source, "An error has happened")
+		elif arg[0].lower() == "feedback" and self.auth(source) != 0:
 			if len(arg) > 1:
 				entry = False
 				for data in self.query("select text from feedback where user = '%s'" % self.auth(source)):
@@ -382,9 +381,45 @@ class Services:
 					self.msg(source, "You already sent a feedback. Please wait until an operator read it.")
 			else:
 				self.msg(source, "\2FEEDBACK\2 \37TEXT\37")
+		elif arg[0].lower() == "whois" and self.auth(source) != 0:
+			entry = False
+			if arg[1].startswith("#"):
+				for user in self.query("select name,email from users where name = '{0}'".format(arg[1][1:])):
+					entry = True
+					self.msg(source, "-Information for account {0}:".format(user[0]))
+					online = list()
+					for uid in self.query("select nick from temp_nick where user = '{0}'".format(user[0])):
+						for data in self.query("select nick from online where uid = '{0}'".format(uid[0])):
+							online.append(data[0])
+					self.msg(source, "Online Nicks: {0}".format(' '.join(online)))
+					self.msg(source, "Email address: {0}".format(user[1]))
+					self.msg(source, "Known on following channels:")
+					self.msg(source, "Channel              Flag")
+					for channel in self.query("select channel,flag from channels where user = '{0}'".format(user[0])):
+						self.msg(source, " {0}{1}{2}".format(channel[0], " "*int(20-len(channel[0])), channel[1]))
+					self.msg(source, "End of list.")
+			else:
+				for data in self.query("select uid from online where nick = '{0}'".format(arg[1])):
+					entry = True
+					for user in self.query("select user from temp_nick where nick = '{0}'".format(data[0])):
+						for account in self.query("select email from users where name = '{0}'".format(user[0])):
+							self.msg(source, "-Information for account {0}:".format(user[0]))
+							online = list()
+							for uid in self.query("select nick from temp_nick where user = '{0}'".format(user[0])):
+								for online_data in self.query("select nick from online where uid = '{0}'".format(uid[0])):
+									online.append(online_data[0])
+							self.msg(source, "Online Nicks: {0}".format(' '.join(online)))
+							self.msg(source, "Email address: {0}".format(account[0]))
+							self.msg(source, "Known on following channels:")
+							self.msg(source, "Channel              Flag")
+						for channel in self.query("select channel,flag from channels where user = '{0}'".format(user[0])):
+							self.msg(source, " {0}{1}{2}".format(channel[0], " "*int(20-len(channel[0])), channel[1]))
+						self.msg(source, "End of list.")
+			if not entry:
+				self.msg(source, "Can\'t find user {0}".format(arg[1]))
 		elif arg[0].lower() == "version": self.version(self.bot, source)
 		else:
-			self.msg(source, "Unknown command. Please try 'HELP' for more information.")
+			self.msg(source, "Unknown command {0}. Please try HELP for more information.".format(arg[0].upper()))
 
 	def nick (self, source):
 		for data in self.query("select nick from online where uid = '%s'" % source):
@@ -393,6 +428,12 @@ class Services:
 	def send(self, text):
 		self.con.send(text+"\n")
 		debug(">> %s" % text)
+
+	def help(self, target, command, description=""):
+		self.msg(target, command+"                    "+description)
+
+	def ohelp(self, target, command, description=""):
+		self.omsg(target, command+"                    "+description)
 
 	def msg(self, target, text):
 		self.send(":%s NOTICE %s :%s" % (self.bot, target, text))
