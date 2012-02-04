@@ -383,7 +383,7 @@ class Services:
 				self.msg(source, "\2FEEDBACK\2 \37TEXT\37")
 		elif arg[0].lower() == "whois" and self.auth(source) != 0:
 			entry = False
-			if len(arg) == 1:
+			if len(arg) == 2:
 				if arg[1].startswith("#"):
 					for user in self.query("select name,email from users where name = '{0}'".format(arg[1][1:])):
 						entry = True
