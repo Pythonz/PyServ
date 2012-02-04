@@ -433,10 +433,10 @@ class Services:
 		debug(">> %s" % text)
 
 	def help(self, target, command, description=""):
-		self.msg(target, command+"                    "+description)
+		self.msg(target, command+" "*int(30-len(command))+description)
 
 	def ohelp(self, target, command, description=""):
-		self.omsg(target, command+"                    "+description)
+		self.omsg(target, command+" "*int(30-len(command))+description)
 
 	def msg(self, target, text):
 		self.send(":%s NOTICE %s :%s" % (self.bot, target, text))
