@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS `users`(name text, pass text, email text);
 DROP TABLE IF EXISTS `channels`;
 CREATE TABLE IF NOT EXISTS `channels`(channel text, user text, flag text);
 DROP TABLE IF EXISTS `chanlist`;
-CREATE TABLE IF NOT EXISTS `chanlist`(name text);
+CREATE TABLE IF NOT EXISTS `channelinfo`(name text, modes text, flags text);
 DROP TABLE IF EXISTS `vhosts`;
 CREATE TABLE IF NOT EXISTS `vhosts`(user text, vhost text, active text);
 DROP TABLE IF EXISTS `temp_nick`;

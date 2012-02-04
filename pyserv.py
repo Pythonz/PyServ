@@ -81,7 +81,7 @@ class Services:
 							self.meta(self.obot, "accountname", "O")
 							self.omsg("$*", "Services are now back online. Have a nice day :)")
 							self.version(self.obot, "$*")
-							for channel in self.query("select name from chanlist"):
+							for channel in self.query("select name from channelinfo"):
 								self.join(str(channel[0]))
 						if data.split()[1] == "PRIVMSG":
 							if data.split()[2] == self.bot:
@@ -94,6 +94,9 @@ class Services:
 							self.query("delete from temp_nick where nick = '%s'" % str(data.split()[0])[1:])
 							self.query("delete from online where uid = '%s'" % str(data.split()[0])[1:])
 						if data.split()[1] == "FMODE":
+							if data.split()[2].startswith("#"):
+								for channel in self.query("select name,modes from channelinfo where name = '{0}'".format(data.split()[2])):
+									self.mode(channel[0], channel[1])
 							if len(data.split()) > 5:
 								for user in data.split()[5:]:
 									for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (data.split()[2], self.auth(user))):
@@ -244,6 +247,7 @@ class Services:
 				self.help(source, "VHOST", "Requests a vHost for your Account")
 				self.help(source, "REQUEST", "Request for a channel")
 				self.help(source, "CHANLEV", "Edits your channel records")
+				self.help(source, "CHANMODE", "Sets modes for your channel")
 				self.help(source, "FEEDBACK", "Sends a feedback to us")
 				self.help(source, "WHOIS", "Shows information about a user")
 			self.help(source, "VERSION", "Shows version of services")
@@ -328,7 +332,7 @@ class Services:
 					if text.lower().split()[1] == str(data[0]).lower():
 						exists = True
 				if not exists:
-					self.query("insert into chanlist values ('%s')" % text.split()[1])
+					self.query("insert into channelinfo values ('%s', '', '')" % text.split()[1])
 					self.query("insert into channels values ('%s','%s','n')" % (text.split()[1], self.auth(source)))
 					self.join(text.split()[1])
 					self.msg(source, "Channel \2%s\2 has been registered for you" % text.split()[1])
@@ -364,6 +368,29 @@ class Services:
 						self.msg(source, "[%s] %s has been with mode +%s" % (channel, username, text.split()[3]))
 					else: self.msg(source, "An error has happened")
 				else: self.msg(source, "An error has happened")
+		elif arg[0].lower() == "chanmode" and self.auth(source) != 0:
+			if len(arg) == 2:
+				if arg[1].startswith("#"):
+					if self.getflag(source, arg[1]) == "n":
+						for channel in self.query("select name,modes from channelinfo where name = '{0}'".format(arg[1])):
+							self.msg(source, "Current modes for {0}: {1}".format(channel[0], channel[1]))
+					else:
+						self.msg(source, "No permission")
+				else:
+					self.msg(source, "Invalid channel '{0}'".format(arg[1]))
+			elif len(arg) == 3:
+				if arg[1].startswith("#"):
+					if self.getflag(source, arg[1]) == "n":
+						for channel in self.query("select name from channelinfo where name = '{0}'".format(arg[1])):
+							self.query("update channelinfo set modes = '{0}' where name = '{1}'".format(arg[2], channel[0]))
+							self.mode(channel[0], arg[2])
+							self.msg(source, "New modes for {0}: {1}".format(channel[0], arg[2]))
+					else:
+						self.msg(source, "No permission")
+				else:
+					self.msg(source, "Invalid channel '{0}'".format(arg[1]))
+			else:
+				self.msg(source, "Syntax: \2CHANMODE\2 \37#channel\37 [\37modes\37]")
 		elif arg[0].lower() == "feedback" and self.auth(source) != 0:
 			if len(arg) > 1:
 				entry = False
@@ -462,7 +489,7 @@ class Services:
 		return 0
 
 	def chanexist(self, channel):
-		for data in self.query("select name from chanlist where name = '%s'" % channel):
+		for data in self.query("select name from channelinfo where name = '%s'" % channel):
 			return True
 		return False
 
@@ -497,6 +524,12 @@ class Services:
 					pass
 				else:
 					self.mode(str(flag[1]), "+%s %s" % (str(flag[0]), target))
+
+	def getflag(self, target, channel):
+		for data in self.query("select user from temp_nick where nick = '%s'" % target):
+			for flag in self.query("select flag from channel where channel = '%s'" % data[0]):
+				return flag[0]
+		return 0
 
 	def isoper(self, target):
 		isoper = False
