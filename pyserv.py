@@ -527,7 +527,7 @@ class Services:
 
 	def getflag(self, target, channel):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
-			for flag in self.query("select flag from channel where channel = '%s'" % data[0]):
+			for flag in self.query("select flag from channels where channel = '%s'" % data[0]):
 				return flag[0]
 		return 0
 
