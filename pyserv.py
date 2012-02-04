@@ -419,7 +419,7 @@ class Services:
 				if not entry:
 					self.msg(source, "Can\'t find user {0}".format(arg[1]))
 			else:
-				self.msg(source, "Syntax: \2WHOIS\2 \37(#)USER\37")
+				self.msg(source, "Syntax: \2WHOIS\2 \37NICK/#ACCOUNT\37")
 		elif arg[0].lower() == "version": self.version(self.bot, source)
 		else:
 			self.msg(source, "Unknown command {0}. Please try HELP for more information.".format(arg[0].upper()))
