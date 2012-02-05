@@ -147,9 +147,8 @@ class Services:
 						if data.split()[1] == "UID":
 							self.query("delete from temp_nick where nick = '%s'" % data.split()[2])
 							self.query("insert into online values ('%s','%s')" % (data.split()[2], data.split()[4]))
-		except Exception,e:
-			debug("<<ERROR>> " + str(e))
-			self.reconnect()
+		except socket.error: self.reconnect()
+		except Exception,e: debug("<<ERROR>> " + str(e))
 
 	def reconnect(self):
 		try:
