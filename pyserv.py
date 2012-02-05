@@ -414,6 +414,21 @@ class Services:
 							self.msg(source, "Current flags for {0}: {1}".format(channel[0], channel[1]))
 					else:
 						self.msg(source, "No permission")
+				elif arg[1] == "?":
+					mode = list()
+					desc = list()
+					mode.append("p")
+					desc.append("Channel rights Protection")
+					mode.append("v")
+					desc.append("Autovoice in channel")
+					mode.append("t")
+					desc.append("Topic save")
+					mode.append("m")
+					desc.append("Modes enforcement")
+					listed = 0
+					while listed != len(mode):
+						self.msg(source, "{0}: {1}".format(mode[listed], desc[listed]))
+						listed += 1
 				else:
 					self.msg(source, "Invalid channel '{0}'".format(arg[1]))
 			elif len(arg) == 3:
