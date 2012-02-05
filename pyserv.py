@@ -155,7 +155,7 @@ class Services:
 							for connection in self.query("select * from online where address = '%s'" % data.split()[8]):
 								conns += 1
 							limit = 3
-							for trust in self.query("select limit from trust where address = '%s'" % data.split()[8]):
+							for trust in self.query("select `limit` from trust where address = '%s'" % data.split()[8]):
 								limit = int(trust[0])
 							if conns > limit and data.split()[8] != "0.0.0.0":
 								self.send(":{0} GLINE *@{1} 30 :Connection limit ({2}) reached".format(self.obot, data.split()[8], limit))
