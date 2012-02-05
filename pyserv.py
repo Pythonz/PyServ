@@ -268,6 +268,7 @@ class Services:
 					self.help(source, "NEWPASS", "Changes your password")
 					self.help(source, "VHOST", "Requests a vHost for your Account")
 					self.help(source, "REQUEST", "Request for a channel")
+					self.help(source, "REMOVE", "Removes a channel")
 					self.help(source, "CHANLEV", "Edits your channel records")
 					self.help(source, "CHANMODE", "Sets modes for your channel")
 					self.help(source, "CHANFLAGS", "Sets flags for your channel")
@@ -362,6 +363,18 @@ class Services:
 						self.msg(source, "Channel \2%s\2 is already registered" % text.split()[1])
 				else:
 					self.msg(source, "An error has happened while registering channel \2%s\2 for you, %s." % (text.split()[1], self.auth(source)))
+			elif arg[0].lower() == "remove" and self.auth(source) != 0:
+				if len(arg) == 2:
+					if arg[1].startswith("#"):
+						if self.getflag(source, arg[1]) == "n":
+							for data in self.query("select name from channelinfo where name = '{0}'".format(arg[1])):
+								self.query("delete from channels where channel = '{0}'".format(data[0]))
+								self.query("delete from channelinfo where name = '{0}'".format(data[0]))
+								self.msg(source, "Channel {0} has been deleted.".format(data[0]))
+								self.send(":{0} PART {1} :Channel {1} has been deleted.".format(self.bot, data[0]))
+						else: self.msg(source, "No permission")
+					else: self.msg(source, "Invalid channel '{0}'".format(arg[1]))
+				else: self.msg(source, "Syntax: \2REMOVE\2 \37#channel\37")							
 			elif arg[0].lower() == "chanlev" and self.auth(source) != 0:
 				if len(arg) == 2:
 					channel = text.split()[1]
@@ -371,7 +384,7 @@ class Services:
 						flag = str(data[2])
 						if channel.lower() == content.lower():
 							self.msg(source, "[%s] User: %s\t||\tFlag: %s" % (content, user, flag))
-				if len(arg) == 4:
+				elif len(arg) == 4:
 					channel = text.split()[1]
 					entry = False
 					for channels in self.query("select channel from channels where user = '%s' and flag = 'n'" % self.auth(source)):
@@ -390,6 +403,7 @@ class Services:
 							self.msg(source, "[%s] %s has been with mode +%s" % (channel, username, text.split()[3]))
 						else: self.msg(source, "An error has happened")
 					else: self.msg(source, "An error has happened")
+				else: self.msg(source, "Syntax: \2CHANLEV\2 \37#channel\37 [\37user\37] [\37flag\37]")
 			elif arg[0].lower() == "chanmode" and self.auth(source) != 0:
 				if len(arg) == 2:
 					if arg[1].startswith("#"):
