@@ -586,7 +586,7 @@ class Services:
 		return 0
 
 	def chanflag(self, flag, channel):
-		for data in self.query("select flags from channel where name = '{0}'".format(channel)):
+		for data in self.query("select flags from channelinfo where name = '{0}'".format(channel)):
 			if data[0].find(flag) != -1:
 				return True
 		return False
