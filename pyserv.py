@@ -260,11 +260,9 @@ class Services:
 			arg = text.split()
 			if text.lower().split()[0] == "help":
 				self.help(source, "HELP", "Shows information about all commands that are available to you")
-				if self.auth(source) == 0 or self.isoper(source):
-					self.help(source, "AUTH", "Authes you")
-					self.help(source, "CAUTH", "Authes you with crypted data")
-					self.help(source, "HELLO", "Creates an account")
-				if self.auth(source) != 0 or self.isoper(source):
+				self.help(source, "AUTH", "Authes you")
+				self.help(source, "HELLO", "Creates an account")
+				if self.auth(source) != 0:
 					self.help(source, "NEWPASS", "Changes your password")
 					self.help(source, "VHOST", "Requests a vHost for your Account")
 					self.help(source, "REQUEST", "Request for a channel")
@@ -282,7 +280,10 @@ class Services:
 					self.msg(source, """Your new password is "%s". Remember it!""" % arg[1])
 				else:
 					self.msg(source, "Syntax: NEWPASS \37password\37")
-			elif arg[0].lower() == "hello" and self.auth(source) == 0:
+			elif arg[0].lower() == "hello":
+				if self.auth(source) != 0:
+					self.msg(source, "HELLO is not available once you have authed.")
+					return 0
 				if len(arg) == 3:
 					exists = False
 					for data in self.query("select name from users where email = '%s' or name = '%s'" % (arg[1], self.nick(source))):
@@ -303,7 +304,10 @@ class Services:
 						self.msg(source, "The account %s already exists or your email %s is used!" % (self.nick(source),arg[1]))
 				else:
 					self.msg(source, "Syntax: HELLO \37email\37 \37email\37")
-			elif text.lower().split()[0] == "auth" and self.auth(source) == 0:
+			elif text.lower().split()[0] == "auth":
+				if self.auth(source) != 0:
+					self.msg(source, "AUTH is not available once you have authed.");
+					return 0
 				if len(text.split()) == 3:
 					exists = False
 					for data in self.query("select name,pass from users where name = '%s'" % text.split()[1]):
@@ -320,26 +324,6 @@ class Services:
 						self.msg(source, "Wrong username or invalid password.")
 				else:
 					self.msg(source, "Syntax: AUTH \37account\37 \37password\37")
-			elif arg[0].lower() == "cauth" and self.auth(source) == 0:
-				if len(arg) == 2:
-					exists = False
-					for data in self.query("select name,pass from users where name = '%s'" % arg[1].split(":")[0]):
-						md5 = hashlib.md5()
-						md5.update(str(data[1]))
-						if str(md5.hexdigest()) == arg[1].split(":")[1]:
-							exists = True
-							for user in self.query("select nick from temp_nick where user = '%s'" % str(data[0])):
-								self.msg(str(user[0]), "Someone else has authed with your account")
-							self.query("insert into temp_nick values ('%s','%s')" % (source, str(data[0])))
-							self.msg(source, "You are now logged in as %s" % str(data[0]))
-							self.meta(source, "accountname", str(data[0]))
-							self.vhost(source)
-							self.flag(source)
-					if not exists:
-						self.msg(source, "Cauth failed.")
-				else:
-					self.msg(source, "Syntax: CAUTH \37USERNAME\37:\37SHA1-MD5-HASHED-PASSWORD\37")
-	
 			elif text.lower().split()[0] == "vhost" and self.auth(source) != 0:
 				if len(text.split()) == 2:
 					self.query("delete from vhosts where user = '%s'" % self.auth(source))
