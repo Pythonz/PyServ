@@ -205,7 +205,7 @@ class Services:
 					self.ohelp(source, "VERSION")
 				elif cmd == "update":
 					self.omsg(source, "Getting newest version ...")
-					subprocess.Popen("git pull", cwd=".").wait()
+					subprocess.Popen("git pull", shell=True).wait()
 					self.omsg(source, "... done.")
 					self.omsg(source, "Looking for database updates ...")
 					__updates = 0
@@ -217,7 +217,7 @@ class Services:
 						_files = __updates - _updates
 						while _files != 0:
 							self.omsg("insert '{0}'".format(_sql[-_files]))
-							subprocess.Popen("mysql -u {0} -p{1} {2} < sql/updates/{3}".format(self.mysql_user, self.mysql_passwd, self.mysql_name, _sql[-_files])).wait()
+							subprocess.Popen("mysql -u {0} -p{1} {2} < sql/updates/{3}".format(self.mysql_user, self.mysql_passwd, self.mysql_name, _sql[-_files]), shell=True).wait()
 							_files -= 1
 					self.omsg(source, "... done.")
 					msg = "We are restarting for an update, please be patient. We are back as soon as possible."
