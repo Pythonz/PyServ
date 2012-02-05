@@ -573,6 +573,7 @@ class Services:
 
 	def join(self, channel):
 		self.send(":%s JOIN %s" % (self.bot, channel))
+		self.smode(channel, "+r")
 		self.smode(channel, "+q %s" % self.bot)
 
 	def ojoin(self, channel):
