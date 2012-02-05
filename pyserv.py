@@ -19,7 +19,7 @@ while len(repo.commits("master", max_count=i)) == i:
 if len(repo.commits("master", max_count=i)) > 2:
 	__version__ = str(len(repo.commits("master", max_count=i)))[0]+"."+str(len(repo.commits("master", max_count=i)))[1:]
 else:
-	__version__ len(repo.commits("master", max_count=i))
+	__version__ = len(repo.commits("master", max_count=i))
 _started = time.time()
 config = ConfigParser.RawConfigParser()
 config.read("pyserv.conf")
