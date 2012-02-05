@@ -1,2 +1,2 @@
 ALTER TABLE `online` ADD COLUMN address text;
-CREATE TABLE IF NOT EXIST `trust` (address text, limit int);
+CREATE TABLE IF NOT EXISTS `trust` (address text, `limit` text);
