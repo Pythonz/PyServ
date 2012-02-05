@@ -195,7 +195,7 @@ class Services:
 				elif cmd == "trust":
 					if len(arg) == 0:
 						for trust in self.query("select * from trust"):
-							self.omsg("IP: {0}          Limit: {1}".format(trust[0], trust[1]))
+							self.omsg(source, "IP: {0}          Limit: {1}".format(trust[0], trust[1]))
 					if len(arg) == 1:
 						entry = False
 						for trust in self.query("select * from trust where address = '{0}'".format(arg[0])):
