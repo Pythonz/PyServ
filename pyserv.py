@@ -71,13 +71,9 @@ class Services:
 						if data.split()[1] == "ENDBURST":
 							self.send(":%s UID %s %s Q %s %s TheQBot 0.0.0.0 %s +I :The Q Bot" % (self.services_id, self.bot, time.time(), self.services_name, self.services_name, time.time()))
 							self.send(":%s OPERTYPE Service" % self.bot)
-							self.join("#opers")
-							self.join("#services")
 							self.meta(self.bot, "accountname", "Q")
 							self.send(":%s UID %s %s O %s %s TheOBot 0.0.0.0 %s +I :The O Bot" % (self.services_id, self.obot, time.time(), self.services_name, self.services_name, time.time()))
 							self.send(":%s OPERTYPE Service" % self.obot)
-							self.ojoin("#opers")
-							self.ojoin("#services")
 							self.meta(self.obot, "accountname", "O")
 							self.omsg("$*", "Services are now back online. Have a nice day :)")
 							self.version(self.obot, "$*")
