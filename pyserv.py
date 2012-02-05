@@ -18,8 +18,10 @@ while len(repo.commits("master", max_count=i)) == i:
 	i += 1
 if len(repo.commits("master", max_count=i)) > 2:
 	__version__ = str(len(repo.commits("master", max_count=i)))[0]+"."+str(len(repo.commits("master", max_count=i)))[1:]
-else:
+elif len(repo.commits("master", max_count=i)) == 2:
 	__version__ = "0."+str(len(repo.commits("master", max_count=i)))
+else:
+	__version__ = "0.0"+str(len(repo.commits("master", max_count=i)))
 _started = time.time()
 config = ConfigParser.RawConfigParser()
 config.read("pyserv.conf")
