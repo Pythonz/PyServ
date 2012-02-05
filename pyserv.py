@@ -9,20 +9,13 @@ import time
 import hashlib
 import smtplib
 import _mysql
-import git
 import subprocess
 
 repo = git.Repo(".")
 i = 1
-__version__ = 0
-while len(repo.commits("master", max_count=i)) == i:
-	i += 1
-if len(repo.commits("master", max_count=i)) > 2:
-	__version__ = str(len(repo.commits("master", max_count=i)))[0]+"."+str(len(repo.commits("master", max_count=i)))[1:]
-elif len(repo.commits("master", max_count=i)) == 2:
-	__version__ = "0."+str(len(repo.commits("master", max_count=i)))
-else:
-	__version__ = "0.0"+str(len(repo.commits("master", max_count=i)))
+f = open("version", "r")
+__version__ = f.read()
+f.close()
 _updates = 0
 for doc in os.listdir("sql/updates"):
 	_updates += 1
