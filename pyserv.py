@@ -219,6 +219,11 @@ class Services:
 							if limit != "":
 								self.query("update trust set `limit` = '{0}' where address = '{1}'".format(limit, arg[0]))
 								self.omsg(source, "Trust for {0} has been set to {1}.".format(arg[0], limit))
+								conns = 0
+								for online in self.query("select nick from online where address = '{0}'".format(arg[0])):
+									conns += 1
+								if conns > int(limit):
+									self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.obot, arg[0], limit))
 							else:
 								self.omsg(source, "Invalid limit")
 						else:
@@ -226,6 +231,11 @@ class Services:
 							if limit != "":
 								self.query("insert into  trust values ('{1}','{0}')".format(limit, arg[0]))
 								self.omsg(source, "Trust for {0} has been set to {1}.".format(arg[0], limit))
+								conns = 0
+								for online in self.query("select nick from online where address = '{0}'".format(arg[0])):
+									conns += 1
+								if conns > int(limit):
+									self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.obot, arg[0], limit))
 							else:
 								self.omsg(source, "Invalid limit")
 				elif cmd == "vhost":
