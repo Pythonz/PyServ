@@ -216,7 +216,7 @@ class Services:
 								conns += 1
 							if conns > 3:
 								for nicks in nick:
-									self.send(":{0} KILL {1} :G-lined".forma(self.obot, nick)
+									self.send(":{0} KILL {1} :G-lined".forma(self.obot, nick))
 								self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.obot, arg[0], limit))
 						else:
 							self.omsg(source, "Trust for {0} does not exist.".format(arg[0]))
@@ -236,7 +236,7 @@ class Services:
 									conns += 1
 								if conns > int(limit):
 									for nicks in nick:
-										self.send(":{0} KILL {1} :G-lined".forma(self.obot, nick)
+										self.send(":{0} KILL {1} :G-lined".forma(self.obot, nick))
 									self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.obot, arg[0], limit))
 							else:
 								self.omsg(source, "Invalid limit")
@@ -252,7 +252,7 @@ class Services:
 									conns += 1
 								if conns > int(limit):
 									for nicks in nick:
-										self.send(":{0} KILL {1} :G-lined".forma(self.obot, nick)
+										self.send(":{0} KILL {1} :G-lined".forma(self.obot, nick))
 									self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.obot, arg[0], limit))
 							else:
 								self.omsg(source, "Invalid limit")
