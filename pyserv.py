@@ -473,12 +473,13 @@ class Services:
 					else:
 						self.msg(source, "Invalid channel '{0}'".format(arg[1]))
 				elif len(arg) == 3:
+					modes = ' '.join(arg[2:])
 					if arg[1].startswith("#"):
 						if self.getflag(source, arg[1]) == "n" or self.getflag(source, arg[1]) == "a":
 							for channel in self.query("select name from channelinfo where name = '{0}'".format(arg[1])):
-								self.query("update channelinfo set modes = '{0}' where name = '{1}'".format(arg[2], channel[0]))
-								self.mode(channel[0], arg[2])
-								self.msg(source, "New modes for {0}: {1}".format(channel[0], arg[2]))
+								self.query("update channelinfo set modes = '{0}' where name = '{1}'".format(modes, channel[0]))
+								self.mode(channel[0], modes)
+								self.msg(source, "New modes for {0}: {1}".format(channel[0], modes))
 						else:
 							self.msg(source, "No permission")
 					else:
