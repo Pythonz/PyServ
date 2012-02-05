@@ -200,7 +200,7 @@ class Services:
 						entry = False
 						for trust in self.query("select * from trust where address = '{0}'".format(arg[0])):
 							entry = True
-							self.query("delete from trust where address = '{0}'".format(trust[0])
+							self.query("delete from trust where address = '{0}'".format(trust[0]))
 						if entry:
 							self.omsg(source, "Trust for {0} has been deleted.".format(arg[0]))
 							conns = 0
