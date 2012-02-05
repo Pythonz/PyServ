@@ -201,15 +201,13 @@ class Services:
 					_version = _web.read()
 					_web.close()
 					if __version__ != _version:
-						self.omsg(source, "-= Update: {0} -> {1} =-".format(__version__, _version))
-						self.omsg(source, "Saving config file ...")
+						self.omsg(source, "{0} -> {1}".format(__version__, _version))
+						self.omsg(source, " Saving config file")
 						subprocess.Popen("git add pyserv.conf", shell=True).wait()
 						subprocess.Popen("git commit -m 'Saving config file'", shell=True).wait()
-						self.omsg(source, "... done.")
-						self.omsg(source, "Getting newest version ...")
+						self.omsg(source, " Getting newest version")
 						subprocess.Popen("git pull", shell=True).wait()
-						self.omsg(source, "... done.")
-						self.omsg(source, "Looking for database updates ...")
+						self.omsg(source, " Looking for database updates")
 						__updates = 0
 						_sql = list()
 						for doc in os.listdir("sql/updates"):
@@ -218,16 +216,15 @@ class Services:
 						if __updates > _updates:
 							_files = __updates - _updates
 							while _files != 0:
-								self.omsg("insert '{0}'".format(_sql[-_files]))
+								self.omsg(" - Insert '{0}'".format(_sql[-_files]))
 								subprocess.Popen("mysql -u {0} -p{1} {2} < sql/updates/{3}".format(self.mysql_user, self.mysql_passwd, self.mysql_name, _sql[-_files]), shell=True).wait()
 								_files -= 1
-						self.omsg(source, "... done.")
 						msg = "We are restarting for an update, please be patient. We are back as soon as possible."
 						self.send(":%s QUIT :%s" % (self.bot, msg))
 						self.send(":%s QUIT :%s" % (self.obot, msg))
 						self.con.close()
 						sys.exit(2)
-					else: self.omsg(source, "-= Update: {0} = {1} =-.".format(__version__, _version))
+					else: self.omsg(source, "No update available.")
 				elif cmd == "trust":
 					if len(arg) == 0:
 						for trust in self.query("select * from trust"):
