@@ -501,8 +501,8 @@ class Services:
 							self.msg(source, "End of list.")
 					else:
 						for data in self.query("select uid from online where nick = '{0}'".format(arg[1])):
-							entry = True
 							for user in self.query("select user from temp_nick where nick = '{0}'".format(data[0])):
+								entry = True
 								for account in self.query("select email from users where name = '{0}'".format(user[0])):
 									self.msg(source, "-Information for account {0}:".format(user[0]))
 									online = list()
