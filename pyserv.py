@@ -96,7 +96,7 @@ class Services:
 						if data.split()[1] == "TOPIC":
 							if len(data.split()) > 1:
 								if self.chanflag("t", data.split()[2]):
-									for channel in self.query("select topic from channel where name = '{0}'".format(data.split()[2])):
+									for channel in self.query("select topic from channelinfo where name = '{0}'".format(data.split()[2])):
 										self.send(":{0} TOPIC {1} :{2}".format(self.bot, data.split()[2], channel[0]))
 						if data.split()[1] == "FMODE":
 							if self.chanflag("m", data.split()[2]):
