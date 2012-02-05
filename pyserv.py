@@ -202,12 +202,9 @@ class Services:
 					_web.close()
 					if __version__ != _version:
 						self.omsg(source, "{0} -> {1}".format(__version__, _version))
-						self.omsg(source, " Saving config file")
 						subprocess.Popen("git add pyserv.conf", shell=True).wait()
 						subprocess.Popen("git commit -m 'Saving config file'", shell=True).wait()
-						self.omsg(source, " Getting newest version")
 						subprocess.Popen("git pull", shell=True).wait()
-						self.omsg(source, " Looking for database updates")
 						__updates = 0
 						_sql = list()
 						for doc in os.listdir("sql/updates"):
