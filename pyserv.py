@@ -205,7 +205,7 @@ class Services:
 					self.ohelp(source, "VERSION")
 				elif cmd == "update":
 					self.omsg(source, "Getting newest version ...")
-					subprocess.Popen("git pull").wait()
+					subprocess.Popen("git pull", cwd=".").wait()
 					self.omsg(source, "... done.")
 					self.omsg(source, "Looking for database updates ...")
 					__updates = 0
