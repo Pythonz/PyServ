@@ -472,7 +472,7 @@ class Services:
 							self.msg(source, "No permission")
 					else:
 						self.msg(source, "Invalid channel '{0}'".format(arg[1]))
-				elif len(arg) == 3:
+				elif len(arg) > 2:
 					modes = ' '.join(arg[2:])
 					if arg[1].startswith("#"):
 						if self.getflag(source, arg[1]) == "n" or self.getflag(source, arg[1]) == "a":
