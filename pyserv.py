@@ -11,7 +11,6 @@ import smtplib
 import _mysql
 import subprocess
 
-repo = git.Repo(".")
 i = 1
 f = open("version", "r")
 __version__ = f.read()
