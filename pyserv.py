@@ -154,12 +154,16 @@ class Services:
 							self.query("delete from temp_nick where nick = '%s'" % data.split()[2])
 							self.query("insert into online values ('%s','%s','%s')" % (data.split()[2], data.split()[4], data.split()[8]))
 							conns = 0
-							for connection in self.query("select * from online where address = '%s'" % data.split()[8]):
+							nicks = list()
+							for connection in self.query("select nick from online where address = '%s'" % data.split()[8]):
+								nicks.append(connection[0])
 								conns += 1
 							limit = 3
 							for trust in self.query("select `limit` from trust where address = '%s'" % data.split()[8]):
 								limit = int(trust[0])
 							if conns > limit and data.split()[8] != "0.0.0.0":
+								for nick in nicks:
+									self.send(":{0} KILL {1} :G-lined".format(self.obot, nick))
 								self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.obot, data.split()[8], limit))
 								
 		except Exception,e:
@@ -206,10 +210,14 @@ class Services:
 						if entry:
 							self.omsg(source, "Trust for {0} has been deleted.".format(arg[0]))
 							conns = 0
+							nicks = list()
 							for online in self.query("select nick from online where address = '{0}'".format(arg[0])):
+								nicks.append(online[0])
 								conns += 1
 							if conns > 3:
-								self.send(":{0} GLINE *@{1} 1800 :Connection limit (3) reached".format(self.obot, arg[0]))
+								for nicks in nick:
+									self.send(":{0} KILL {1} :G-lined".forma(self.obot, nick)
+								self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.obot, arg[0], limit))
 						else:
 							self.omsg(source, "Trust for {0} does not exist.".format(arg[0]))
 					if len(arg) == 2:
@@ -222,9 +230,13 @@ class Services:
 								self.query("update trust set `limit` = '{0}' where address = '{1}'".format(limit, arg[0]))
 								self.omsg(source, "Trust for {0} has been set to {1}.".format(arg[0], limit))
 								conns = 0
+								nicks = list()
 								for online in self.query("select nick from online where address = '{0}'".format(arg[0])):
+									nicks.append(online[0])
 									conns += 1
 								if conns > int(limit):
+									for nicks in nick:
+										self.send(":{0} KILL {1} :G-lined".forma(self.obot, nick)
 									self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.obot, arg[0], limit))
 							else:
 								self.omsg(source, "Invalid limit")
@@ -234,9 +246,13 @@ class Services:
 								self.query("insert into  trust values ('{1}','{0}')".format(limit, arg[0]))
 								self.omsg(source, "Trust for {0} has been set to {1}.".format(arg[0], limit))
 								conns = 0
+								nicks = list()
 								for online in self.query("select nick from online where address = '{0}'".format(arg[0])):
+									nicks.append(online[0])
 									conns += 1
 								if conns > int(limit):
+									for nicks in nick:
+										self.send(":{0} KILL {1} :G-lined".forma(self.obot, nick)
 									self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.obot, arg[0], limit))
 							else:
 								self.omsg(source, "Invalid limit")
