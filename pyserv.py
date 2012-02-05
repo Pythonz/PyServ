@@ -433,7 +433,7 @@ class Services:
 				if arg[1].startswith("#"):
 					if self.getflag(source, arg[1]) == "n" or self.getflag(source, arg[1]) == "a":
 						self.query("update channelinfo set topic = '{0}' where name = '{1}'".format(' '.join(arg[2:], arg[1]))
-						self.send(":{0} TOPIC {1} :{2}".format(self.bot, arg[1], ' '.join(arg[2:])))
+						self.send(":%s TOPIC %s :%s" % (self.bot, arg[1], ' '.join(arg[2:])))
 						self.msg(source, "Done.")
 					else: self.msg(source, "No permission")
 				else: self.msg(source, "Invalid channel '{0}'".format(arg[1]))
