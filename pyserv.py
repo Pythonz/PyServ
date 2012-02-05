@@ -10,6 +10,7 @@ import hashlib
 import smtplib
 import _mysql
 import subprocess
+import urllib2
 
 i = 1
 f = open("version", "r")
