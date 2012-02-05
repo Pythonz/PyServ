@@ -150,7 +150,16 @@ class Services:
 								self.metadata(uid, string, content)
 						if data.split()[1] == "UID":
 							self.query("delete from temp_nick where nick = '%s'" % data.split()[2])
-							self.query("insert into online values ('%s','%s')" % (data.split()[2], data.split()[4]))
+							self.query("insert into online values ('%s','%s','%s')" % (data.split()[2], data.split()[4], data.split()[8]))
+							conns = 1
+							for connection in self.query("select * from online where address = '%s'" % data.split()[8]):
+								conns += 1
+							limit = 3
+							for trust in self.query("select limit from trust where address = '%s'" % data.split()[8]):
+								limit = int(trust[0])
+							if conns > limit and data.split()[8] != "0.0.0.0":
+								self.send(":{0} GLINE *@{1} 30 :Connection limit ({2}) reached".format(self.obot, data.split()[8], limit))
+								
 		except Exception,e:
 			debug("<<ERROR>> " + str(e))
 			self.reconnect()
@@ -180,6 +189,7 @@ class Services:
 					self.ohelp(source, "GLOBAL", "MESSAGE")
 					self.ohelp(source, "FEEDBACK", "[USER]")
 					self.ohelp(source, "KILL", "NICK")
+					self.ohelp(source, "TRUST", "IP [LIMIT]")
 					self.ohelp(source, "QUIT", "[{UPGRADE} / REASON]")
 					self.ohelp(source, "VERSION")
 				elif cmd == "vhost":

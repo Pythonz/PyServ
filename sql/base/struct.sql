@@ -13,4 +13,6 @@ CREATE TABLE IF NOT EXISTS `opers`(uid text);
 DROP TABLE IF EXISTS `feedback`;
 CREATE TABLE IF NOT EXISTS `feedback`(user text, text text);
 DROP TABLE IF EXISTS `online`;
-CREATE TABLE IF NOT EXISTS `online` (uid text, nick text);
+CREATE TABLE IF NOT EXISTS `online` (uid text, nick text, address text);
+DROP TABLE IF EXISTS `trust`;
+CREATE TABLE IF NOT EXISTS `trust` (address text, limit int);
