@@ -10,6 +10,7 @@ import hashlib
 import smtplib
 import _mysql
 import git
+import subprocess
 
 repo = git.Repo(".")
 i = 1
@@ -22,6 +23,9 @@ elif len(repo.commits("master", max_count=i)) == 2:
 	__version__ = "0."+str(len(repo.commits("master", max_count=i)))
 else:
 	__version__ = "0.0"+str(len(repo.commits("master", max_count=i)))
+_updates = 0
+for doc in os.listdir("sql/updates"):
+	_updates += 1
 _started = time.time()
 config = ConfigParser.RawConfigParser()
 config.read("pyserv.conf")
@@ -196,8 +200,31 @@ class Services:
 					self.ohelp(source, "FEEDBACK", "[USER]")
 					self.ohelp(source, "KILL", "NICK")
 					self.ohelp(source, "TRUST", "IP [LIMIT]")
-					self.ohelp(source, "QUIT", "[{UPGRADE} / REASON]")
+					self.ohelp(source, "UPDATE")
+					self.ohelp(source, "QUIT", "[REASON]")
 					self.ohelp(source, "VERSION")
+				elif cmd == "update":
+					self.omsg(source, "Getting newest version ..."
+					subprocess.Popen("git pull").wait()
+					self.omsg(source, "... done.")
+					self.omsg(source, "Looking for database updates ...")
+					__updates = 0
+					_sql = list()
+					for doc in os.listdir("sql/updates"):
+						_sql.append(doc)
+						__updates += 1
+					if __updates > _updates:
+						_files = __updates - _updates
+						while _files != 0:
+							self.omsg("insert '{0}'".format(_sql[-_files]))
+							subprocess.Popen("mysql -u {0} -p{1} {2} < sql/updates/{3}".format(self.mysql_user, self.mysql_passwd, self.mysql_name, _sql[-_files])).wait()
+							_files -= 1
+					self.omsg(source, "... done.")
+					msg = "We are restarting for an update, please be patient. We are back as soon as possible."
+					self.send(":%s QUIT :%s" % (self.bot, msg))
+					self.send(":%s QUIT :%s" % (self.obot, msg))
+					self.con.close()
+					sys.exit(2)
 				elif cmd == "trust":
 					if len(arg) == 0:
 						for trust in self.query("select * from trust"):
@@ -305,14 +332,6 @@ class Services:
 						msg = "services shutdown"
 						self.send(":%s QUIT :%s" % (self.bot, msg))
 						self.send(":%s QUIT :%s" % (self.obot, msg))
-					elif len(arg) == 1:
-						if args.lower() == "upgrade":
-							msg = "we are going down for an upgrade. we are back as soon as it is finished!"
-							self.send(":%s QUIT :%s" % (self.bot, msg))
-							self.send(":%s QUIT :%s" % (self.obot, msg))
-						else:
-							self.send(":%s QUIT :%s" % (self.bot, args))
-							self.send(":%s QUIT :%s" % (self.obot, args))
 					else:
 						self.send(":%s QUIT :%s" % (self.bot, args))
 						self.send(":%s QUIT :%s" % (self.obot, args))
