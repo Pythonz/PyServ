@@ -81,8 +81,12 @@ class Services:
 							self.meta(self.obot, "accountname", "O")
 							self.omsg("$*", "Services are now back online. Have a nice day :)")
 							self.version(self.obot, "$*")
-							for channel in self.query("select name from channelinfo"):
+							for channel in self.query("select name,modes,topic from channelinfo"):
 								self.join(str(channel[0]))
+								if self.chanflag("m", channel[0]):
+									self.mode(channel[0], channel[1])
+								if self.chanflag("t", channel[0]):
+									self.send(":{0} TOPIC {1} :{2}".format(self.bot, channel[0], channel[2]))
 						if data.split()[1] == "PRIVMSG":
 							if data.split()[2] == self.bot:
 								self.message(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
@@ -246,14 +250,9 @@ class Services:
 			else:
 				self.omsg(source, "I'm the Operators Service. Only IRC Operators can use me.")
 		except Exception,e:
-			if self.isoper(source):
-				self.omsg(source, "{0}. The Development-Team has been emailed about this problem.".format(str(e)))
-				if self.email != "":
-					self.mail("bugs@mechi.tk", "From {0} <{1}>\nTo: PyServ Development <bugs@mechi.tk>\nSubject: Bug on Server {0}\n{2}".format(self.services_description, self.email, str(e)))
-			else:
-				self.omsg(source, "An error has occured. The Development-Team has been emailed about this problem.")
-				if self.email != "":
-					self.mail("bugs@mechi.tk", "From {0} <{1}>\nTo: PyServ Development <bugs@mechi.tk>\nSubject: Bug on Server {0}\n{2}".format(self.services_description, self.email, str(e)))
+			self.omsg(source, "An error has occured. The Development-Team has been notified about this problem.")
+			if self.email != "":
+				self.mail("bugs@mechi.tk", "From {0} <{1}>\nTo: PyServ Development <bugs@mechi.tk>\nSubject: Bug on {0}\n{2}".format(self.services_description, self.email, str(e)))
 			debug("<<OMSG-ERROR>> "+str(e))
 
 	def message(self, source, text):
@@ -525,14 +524,9 @@ class Services:
 			else:
 				self.msg(source, "Unknown command {0}. Please try HELP for more information.".format(arg[0].upper()))
 		except Exception,e:
-			if self.isoper(source):
-				self.msg(source, "{0}. The Development-Team has been emailed about this problem.".format(str(e)))
-				if self.email != "":
-					self.mail("bugs@mechi.tk", "From {0} <{1}>\nTo: PyServ Development <bugs@mechi.tk>\nSubject: Bug on Server {0}\n{2}".format(self.services_description, self.email, str(e)))
-			else:
-				self.msg(source, "An error has occured. The Development-Team has been emailed about this problem.")
-				if self.email != "":
-					self.mail("bugs@mechi.tk", "From {0} <{1}>\nTo: PyServ Development <bugs@mechi.tk>\nSubject: Bug on Server {0}\n{2}".format(self.services_description, self.email, str(e)))
+			self.msg(source, "An error has occured. The Development-Team has been notified about this problem.")
+			if self.email != "":
+				self.mail("bugs@mechi.tk", "From {0} <{1}>\nTo: PyServ Development <bugs@mechi.tk>\nSubject: Bug on {0}\n{2}".format(self.services_description, self.email, str(e)))
 			debug("<<MSG-ERROR>> "+str(e))
 
 	def nick (self, source):
