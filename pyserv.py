@@ -204,6 +204,10 @@ class Services:
 					self.ohelp(source, "QUIT", "[REASON]")
 					self.ohelp(source, "VERSION")
 				elif cmd == "update":
+					self.omsg(source, "Saving config file ...")
+					subprocess.Popen("git add pyserv.conf", shell=True).wait()
+					subprocess.Popen("git commit -m 'Saving config file'", shell=True).wait()
+					self.omsg(source, "... done.")
 					self.omsg(source, "Getting newest version ...")
 					subprocess.Popen("git pull", shell=True).wait()
 					self.omsg(source, "... done.")
