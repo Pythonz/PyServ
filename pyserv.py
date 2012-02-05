@@ -151,7 +151,7 @@ class Services:
 						if data.split()[1] == "UID":
 							self.query("delete from temp_nick where nick = '%s'" % data.split()[2])
 							self.query("insert into online values ('%s','%s','%s')" % (data.split()[2], data.split()[4], data.split()[8]))
-							conns = 1
+							conns = 0
 							for connection in self.query("select * from online where address = '%s'" % data.split()[8]):
 								conns += 1
 							limit = 3
@@ -192,6 +192,42 @@ class Services:
 					self.ohelp(source, "TRUST", "IP [LIMIT]")
 					self.ohelp(source, "QUIT", "[{UPGRADE} / REASON]")
 					self.ohelp(source, "VERSION")
+				elif cmd == "trust":
+					if len(arg) == 0:
+						for trust in self.query("select * from trust"):
+							self.omsg("IP: {0}          Limit: {1}".format(trust[0], trust[1]))
+					if len(arg) == 1:
+						entry = False
+						for trust in self.query("select * from trust where address = '{0}'".format(arg[0])):
+							entry = True
+							self.query("delete from trust where address = '{0}'".format(trust[0])
+						if entry:
+							self.omsg(source, "Trust for {0} has been deleted.".format(arg[0]))
+							conns = 0
+							for online in self.query("select nick from online where address = '{0}'".format(arg[0])):
+								conns += 1
+							if conns > 3:
+								self.send(":{0} GLINE *@{1} 30 :Connection limit (3) reached".format(self.obot, arg[0]))
+						else:
+							self.omsg(source, "Trust for {0} does not exist.".format(arg[0]))
+					if len(arg) == 2:
+						entry = False
+						for trust in self.query("select * from trust where address = '{0}'".format(arg[0])):
+							entry = True
+						if entry:
+							limit = filter(lambda x: x.isdigit(), arg[1])
+							if limit != "":
+								self.query("update trust set `limit` = '{0}' where address = '{1}'".format(limit, arg[0]))
+								self.omsg(source, "Trust for {0} has been set to {1}.".format(arg[0], limit))
+							else:
+								self.omsg(source, "Invalid limit")
+						else:
+							limit = filter(lambda x: x.isdigit(), arg[1])
+							if limit != "":
+								self.query("insert into  trust values ('{1}','{0}')".format(limit, arg[0]))
+								self.omsg(source, "Trust for {0} has been set to {1}.".format(arg[0], limit))
+							else:
+								self.omsg(source, "Invalid limit")
 				elif cmd == "vhost":
 					if arg[0].lower() == "list":
 						for data in self.query("select user,vhost from vhosts where active = '0'"):
