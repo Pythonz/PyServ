@@ -158,7 +158,7 @@ class Services:
 							for trust in self.query("select `limit` from trust where address = '%s'" % data.split()[8]):
 								limit = int(trust[0])
 							if conns > limit and data.split()[8] != "0.0.0.0":
-								self.send(":{0} GLINE *@{1} 30 :Connection limit ({2}) reached".format(self.obot, data.split()[8], limit))
+								self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.obot, data.split()[8], limit))
 								
 		except Exception,e:
 			debug("<<ERROR>> " + str(e))
@@ -207,7 +207,7 @@ class Services:
 							for online in self.query("select nick from online where address = '{0}'".format(arg[0])):
 								conns += 1
 							if conns > 3:
-								self.send(":{0} GLINE *@{1} 30 :Connection limit (3) reached".format(self.obot, arg[0]))
+								self.send(":{0} GLINE *@{1} 1800 :Connection limit (3) reached".format(self.obot, arg[0]))
 						else:
 							self.omsg(source, "Trust for {0} does not exist.".format(arg[0]))
 					if len(arg) == 2:
