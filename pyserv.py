@@ -10,7 +10,6 @@ import hashlib
 import smtplib
 import _mysql
 import git
-import fnmatch
 
 repo = git.Repo(".")
 i = 1
@@ -588,7 +587,7 @@ class Services:
 
 	def chanflag(self, flag, channel):
 		for data in self.query("select flags from channelinfo where name = '{0}'".format(channel)):
-			if fnmatch.fnmatch(data[0], "*"+flag+"*"):
+			if data[0].find(flag) != -1:
 				return True
 		return False
 
