@@ -360,10 +360,37 @@ class Services:
 					self.help(source, "CHANLEV", "Edits your channel records")
 					self.help(source, "CHANMODE", "Sets modes for your channel")
 					self.help(source, "CHANFLAGS", "Sets flags for your channel")
+					self.help(source, "KICK", "Kicks someone from the channel")
+					#self.help(source, "OWNER", "Sets your owner (+q) flag")
+					#self.help(source, "DEOWNER", "Removes your owner (+q) flag")
+					#self.help(source, "PROTECT", "Sets admin (+a) flag to you or someone on the channel")
+					#self.help(source, "DEPROTECT", "Removes admin (+a) flag from you or someone on the channel")
+					#self.help(source, "OP", "Sets op (+o) flag to you or someone on the channel")
+					#self.help(source, "DEOP", "Removes op (+o) flag from you or someone on the channel")
+					#self.help(source, "VOICE", "Sets voice (+v) flag to you or someone on the channel")
+					#self.help(source, "DEVOICE", "Removes voice (+v) flag from you or someone on the channel")
 					self.help(source, "SETTOPIC", "Sets topic for your channel")
 					self.help(source, "FEEDBACK", "Sends a feedback to us")
 					self.help(source, "WHOIS", "Shows information about a user")
 				self.help(source, "VERSION", "Shows version of services")
+			elif arg[0].lower() == "kill" and self.auth(source) != 0:
+				if len(arg) == 3:
+					if arg[1].startswith("#"):
+						flag = self.getflag(source, arg[1])
+						if flag == "n" or flag == "a" or flag =="o":
+							self.send(":{0} KICK {1} {2} :{2}".format(self.bot, arg[1], arg[2]))
+							self.msg(source, "Done.")
+						else: self.msg(source, "Denied.")
+					else: self.msg(source, "Invalid channel")
+				elif len(arg) > 3:
+					if arg[1].startswith("#"):
+						flag = self.getflag(source, arg[1])
+						if flag == "n" or flag == "a" or flag =="o":
+							self.send(":{0} KICK {1} {2} :{3}".format(self.bot, arg[1], arg[2], ' '.join(arg[3:])))
+							self.msg(source, "Done.")
+						else: self.msg(source, "Denied.")
+					else: self.msg(source, "Invalid channel")
+				else: self.msg(source, "Syntax: KICK <#channel> <user> [,<user>] [reason]")
 			elif arg[0].lower() == "newpass" and self.auth(source) != 0:
 				if len(arg) == 2:
 					self.query("update users set pass = '%s' where name = '%s'" % (self.hash(arg[1]), self.auth(source)))
@@ -488,8 +515,8 @@ class Services:
 							self.msg(source, "No permission")
 					else:
 						self.msg(source, "Invalid channel '{0}'".format(arg[1]))
-				elif len(arg) > 2:
-					modes = ' '.join(arg[2:])
+				elif len(arg) == 2:
+					modes = arg[2]
 					if arg[1].startswith("#"):
 						if self.getflag(source, arg[1]) == "n" or self.getflag(source, arg[1]) == "a":
 							for channel in self.query("select name from channelinfo where name = '{0}'".format(arg[1])):
