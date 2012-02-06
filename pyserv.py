@@ -390,7 +390,7 @@ class Services:
 					else: self.msg(source, "Invalid channel")
 				elif len(arg) > 2:
 					if arg[1].startswith("#"):
-						flag == self.getflag(source, arg[1])
+						flag = self.getflag(source, arg[1])
 						welcome = ' '.join(arg[2:]).replace("'", "\'").replace('"', '\"').replace("(", "\(").replace(")", "\)")
 						if flag == "n" or flag == "q" or flag == "a":
 							if welcome.lower() == "-delete-":
