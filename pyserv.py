@@ -373,7 +373,7 @@ class Services:
 					self.help(source, "FEEDBACK", "Sends a feedback to us")
 					self.help(source, "WHOIS", "Shows information about a user")
 				self.help(source, "VERSION", "Shows version of services")
-			elif arg[0].lower() == "kill" and self.auth(source) != 0:
+			elif arg[0].lower() == "kick" and self.auth(source) != 0:
 				if len(arg) == 3:
 					if arg[1].startswith("#"):
 						flag = self.getflag(source, arg[1])
