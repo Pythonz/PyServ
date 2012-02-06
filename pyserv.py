@@ -216,7 +216,7 @@ class Services:
 						if __updates > _updates:
 							_files = __updates - _updates
 							while _files != 0:
-								self.omsg(" - Insert '{0}'".format(_sql[-_files]))
+								self.omsg(source, " - Insert '{0}'".format(_sql[-_files]))
 								subprocess.Popen("mysql -u {0} -p{1} {2} < sql/updates/{3}".format(self.mysql_user, self.mysql_passwd, self.mysql_name, _sql[-_files]), shell=True).wait()
 								_files -= 1
 						msg = "We are restarting for an update, please be patient. We are back as soon as possible."
