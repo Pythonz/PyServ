@@ -361,6 +361,7 @@ class Services:
 					self.help(source, "CHANMODE", "Sets modes for your channel")
 					self.help(source, "CHANFLAGS", "Sets flags for your channel")
 					self.help(source, "KICK", "Kicks someone from the channel")
+					self.help(source, "SYNC", "Syncs your flags on all channels")
 					self.help(source, "OWNER", "Sets your owner (+q) flag")
 					self.help(source, "DEOWNER", "Removes your owner (+q) flag")
 					self.help(source, "PROTECT", "Sets admin (+a) flag to you or someone on the channel")
@@ -373,10 +374,13 @@ class Services:
 					self.help(source, "FEEDBACK", "Sends a feedback to us")
 					self.help(source, "WHOIS", "Shows information about a user")
 				self.help(source, "VERSION", "Shows version of services")
+			elif arg[0].lower() == "sync" and self.auth(source) != 0:
+				self.flag(source)
+				self.msg(source, "Done.")
 			elif arg[0].lower() == "owner" and self.auth(source) != 0:
 				if len(arg) == 2:
 					if arg[1].startswith("#"):
-						if self.getflag(source, arg[1]) == "n":
+						if self.getflag(source, arg[1]) == "n" or self.getflag(source, arg[1]) == "q":
 							self.mode(arg[1], "+q {0}".format(source))
 							self.msg(source, "Done.")
 						else: self.msg(source, "Denied.")
@@ -385,7 +389,7 @@ class Services:
 			elif arg[0].lower() == "deowner" and self.auth(source) != 0:
 				if len(arg) == 2:
 					if arg[1].startswith("#"):
-						if self.getflag(source, arg[1]) == "n":
+						if self.getflag(source, arg[1]) == "n" or self.getflag(source, arg[1]) == "q":
 							self.mode(arg[1], "-q {0}".format(source))
 							self.msg(source, "Done.")
 						else: self.msg(source, "Denied.")
@@ -395,7 +399,7 @@ class Services:
 				if len(arg) == 2:
 					if arg[1].startswith("#"):
 						flag = self.getflag(source, arg[1])
-						if flag == "n" or flag == "a":
+						if flag == "n" or flag == "q" or flag == "a":
 							self.mode(arg[1], "+a {0}".format(source))
 							self.msg(source, "Done.")
 						else: self.msg(source, "Denied.")
@@ -403,7 +407,7 @@ class Services:
 				elif len(arg) > 2:
 					if arg[1].startswith("#"):
 						flag = self.getflag(source, arg[1])
-						if flag == "n":
+						if flag == "n" or flag == "q":
 							self.mode(arg[1], "+{0} {1}".format("a"*len(arg[2:]), ' '.join(arg[2:])))
 							self.msg(source, "Done.")
 						else: self.msg(source, "Denied.")
@@ -413,7 +417,7 @@ class Services:
 				if len(arg) == 2:
 					if arg[1].startswith("#"):
 						flag = self.getflag(source, arg[1])
-						if flag == "n" or flag == "a":
+						if flag == "n" or flag == "q" or flag == "a":
 							self.mode(arg[1], "-a {0}".format(source))
 							self.msg(source, "Done.")
 						else: self.msg(source, "Denied.")
@@ -421,7 +425,7 @@ class Services:
 				elif len(arg) > 2:
 					if arg[1].startswith("#"):
 						flag = self.getflag(source, arg[1])
-						if flag == "n":
+						if flag == "n" or flag == "q":
 							self.mode(arg[1], "-{0} {1}".format("a"*len(arg[2:]), ' '.join(arg[2:])))
 							self.msg(source, "Done.")
 						else: self.msg(source, "Denied.")
@@ -431,7 +435,7 @@ class Services:
 				if len(arg) == 2:
 					if arg[1].startswith("#"):
 						flag = self.getflag(source, arg[1])
-						if flag == "n" or flag == "a" or flag == "o":
+						if flag == "n" or flag == "q" or flag == "a" or flag == "o":
 							self.mode(arg[1], "+o {0}".format(source))
 							self.msg(source, "Done.")
 						else: self.msg(source, "Denied.")
@@ -439,7 +443,7 @@ class Services:
 				elif len(arg) > 2:
 					if arg[1].startswith("#"):
 						flag = self.getflag(source, arg[1])
-						if flag == "n" or flag == "a" or flag == "o":
+						if flag == "n" or flag == "q" or flag == "a" or flag == "o":
 							self.mode(arg[1], "+{0} {1}".format("o"*len(arg[2:]), ' '.join(arg[2:])))
 							self.msg(source, "Done.")
 						else: self.msg(source, "Denied.")
@@ -449,7 +453,7 @@ class Services:
 				if len(arg) == 2:
 					if arg[1].startswith("#"):
 						flag = self.getflag(source, arg[1])
-						if flag == "n" or flag == "a" or flag == "o":
+						if flag == "n" or flag == "q" or flag == "a" or flag == "o":
 							self.mode(arg[1], "-o {0}".format(source))
 							self.msg(source, "Done.")
 						else: self.msg(source, "Denied.")
@@ -457,7 +461,7 @@ class Services:
 				elif len(arg) > 2:
 					if arg[1].startswith("#"):
 						flag = self.getflag(source, arg[1])
-						if flag == "n" or flag == "a" or flag == "o":
+						if flag == "n" or flag == "q" or flag == "a" or flag == "o":
 							self.mode(arg[1], "-{0} {1}".format("o"*len(arg[2:]), ' '.join(arg[2:])))
 							self.msg(source, "Done.")
 						else: self.msg(source, "Denied.")
@@ -467,7 +471,7 @@ class Services:
 				if len(arg) == 2:
 					if arg[1].startswith("#"):
 						flag = self.getflag(source, arg[1])
-						if flag == "n" or flag == "a" or flag == "o" or flag == "v":
+						if flag == "n" or flag == "q" or flag == "a" or flag == "o" or flag == "v":
 							self.mode(arg[1], "+v {0}".format(source))
 							self.msg(source, "Done.")
 						else: self.msg(source, "Denied.")
@@ -475,7 +479,7 @@ class Services:
 				elif len(arg) > 2:
 					if arg[1].startswith("#"):
 						flag = self.getflag(source, arg[1])
-						if flag == "n" or flag == "a" or flag == "o":
+						if flag == "n" or flag == "q" or flag == "a" or flag == "o":
 							self.mode(arg[1], "+{0} {1}".format("v"*len(arg[2:]), ' '.join(arg[2:])))
 							self.msg(source, "Done.")
 						else: self.msg(source, "Denied.")
