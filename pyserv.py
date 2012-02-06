@@ -378,16 +378,20 @@ class Services:
 					if arg[1].startswith("#"):
 						flag = self.getflag(source, arg[1])
 						if flag == "n" or flag == "a" or flag =="o":
-							self.send(":{0} KICK {1} {2} :{2}".format(self.bot, arg[1], arg[2]))
-							self.msg(source, "Done.")
+							if arg[2].lower() != "q" and not self.isoper(self.uid(arg[2])):
+								self.send(":{0} KICK {1} {2} :{2}".format(self.bot, arg[1], arg[2]))
+								self.msg(source, "Done.")
+							else: self.msg(source, "Denied.")
 						else: self.msg(source, "Denied.")
 					else: self.msg(source, "Invalid channel")
 				elif len(arg) > 3:
 					if arg[1].startswith("#"):
 						flag = self.getflag(source, arg[1])
 						if flag == "n" or flag == "a" or flag =="o":
-							self.send(":{0} KICK {1} {2} :{3}".format(self.bot, arg[1], arg[2], ' '.join(arg[3:])))
-							self.msg(source, "Done.")
+							if arg[2].lower() != "q" and not self.isoper(self.uid(arg[2])):
+								self.send(":{0} KICK {1} {2} :{3}".format(self.bot, arg[1], arg[2], ' '.join(arg[3:])))
+								self.msg(source, "Done.")
+							else: self.msg(source, "Denied.")
 						else: self.msg(source, "Denied.")
 					else: self.msg(source, "Invalid channel")
 				else: self.msg(source, "Syntax: KICK <#channel> <user> [,<user>] [reason]")
@@ -645,9 +649,15 @@ class Services:
 				self.mail("bugs@mechi.tk", "From {0} <{1}>\nTo: PyServ Development <bugs@mechi.tk>\nSubject: Bug on {0}\n{2}".format(self.services_description, self.email, str(e)))
 			debug("<<MSG-ERROR>> "+str(e))
 
+	def uid (self, nick):
+		for data in self.query("select uid from online where nick = '{0}'".format(nick)):
+			return str(data[0])
+		return nick
+
 	def nick (self, source):
 		for data in self.query("select nick from online where uid = '%s'" % source):
 			return str(data[0])
+		return source
 
 	def send(self, text):
 		self.con.send(text+"\n")
