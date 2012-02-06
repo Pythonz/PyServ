@@ -137,7 +137,7 @@ class Services:
 									self.mode(fjoin_chan, "+v %s" % fjoin_nick)
 							for data in self.query("select name,welcome from channelinfo where name = '{0}'".format(fjoin_chan)):
 								if data[1] != "":
-									self.msg(source, "[{0}] {1}".format(data[0], data[1]))
+									self.msg(fjoin_nick, "[{0}] {1}".format(data[0], data[1]))
 							if self.isoper(fjoin_nick) and self.chanexist(fjoin_chan):
 								self.send(":%s NOTICE %s :Operator %s has joined" % (self.services_id, fjoin_chan, self.nick(fjoin_nick)))
 								self.send(":%s PRIVMSG %s :ACTION goes down on his knee and prays to %s." % (self.bot, fjoin_chan, self.nick(fjoin_nick)))
