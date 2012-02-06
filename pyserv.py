@@ -637,13 +637,16 @@ class Services:
 				else: self.msg(source, "Syntax: REMOVE <#channel>")							
 			elif arg[0].lower() == "chanlev" and self.auth(source) != 0:
 				if len(arg) == 2:
-					channel = text.split()[1]
-					for data in self.query("select * from channels"):
-						content = str(data[0])
-						user = str(data[1])
-						flag = str(data[2])
-						if channel.lower() == content.lower():
-							self.msg(source, "[%s] User: %s\t||\tFlag: %s" % (content, user, flag))
+					if arg[1].startswith("#"):
+						if self.getflag(source, arg[1]) != "0":
+							channel = text.split()[1]
+							self.msg(source, "Known users on {0}:".format(channel))
+							self.msg(source, "Username               Flag")
+							for data in self.query("select user,flag from channels where channel='{0}'".format(channel)):
+								self.msg(source, " {0} {1} {2}".format(data[0], " "*int(14-len(data[0])), data[1]))
+							self.msg(source, "End of list.")
+						else: self.msg(source, "Denied.")
+					else: self.msg(source, "Invalid channel")
 				elif len(arg) == 4:
 					channel = text.split()[1]
 					entry = False
