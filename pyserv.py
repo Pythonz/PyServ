@@ -136,7 +136,7 @@ class Services:
 								if self.chanflag("v", fjoin_chan):
 									self.mode(fjoin_chan, "+v %s" % fjoin_nick)
 							for welcome in self.query("select name,welcome from channelinfo where name = '{0}'".format(fjoin_chan)):
-								if welcome[1] != "":
+								if self.chanflag("w", fjoin_chan):
 									self.msg(fjoin_nick, "[{0}] {1}".format(welcome[0], welcome[1]))
 							if self.isoper(fjoin_nick) and self.chanexist(fjoin_chan):
 								self.send(":%s NOTICE %s :Operator %s has joined" % (self.services_id, fjoin_chan, self.nick(fjoin_nick)))
@@ -393,13 +393,11 @@ class Services:
 						flag = self.getflag(source, arg[1])
 						welcome = ' '.join(arg[2:]).replace("'", "\'").replace('"', '\"').replace("(", "\(").replace(")", "\)")
 						if flag == "n" or flag == "q" or flag == "a":
-							if welcome.lower() == "-delete-":
-								self.query("update channelinfo set welcome = '' where name = '{0}'".format(arg[1]))
-							else: self.query("update channelinfo set welcome = '{0}' where name = '{1}'".format(welcome, arg[1]))
+							self.query("update channelinfo set welcome = '{0}' where name = '{1}'".format(welcome, arg[1]))
 							self.msg(source, "Done.")
 						else: self.msg(source, "Denied.")
 					else: self.msg(source, "Invalid channel")
-				else: self.msg(source, "Syntax: WELCOME <#channel> [<message>/-delete-]")
+				else: self.msg(source, "Syntax: WELCOME <#channel> [<text>]")
 			elif arg[0].lower() == "sync" and self.auth(source) != 0:
 				self.flag(source)
 				self.msg(source, "Done.")
@@ -708,6 +706,8 @@ class Services:
 						desc.append("Topic save")
 						mode.append("m")
 						desc.append("Modes enforcement")
+						mode.append("w")
+						desc.append("Welcome message on join")
 						listed = 0
 						while listed != len(mode):
 							self.msg(source, "{0}: {1}".format(mode[listed], desc[listed]))
