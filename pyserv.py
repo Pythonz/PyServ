@@ -643,7 +643,7 @@ class Services:
 							self.msg(source, "Known users on {0}:".format(channel))
 							self.msg(source, "Username               Flag")
 							for data in self.query("select user,flag from channels where channel='{0}'".format(channel)):
-								self.msg(source, " {0} {1} {2}".format(data[0], " "*int(14-len(data[0])), data[1]))
+								self.msg(source, " {0} {1} {2}".format(data[0], " "*int(24-len(data[0])), data[1]))
 							self.msg(source, "End of list.")
 						else: self.msg(source, "Denied.")
 					else: self.msg(source, "Invalid channel")
