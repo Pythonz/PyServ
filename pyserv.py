@@ -726,7 +726,7 @@ class Services:
 					else:
 						self.msg(source, "Invalid channel '{0}'".format(arg[1]))
 				else:
-					self.msg(source, "Syntax: CHANFLAGS <#channel> [<flags>])
+					self.msg(source, "Syntax: CHANFLAGS <#channel> [<flags>]")
 			elif arg[0].lower() == "settopic" and self.auth(source) != 0:
 				if len(arg) > 2:
 					if arg[1].startswith("#"):
