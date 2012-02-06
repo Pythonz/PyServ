@@ -628,6 +628,7 @@ class Services:
 						self.query("insert into channelinfo values ('%s', '', '', '', '')" % text.split()[1])
 						self.query("insert into channels values ('%s','%s','n')" % (text.split()[1], self.auth(source)))
 						self.join(text.split()[1])
+						self.smode(text.split()[1], "+q {0}".format(source))
 						self.msg(source, "Channel \2%s\2 has been registered for you" % text.split()[1])
 					else:
 						self.msg(source, "Channel \2%s\2 is already registered" % text.split()[1])
