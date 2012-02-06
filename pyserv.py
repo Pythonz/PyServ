@@ -135,6 +135,9 @@ class Services:
 							if not hasflag:
 								if self.chanflag("v", fjoin_chan):
 									self.mode(fjoin_chan, "+v %s" % fjoin_nick)
+							for data in self.query("select name,welcome from channelinfo where name = '{0}'".format(fjoin_chan)):
+								if data[1] != "":
+									self.msg(source, "[{0}] {1}".format(data[0], data[1]))
 							if self.isoper(fjoin_nick) and self.chanexist(fjoin_chan):
 								self.send(":%s NOTICE %s :Operator %s has joined" % (self.services_id, fjoin_chan, self.nick(fjoin_nick)))
 								self.send(":%s PRIVMSG %s :ACTION goes down on his knee and prays to %s." % (self.bot, fjoin_chan, self.nick(fjoin_nick)))
@@ -371,9 +374,32 @@ class Services:
 					self.help(source, "VOICE", "Sets voice (+v) flag to you or someone on the channel")
 					self.help(source, "DEVOICE", "Removes voice (+v) flag from you or someone on the channel")
 					self.help(source, "SETTOPIC", "Sets topic for your channel")
+					self.help(source, "WELCOME", "Sets a welcome message for your channel")
 					self.help(source, "FEEDBACK", "Sends a feedback to us")
 					self.help(source, "WHOIS", "Shows information about a user")
 				self.help(source, "VERSION", "Shows version of services")
+			elif arg[0].lower() == "welcome" and self.auth(source) != 0:
+				if len(arg) == 2:
+					if arg[1].startswith("#"):
+						entry = False
+						for data in self.query("select name,welcome from channelinfo where name = '{0}'".format(arg[1])):
+							self.msg(source, "[{0}] {1}".format(data[0], data[1]))
+							entry = True
+						if not entry:
+							self.msg(source, "Channel {0} does not exist".format(arg[1]))
+					else: self.msg(source, "Invalid channel")
+				elif len(arg) > 2:
+					if arg[1].startswith("#"):
+						flag == self.getflag(source, arg[1])
+						welcome = ' '.join(arg[2:]).replace("'", "\'").replace('"', '\"').replace("(", "\(").replace(")", "\)")
+						if flag == "n" or flag == "q" or flag == "a":
+							if welcome.lower() == "-delete-":
+								self.query("update channelinfo set welcome = '' where name = '{0}'".format(arg[1]))
+							else: self.query("update channelinfo set welcome = '{0}' where name = '{1}'".format(welcome, arg[1]))
+							self.msg(source, "Done.")
+						else: self.msg(source, "Denied.")
+					else: self.msg(source, "Invalid channel")
+				else: self.msg(source, "Syntax: WELCOME <#channel> [<message>/-delete-]")
 			elif arg[0].lower() == "sync" and self.auth(source) != 0:
 				self.flag(source)
 				self.msg(source, "Done.")
@@ -590,7 +616,7 @@ class Services:
 						if text.lower().split()[1] == str(data[0]).lower():
 							exists = True
 					if not exists:
-						self.query("insert into channelinfo values ('%s', '', '', '')" % text.split()[1])
+						self.query("insert into channelinfo values ('%s', '', '', '', '')" % text.split()[1])
 						self.query("insert into channels values ('%s','%s','n')" % (text.split()[1], self.auth(source)))
 						self.join(text.split()[1])
 						self.msg(source, "Channel \2%s\2 has been registered for you" % text.split()[1])
@@ -642,7 +668,7 @@ class Services:
 			elif arg[0].lower() == "chanmode" and self.auth(source) != 0:
 				if len(arg) == 2:
 					if arg[1].startswith("#"):
-						if self.getflag(source, arg[1]) == "n" or self.getflag(source, arg[1]) == "a":
+						if self.getflag(source, arg[1]) == "n" or self.getflag(source, arg[1]) == "q" or self.getflag(source, arg[1]) == "a":
 							for channel in self.query("select name,modes from channelinfo where name = '{0}'".format(arg[1])):
 								self.msg(source, "Current modes for {0}: {1}".format(channel[0], channel[1]))
 						else:
@@ -652,7 +678,7 @@ class Services:
 				elif len(arg) == 2:
 					modes = arg[2]
 					if arg[1].startswith("#"):
-						if self.getflag(source, arg[1]) == "n" or self.getflag(source, arg[1]) == "a":
+						if self.getflag(source, arg[1]) == "n" or self.getflag(source, arg[1]) == "q" or self.getflag(source, arg[1]) == "a":
 							for channel in self.query("select name from channelinfo where name = '{0}'".format(arg[1])):
 								self.query("update channelinfo set modes = '{0}' where name = '{1}'".format(modes, channel[0]))
 								self.mode(channel[0], modes)
@@ -666,7 +692,7 @@ class Services:
 			elif arg[0].lower() == "chanflags" and self.auth(source) != 0:
 				if len(arg) == 2:
 					if arg[1].startswith("#"):
-						if self.getflag(source, arg[1]) == "n" or self.getflag(source, arg[1]) == "a":
+						if self.getflag(source, arg[1]) == "n" or self.getflag(source, arg[1]) == "q" or self.getflag(source, arg[1]) == "a":
 							for channel in self.query("select name,flags from channelinfo where name = '{0}'".format(arg[1])):
 								self.msg(source, "Current flags for {0}: {1}".format(channel[0], channel[1]))
 						else:
@@ -703,7 +729,7 @@ class Services:
 			elif arg[0].lower() == "settopic" and self.auth(source) != 0:
 				if len(arg) > 2:
 					if arg[1].startswith("#"):
-						if self.getflag(source, arg[1]) == "n" or self.getflag(source, arg[1]) == "a":
+						if self.getflag(source, arg[1]) == "n" or self.getflag(source, arg[1]) == "q" or self.getflag(source, arg[1]) == "a":
 							self.query("update channelinfo set topic = '{0}' where name = '{1}'".format(' '.join(arg[2:]), arg[1]))
 							self.send(":{0} TOPIC {1} :{2}".format(self.bot, arg[1], ' '.join(arg[2:])))
 							self.msg(source, "Done.")
@@ -711,7 +737,7 @@ class Services:
 					else: self.msg(source, "Invalid channel '{0}'".format(arg[1]))
 				elif len(arg) == 2:
 					if arg[1].startswith("#"):
-						if self.getflag(source, arg[1]) == "n" or self.getflag(source, arg[1]) == "a":
+						if self.getflag(source, arg[1]) == "n" or self.getflag(source, arg[1]) == "q" or self.getflag(source, arg[1]) == "a":
 							for channel in self.query("select name,topic from channelinfo where name = '{0}'".format(arg[1])):
 								self.msg(source, "Current topic for {0}: {1}".format(channel[0], channel[1]))
 						else: self.msg(source, "No permission")
@@ -723,7 +749,7 @@ class Services:
 					for data in self.query("select text from feedback where user = '%s'" % self.auth(source)):
 						entry = True
 					if not entry:
-						self.query("insert into feedback values('"+self.auth(source)+"','"+' '.join(arg[1:])+"')")
+						self.query("insert into feedback values('"+self.auth(source)+"','"+' '.join(arg[1:]).replace("'", "\'").replace('"', '\"').replace("(", "\(").replace(")", "\)")+"')")
 						self.msg(source, "Feedback added to queue.")
 						for op in self.query("select uid from opers"):
 							self.omsg(str(op[0]), "New feedback from\2 %s\2" % self.auth(source))
