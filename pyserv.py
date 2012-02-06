@@ -361,18 +361,144 @@ class Services:
 					self.help(source, "CHANMODE", "Sets modes for your channel")
 					self.help(source, "CHANFLAGS", "Sets flags for your channel")
 					self.help(source, "KICK", "Kicks someone from the channel")
-					#self.help(source, "OWNER", "Sets your owner (+q) flag")
-					#self.help(source, "DEOWNER", "Removes your owner (+q) flag")
-					#self.help(source, "PROTECT", "Sets admin (+a) flag to you or someone on the channel")
-					#self.help(source, "DEPROTECT", "Removes admin (+a) flag from you or someone on the channel")
-					#self.help(source, "OP", "Sets op (+o) flag to you or someone on the channel")
-					#self.help(source, "DEOP", "Removes op (+o) flag from you or someone on the channel")
-					#self.help(source, "VOICE", "Sets voice (+v) flag to you or someone on the channel")
-					#self.help(source, "DEVOICE", "Removes voice (+v) flag from you or someone on the channel")
+					self.help(source, "OWNER", "Sets your owner (+q) flag")
+					self.help(source, "DEOWNER", "Removes your owner (+q) flag")
+					self.help(source, "PROTECT", "Sets admin (+a) flag to you or someone on the channel")
+					self.help(source, "DEPROTECT", "Removes admin (+a) flag from you or someone on the channel")
+					self.help(source, "OP", "Sets op (+o) flag to you or someone on the channel")
+					self.help(source, "DEOP", "Removes op (+o) flag from you or someone on the channel")
+					self.help(source, "VOICE", "Sets voice (+v) flag to you or someone on the channel")
+					self.help(source, "DEVOICE", "Removes voice (+v) flag from you or someone on the channel")
 					self.help(source, "SETTOPIC", "Sets topic for your channel")
 					self.help(source, "FEEDBACK", "Sends a feedback to us")
 					self.help(source, "WHOIS", "Shows information about a user")
 				self.help(source, "VERSION", "Shows version of services")
+			elif arg[0].lower() == "owner" and self.auth(source) != 0:
+				if len(arg) == 2:
+					if arg[1].startswith("#"):
+						if self.getflag(source, arg[1]) == "n":
+							self.mode(arg[1], "+q {0}".format(source))
+							self.msg(source, "Done.")
+						else: self.msg(source, "Denied.")
+					else: self.msg(source, "Invalid channel")
+				else: self.msg(source, "Syntax: OWNER <#channel>")
+			elif arg[0].lower() == "deowner" and self.auth(source) != 0:
+				if len(arg) == 2:
+					if arg[1].startswith("#"):
+						if self.getflag(source, arg[1]) == "n":
+							self.mode(arg[1], "-q {0}".format(source))
+							self.msg(source, "Done.")
+						else: self.msg(source, "Denied.")
+					else: self.msg(source, "Invalid channel")
+				else: self.msg(source, "Syntax: DEOWNER <#channel>")
+			elif arg[0].lower() == "protect" and self.auth(source) != 0:
+				if len(arg) == 2:
+					if arg[1].startswith("#"):
+						flag = self.getflag(source, arg[1])
+						if flag == "n" or flag == "a":
+							self.mode(arg[1], "+a {0}".format(source))
+							self.msg(source, "Done.")
+						else: self.msg(source, "Denied.")
+					else: self.msg(source, "Invalid channel")
+				elif len(arg) > 2:
+					if arg[1].startswith("#"):
+						flag = self.getflag(source, arg[1])
+						if flag == "n":
+							self.mode(arg[1], "+{0} {1}".format("a"*len(arg[2:]), ' '.join(arg[2:])))
+							self.msg(source, "Done.")
+						else: self.msg(source, "Denied.")
+					else: self.msg(source, "Invalid channel")
+				else: self.msg(source, "Syntax: PROTECT <#channel> [<nick> [,<nick>]]")
+			elif arg[0].lower() == "deprotect" and self.auth(source) != 0:
+				if len(arg) == 2:
+					if arg[1].startswith("#"):
+						flag = self.getflag(source, arg[1])
+						if flag == "n" or flag == "a":
+							self.mode(arg[1], "-a {0}".format(source))
+							self.msg(source, "Done.")
+						else: self.msg(source, "Denied.")
+					else: self.msg(source, "Invalid channel")
+				elif len(arg) > 2:
+					if arg[1].startswith("#"):
+						flag = self.getflag(source, arg[1])
+						if flag == "n":
+							self.mode(arg[1], "-{0} {1}".format("a"*len(arg[2:]), ' '.join(arg[2:])))
+							self.msg(source, "Done.")
+						else: self.msg(source, "Denied.")
+					else: self.msg(source, "Invalid channel")
+				else: self.msg(source, "Syntax: DEPROTECT <#channel> [<nick> [,<nick>]]")
+			elif arg[0].lower() == "op" and self.auth(source) != 0:
+				if len(arg) == 2:
+					if arg[1].startswith("#"):
+						flag = self.getflag(source, arg[1])
+						if flag == "n" or flag == "a" or flag == "o":
+							self.mode(arg[1], "+o {0}".format(source))
+							self.msg(source, "Done.")
+						else: self.msg(source, "Denied.")
+					else: self.msg(source, "Invalid channel")
+				elif len(arg) > 2:
+					if arg[1].startswith("#"):
+						flag = self.getflag(source, arg[1])
+						if flag == "n" or flag == "a" or flag == "o":
+							self.mode(arg[1], "+{0} {1}".format("o"*len(arg[2:]), ' '.join(arg[2:])))
+							self.msg(source, "Done.")
+						else: self.msg(source, "Denied.")
+					else: self.msg(source, "Invalid channel")
+				else: self.msg(source, "Syntax: OP <#channel> [<nick> [,<nick>]]")
+			elif arg[0].lower() == "deop" and self.auth(source) != 0:
+				if len(arg) == 2:
+					if arg[1].startswith("#"):
+						flag = self.getflag(source, arg[1])
+						if flag == "n" or flag == "a" or flag == "o":
+							self.mode(arg[1], "-o {0}".format(source))
+							self.msg(source, "Done.")
+						else: self.msg(source, "Denied.")
+					else: self.msg(source, "Invalid channel")
+				elif len(arg) > 2:
+					if arg[1].startswith("#"):
+						flag = self.getflag(source, arg[1])
+						if flag == "n" or flag == "a" or flag == "o":
+							self.mode(arg[1], "-{0} {1}".format("o"*len(arg[2:]), ' '.join(arg[2:])))
+							self.msg(source, "Done.")
+						else: self.msg(source, "Denied.")
+					else: self.msg(source, "Invalid channel")
+				else: self.msg(source, "Syntax: DEOP <#channel> [<nick> [,<nick>]]")
+			elif arg[0].lower() == "voice" and self.auth(source) != 0:
+				if len(arg) == 2:
+					if arg[1].startswith("#"):
+						flag = self.getflag(source, arg[1])
+						if flag == "n" or flag == "a" or flag == "o" or flag == "v":
+							self.mode(arg[1], "+v {0}".format(source))
+							self.msg(source, "Done.")
+						else: self.msg(source, "Denied.")
+					else: self.msg(source, "Invalid channel")
+				elif len(arg) > 2:
+					if arg[1].startswith("#"):
+						flag = self.getflag(source, arg[1])
+						if flag == "n" or flag == "a" or flag == "o":
+							self.mode(arg[1], "+{0} {1}".format("v"*len(arg[2:]), ' '.join(arg[2:])))
+							self.msg(source, "Done.")
+						else: self.msg(source, "Denied.")
+					else: self.msg(source, "Invalid channel")
+				else: self.msg(source, "Syntax: VOICE <#channel> [<nick> [,<nick>]]")
+			elif arg[0].lower() == "devoice" and self.auth(source) != 0:
+				if len(arg) == 2:
+					if arg[1].startswith("#"):
+						flag = self.getflag(source, arg[1])
+						if flag == "n" or flag == "a" or flag == "o" or flag == "v":
+							self.mode(arg[1], "-v {0}".format(source))
+							self.msg(source, "Done.")
+						else: self.msg(source, "Denied.")
+					else: self.msg(source, "Invalid channel")
+				elif len(arg) > 2:
+					if arg[1].startswith("#"):
+						flag = self.getflag(source, arg[1])
+						if flag == "n" or flag == "a" or flag == "o":
+							self.mode(arg[1], "-{0} {1}".format("v"*len(arg[2:]), ' '.join(arg[2:])))
+							self.msg(source, "Done.")
+						else: self.msg(source, "Denied.")
+					else: self.msg(source, "Invalid channel")
+				else: self.msg(source, "Syntax: DEVOICE <#channel> [<nick> [,<nick>]]")
 			elif arg[0].lower() == "kick" and self.auth(source) != 0:
 				if len(arg) == 3:
 					if arg[1].startswith("#"):
