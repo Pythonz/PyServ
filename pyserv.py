@@ -364,6 +364,7 @@ class Services:
 					self.help(source, "CHANLEV", "Edits your channel records")
 					self.help(source, "CHANMODE", "Sets modes for your channel")
 					self.help(source, "CHANFLAGS", "Sets flags for your channel")
+					self.help(source, "INVITE", "Invites you into a channel")
 					self.help(source, "KICK", "Kicks someone from the channel")
 					self.help(source, "SYNC", "Syncs your flags on all channels")
 					self.help(source, "OWNER", "Sets your owner (+q) flag")
@@ -379,6 +380,15 @@ class Services:
 					self.help(source, "FEEDBACK", "Sends a feedback to us")
 					self.help(source, "WHOIS", "Shows information about a user")
 				self.help(source, "VERSION", "Shows version of services")
+			elif arg[0].lower() == "invite" and self.auth(source) != 0:
+				if len(arg) == 2:
+					if arg[1].startswith("#"):
+						if self.getflag(source, arg[1]) != 0:
+							self.send(":{0} INVITE {1} {2}".format(self.services_id, source, arg[1]))
+							self.msg(source, "Done.")
+						else: self.msg(source, "Denied.")
+					else: self.msg(source, "Invalid channel")
+				else: self.msg(source, "Syntax: INVITE <#channel>")
 			elif arg[0].lower() == "welcome" and self.auth(source) != 0:
 				if len(arg) == 2:
 					if arg[1].startswith("#"):
