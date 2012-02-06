@@ -229,7 +229,7 @@ class Services:
 					if len(arg) == 0:
 						for trust in self.query("select * from trust"):
 							self.omsg(source, "IP: {0}          Limit: {1}".format(trust[0], trust[1]))
-					if len(arg) == 1:
+					elif len(arg) == 1:
 						entry = False
 						for trust in self.query("select * from trust where address = '{0}'".format(arg[0])):
 							entry = True
@@ -247,7 +247,7 @@ class Services:
 								self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.obot, arg[0], limit))
 						else:
 							self.omsg(source, "Trust for {0} does not exist.".format(arg[0]))
-					if len(arg) == 2:
+					elif len(arg) == 2:
 						entry = False
 						for trust in self.query("select * from trust where address = '{0}'".format(arg[0])):
 							entry = True
@@ -283,6 +283,7 @@ class Services:
 									self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.obot, arg[0], limit))
 							else:
 								self.omsg(source, "Invalid limit")
+					else: self.omsg(source, "TRUST [<address> [<limit>]]")
 				elif cmd == "vhost":
 					if arg[0].lower() == "list":
 						for data in self.query("select user,vhost from vhosts where active = '0'"):
@@ -308,7 +309,7 @@ class Services:
 						self.omsg(source, "Following users sent a feedback:")
 						for data in self.query("select user from feedback"):
 							self.omsg(source, str(data[0]))
-						self.omsg(source, "To read a feedback: \2FEEDBACK \37USER\37\2")
+						self.omsg(source, "To read a feedback: FEEDBACK <user>")
 					else:
 						entry = False
 						for data in self.query("select user,text from feedback"):
@@ -326,7 +327,7 @@ class Services:
 					elif len(arg) > 1:
 						self.kill(arg[0], ' '.join(arg[1:]))
 					else:
-						self.omsg(source, "Syntax: \2KILL \37NICK\37\2")
+						self.omsg(source, "Syntax: KILL <nick>")
 				elif cmd == "quit":
 					if len(arg) == 0:
 						msg = "services shutdown"
@@ -554,7 +555,7 @@ class Services:
 					self.query("update users set pass = '%s' where name = '%s'" % (self.hash(arg[1]), self.auth(source)))
 					self.msg(source, """Your new password is "%s". Remember it!""" % arg[1])
 				else:
-					self.msg(source, "Syntax: NEWPASS \37password\37")
+					self.msg(source, "Syntax: NEWPASS <password>")
 			elif arg[0].lower() == "hello":
 				if self.auth(source) != 0:
 					self.msg(source, "HELLO is not available once you have authed.")
@@ -578,7 +579,7 @@ class Services:
 					else:
 						self.msg(source, "The account %s already exists or your email %s is used!" % (self.nick(source),arg[1]))
 				else:
-					self.msg(source, "Syntax: HELLO \37email\37 \37email\37")
+					self.msg(source, "Syntax: HELLO <email> <email>")
 			elif text.lower().split()[0] == "auth":
 				if self.auth(source) != 0:
 					self.msg(source, "AUTH is not available once you have authed.");
@@ -598,7 +599,7 @@ class Services:
 					if not exists:
 						self.msg(source, "Wrong username or invalid password.")
 				else:
-					self.msg(source, "Syntax: AUTH \37account\37 \37password\37")
+					self.msg(source, "Syntax: AUTH <username> <password>")
 			elif text.lower().split()[0] == "vhost" and self.auth(source) != 0:
 				if len(text.split()) == 2:
 					self.query("delete from vhosts where user = '%s'" % self.auth(source))
@@ -606,7 +607,7 @@ class Services:
 					self.msg(source, "Your new vhost\2 %s\2 has been requested" % text.split()[1])
 					self.vhost(source)
 				else:
-					self.msg(source, "Syntax: VHOST \37vhost\37")
+					self.msg(source, "Syntax: VHOST <vhost>")
 			elif text.lower().split()[0] == "request" and self.auth(source) != 0:
 				if len(text.split()) == 2 and text.split()[1].startswith("#"):
 					exists = False
@@ -633,7 +634,7 @@ class Services:
 								self.send(":{0} PART {1} :Channel {1} has been deleted.".format(self.bot, data[0]))
 						else: self.msg(source, "No permission")
 					else: self.msg(source, "Invalid channel '{0}'".format(arg[1]))
-				else: self.msg(source, "Syntax: \2REMOVE\2 \37#channel\37")							
+				else: self.msg(source, "Syntax: REMOVE <#channel>")							
 			elif arg[0].lower() == "chanlev" and self.auth(source) != 0:
 				if len(arg) == 2:
 					channel = text.split()[1]
@@ -662,7 +663,7 @@ class Services:
 							self.msg(source, "[%s] %s has been with mode +%s" % (channel, username, text.split()[3]))
 						else: self.msg(source, "An error has happened")
 					else: self.msg(source, "An error has happened")
-				else: self.msg(source, "Syntax: \2CHANLEV\2 \37#channel\37 [\37user\37] [\37flag\37]")
+				else: self.msg(source, "Syntax: CHANLEV <#channel> [<user> [<flag>]]")
 			elif arg[0].lower() == "chanmode" and self.auth(source) != 0:
 				if len(arg) == 2:
 					if arg[1].startswith("#"):
@@ -686,7 +687,7 @@ class Services:
 					else:
 						self.msg(source, "Invalid channel '{0}'".format(arg[1]))
 				else:
-					self.msg(source, "Syntax: \2CHANMODE\2 \37#channel\37 [\37modes\37]")
+					self.msg(source, "Syntax: CHANMODE <#channel> [<modes>]")
 			elif arg[0].lower() == "chanflags" and self.auth(source) != 0:
 				if len(arg) == 2:
 					if arg[1].startswith("#"):
@@ -725,7 +726,7 @@ class Services:
 					else:
 						self.msg(source, "Invalid channel '{0}'".format(arg[1]))
 				else:
-					self.msg(source, "Syntax: \2CHANFLAGS\2 \37#channel\37 [\37flags\37]")
+					self.msg(source, "Syntax: CHANFLAGS <#channel> [<flags>])
 			elif arg[0].lower() == "settopic" and self.auth(source) != 0:
 				if len(arg) > 2:
 					if arg[1].startswith("#"):
@@ -735,14 +736,7 @@ class Services:
 							self.msg(source, "Done.")
 						else: self.msg(source, "No permission")
 					else: self.msg(source, "Invalid channel '{0}'".format(arg[1]))
-				elif len(arg) == 2:
-					if arg[1].startswith("#"):
-						if self.getflag(source, arg[1]) == "n" or self.getflag(source, arg[1]) == "q" or self.getflag(source, arg[1]) == "a":
-							for channel in self.query("select name,topic from channelinfo where name = '{0}'".format(arg[1])):
-								self.msg(source, "Current topic for {0}: {1}".format(channel[0], channel[1]))
-						else: self.msg(source, "No permission")
-					else: self.msg(source, "Invalid channel '{0}'".format(arg[1]))
-				else: self.msg(source, "Syntax: \2SETTOPIC\2 \37#channel\37 [\37topic\37]")
+				else: self.msg(source, "Syntax: SETTOPIC <#channel> <topic>")
 			elif arg[0].lower() == "feedback" and self.auth(source) != 0:
 				if len(arg) > 1:
 					entry = False
@@ -756,7 +750,7 @@ class Services:
 					else:
 						self.msg(source, "You already sent a feedback. Please wait until an operator read it.")
 				else:
-					self.msg(source, "\2FEEDBACK\2 \37TEXT\37")
+					self.msg(source, "FEEDBACK <text>")
 			elif arg[0].lower() == "whois" and self.auth(source) != 0:
 				entry = False
 				if len(arg) == 2:
@@ -795,7 +789,7 @@ class Services:
 					if not entry:
 						self.msg(source, "Can\'t find user {0}".format(arg[1]))
 				else:
-					self.msg(source, "Syntax: \2WHOIS\2 \37NICK/#ACCOUNT\37")
+					self.msg(source, "Syntax: WHOIS <nick>/<#account>")
 			elif arg[0].lower() == "version": self.version(self.bot, source)
 			else:
 				self.msg(source, "Unknown command {0}. Please try HELP for more information.".format(arg[0].upper()))
