@@ -437,7 +437,7 @@ class Services:
 							self.msg(source, "Done.")
 						else: self.msg(source, "Denied.")
 					else: self.msg(source, "Invalid channel")
-				else: self.msg(source, "Syntax: PROTECT <#channel> [<nick> [,<nick>]]")
+				else: self.msg(source, "Syntax: PROTECT <#channel> [<nick> [<nick>]]")
 			elif arg[0].lower() == "deprotect" and self.auth(source) != 0:
 				if len(arg) == 2:
 					if arg[1].startswith("#"):
@@ -455,7 +455,7 @@ class Services:
 							self.msg(source, "Done.")
 						else: self.msg(source, "Denied.")
 					else: self.msg(source, "Invalid channel")
-				else: self.msg(source, "Syntax: DEPROTECT <#channel> [<nick> [,<nick>]]")
+				else: self.msg(source, "Syntax: DEPROTECT <#channel> [<nick> [<nick>]]")
 			elif arg[0].lower() == "op" and self.auth(source) != 0:
 				if len(arg) == 2:
 					if arg[1].startswith("#"):
@@ -473,7 +473,7 @@ class Services:
 							self.msg(source, "Done.")
 						else: self.msg(source, "Denied.")
 					else: self.msg(source, "Invalid channel")
-				else: self.msg(source, "Syntax: OP <#channel> [<nick> [,<nick>]]")
+				else: self.msg(source, "Syntax: OP <#channel> [<nick> [<nick>]]")
 			elif arg[0].lower() == "deop" and self.auth(source) != 0:
 				if len(arg) == 2:
 					if arg[1].startswith("#"):
@@ -491,7 +491,7 @@ class Services:
 							self.msg(source, "Done.")
 						else: self.msg(source, "Denied.")
 					else: self.msg(source, "Invalid channel")
-				else: self.msg(source, "Syntax: DEOP <#channel> [<nick> [,<nick>]]")
+				else: self.msg(source, "Syntax: DEOP <#channel> [<nick> [<nick>]]")
 			elif arg[0].lower() == "voice" and self.auth(source) != 0:
 				if len(arg) == 2:
 					if arg[1].startswith("#"):
@@ -509,7 +509,7 @@ class Services:
 							self.msg(source, "Done.")
 						else: self.msg(source, "Denied.")
 					else: self.msg(source, "Invalid channel")
-				else: self.msg(source, "Syntax: VOICE <#channel> [<nick> [,<nick>]]")
+				else: self.msg(source, "Syntax: VOICE <#channel> [<nick> [<nick>]]")
 			elif arg[0].lower() == "devoice" and self.auth(source) != 0:
 				if len(arg) == 2:
 					if arg[1].startswith("#"):
@@ -527,7 +527,7 @@ class Services:
 							self.msg(source, "Done.")
 						else: self.msg(source, "Denied.")
 					else: self.msg(source, "Invalid channel")
-				else: self.msg(source, "Syntax: DEVOICE <#channel> [<nick> [,<nick>]]")
+				else: self.msg(source, "Syntax: DEVOICE <#channel> [<nick> [<nick>]]")
 			elif arg[0].lower() == "kick" and self.auth(source) != 0:
 				if len(arg) == 3:
 					if arg[1].startswith("#"):
