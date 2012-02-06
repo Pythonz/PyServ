@@ -384,7 +384,7 @@ class Services:
 				if len(arg) == 2:
 					if arg[1].startswith("#"):
 						if self.getflag(source, arg[1]) != 0:
-							self.send(":{0} INVITE {1} {2}".format(self.services_id, source, arg[1]))
+							self.send(":{0} INVITE {1} {2}".format(self.bot, source, arg[1]))
 							self.msg(source, "Done.")
 						else: self.msg(source, "Denied.")
 					else: self.msg(source, "Invalid channel")
