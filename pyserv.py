@@ -23,7 +23,7 @@ try:
 	_started = time.time()
 	config = ConfigParser.RawConfigParser()
 	config.read("pyserv.conf")
-except:
+except Exception:
 	print("<<ERROR>> {0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb)))
 
 def debug(text):
@@ -169,7 +169,7 @@ class Services:
 									self.send(":{0} KILL {1} :G-lined".format(self.obot, nick))
 								self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.obot, data.split()[8], limit))
 								
-		except:
+		except Exception:
 			et, ev, tb = sys.exc_info()
 			e = "{0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb))
 			debug("<<ERROR>> " + str(e))
@@ -368,7 +368,7 @@ class Services:
 					self.omsg(source, "Unknown command {0}. Use HELP for more information".format(cmd.upper()))
 			else:
 				self.omsg(source, "I'm the Operators Service. Only IRC Operators can use me.")
-		except:
+		except Exception:
 			self.omsg(source, "An error has occured. The Development-Team has been notified about this problem.")
 			et, ev, tb = sys.exc_info()
 			e = "{0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb))
@@ -834,7 +834,7 @@ class Services:
 			elif arg[0].lower() == "version": self.version(self.bot, source)
 			else:
 				self.msg(source, "Unknown command {0}. Please try HELP for more information.".format(arg[0].upper()))
-		except:
+		except Exception:
 			self.msg(source, "An error has occured. The Development-Team has been notified about this problem.")
 			et, ev, tb = sys.exc_info()
 			e = "{0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb))
