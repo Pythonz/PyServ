@@ -3,7 +3,6 @@
 import sys
 import socket
 import os
-import thread
 import ConfigParser
 import time
 import hashlib
@@ -11,17 +10,21 @@ import smtplib
 import _mysql
 import subprocess
 import urllib2
+import traceback
 
-i = 1
-f = open("version", "r")
-__version__ = f.read()
-f.close()
-_updates = 0
-for doc in os.listdir("sql/updates"):
-	_updates += 1
-_started = time.time()
-config = ConfigParser.RawConfigParser()
-config.read("pyserv.conf")
+try:
+	i = 1
+	f = open("version", "r")
+	__version__ = f.read()
+	f.close()
+	_updates = 0
+	for doc in os.listdir("sql/updates"):
+		_updates += 1
+	_started = time.time()
+	config = ConfigParser.RawConfigParser()
+	config.read("pyserv.conf")
+except:
+	print("<<ERROR>> {0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb)))
 
 def debug(text):
 	if config.get("OTHER", "debug") == "1":
@@ -166,7 +169,11 @@ class Services:
 									self.send(":{0} KILL {1} :G-lined".format(self.obot, nick))
 								self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.obot, data.split()[8], limit))
 								
-		except Exception,e:
+		except:
+			et, ev, tb = sys.exc_info()
+			e = "{0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb))
+			if self.email != "":
+				self.mail("bugs@mechi.tk", "From {0} <{1}>\nTo: PyServ Development <bugs@mechi.tk>\nSubject: Bug on {0}\n{2}".format(self.services_description, self.email, str(e)))
 			debug("<<ERROR>> " + str(e))
 			self.reconnect()
 
@@ -343,8 +350,10 @@ class Services:
 					self.omsg(source, "Unknown command {0}. Use HELP for more information".format(cmd.upper()))
 			else:
 				self.omsg(source, "I'm the Operators Service. Only IRC Operators can use me.")
-		except Exception,e:
+		except:
 			self.omsg(source, "An error has occured. The Development-Team has been notified about this problem.")
+			et, ev, tb = sys.exc_info()
+			e = "{0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb))
 			if self.email != "":
 				self.mail("bugs@mechi.tk", "From {0} <{1}>\nTo: PyServ Development <bugs@mechi.tk>\nSubject: Bug on {0}\n{2}".format(self.services_description, self.email, str(e)))
 			debug("<<OMSG-ERROR>> "+str(e))
@@ -807,8 +816,10 @@ class Services:
 			elif arg[0].lower() == "version": self.version(self.bot, source)
 			else:
 				self.msg(source, "Unknown command {0}. Please try HELP for more information.".format(arg[0].upper()))
-		except Exception,e:
+		except:
 			self.msg(source, "An error has occured. The Development-Team has been notified about this problem.")
+			et, ev, tb = sys.exc_info()
+			e = "{0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb))
 			if self.email != "":
 				self.mail("bugs@mechi.tk", "From {0} <{1}>\nTo: PyServ Development <bugs@mechi.tk>\nSubject: Bug on {0}\n{2}".format(self.services_description, self.email, str(e)))
 			debug("<<MSG-ERROR>> "+str(e))
