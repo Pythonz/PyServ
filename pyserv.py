@@ -322,23 +322,26 @@ class Services:
 								self.omsg(source, "Invalid limit")
 					else: self.omsg(source, "TRUST [<address> [<limit>]]")
 				elif cmd == "vhost":
-					if arg[0].lower() == "list":
-						for data in self.query("select user,vhost from vhosts where active = '0'"):
-							self.omsg(source, "User: %s\t|\tRequested vHost: %s" % (str(data[0]), str(data[1])))
-					if arg[0].lower() == "activate":
-						for data in self.query("select user from vhosts where active = '0'"):
-							if arg[1].lower() == str(data[0]).lower():
-								self.query("update vhosts set active = '1' where user = '%s'" % str(data[0]))
-								for user in self.query("select nick from temp_nick where user = '%s'" % str(data[0])):
-									for vhost in self.query("select vhost from vhosts where user = '%s' and active = '1'" % str(data[0])):
-										self.send(":%s CHGHOST %s %s" % (self.bot, str(user[0]), str(vhost[0])))
-										self.msg(str(user[0]), "Your vhost\2 %s\2 has been activated" % str(vhost[0]))
-								self.omsg(source, "vHost for user \2%s\2 has been activated" % str(data[0]))
-					if arg[0].lower() == "reject":
-						for data in self.query("select user from vhosts where active = '0'"):
-							if arg[1].lower() == str(data[0]).lower():
-								self.query("delete from vhosts where user = '%s'" % str(data[0]))
-								self.omsg(source, "vHost for user\2 %s\2 has been rejected" % str(data[0]))
+					if len(arg) == 1.
+						if arg[0].lower() == "list":
+							for data in self.query("select user,vhost from vhosts where active = '0'"):
+								self.omsg(source, "User: %s\t|\tRequested vHost: %s" % (str(data[0]), str(data[1])))
+					elif len(arg) == 2:
+						if arg[0].lower() == "activate":
+							for data in self.query("select user from vhosts where active = '0'"):
+								if arg[1].lower() == str(data[0]).lower():
+									self.query("update vhosts set active = '1' where user = '%s'" % str(data[0]))
+									for user in self.query("select nick from temp_nick where user = '%s'" % str(data[0])):
+										for vhost in self.query("select vhost from vhosts where user = '%s' and active = '1'" % str(data[0])):
+											self.send(":%s CHGHOST %s %s" % (self.bot, str(user[0]), str(vhost[0])))
+											self.msg(str(user[0]), "Your vhost\2 %s\2 has been activated" % str(vhost[0]))
+									self.omsg(source, "vHost for user \2%s\2 has been activated" % str(data[0]))
+						if arg[0].lower() == "reject":
+							for data in self.query("select user from vhosts where active = '0'"):
+								if arg[1].lower() == str(data[0]).lower():
+									self.query("delete from vhosts where user = '%s'" % str(data[0]))
+									self.omsg(source, "vHost for user\2 %s\2 has been rejected" % str(data[0]))
+					else: self.omsg(source, "Syntax: VHOST <list>/<activate>/<reject> [<user>]")
 				elif cmd == "global":
 					self.omsg("$*", "[%s] " % self.nick(source) + args)
 				elif cmd == "feedback":
