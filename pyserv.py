@@ -322,7 +322,7 @@ class Services:
 								self.omsg(source, "Invalid limit")
 					else: self.omsg(source, "TRUST [<address> [<limit>]]")
 				elif cmd == "vhost":
-					if len(arg) == 1.
+					if len(arg) == 1:
 						if arg[0].lower() == "list":
 							for data in self.query("select user,vhost from vhosts where active = '0'"):
 								self.omsg(source, "User: %s\t|\tRequested vHost: %s" % (str(data[0]), str(data[1])))
