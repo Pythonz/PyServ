@@ -168,7 +168,7 @@ class Services:
 								for nick in nicks:
 									self.send(":{0} KILL {1} :G-lined".format(self.obot, nick))
 								self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.obot, data.split()[8], limit))
-							elif conns == limit:
+							elif conns == limit and data.split()[8] != "0.0.0.0":
 								for nick in nicks:
 									self.omsg(nick, "Your IP is scratching the connection limit. If you need more connections please request a trust and give us a reason on #help.")
 								
@@ -269,11 +269,11 @@ class Services:
 							for online in self.query("select nick from online where address = '{0}'".format(arg[0])):
 								nicks.append(online[0])
 								conns += 1
-							if conns > 3:
+							if conns > 3 and arg[0] != "0.0.0.0":
 								for nick in nicks:
 									self.send(":{0} KILL {1} :G-lined".forma(self.obot, nick))
 								self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.obot, arg[0], limit))
-							elif conns == 3:
+							elif conns == 3 and arg[0] != "0.0.0.0":
 								for nick in nicks:
 									self.omsg(nick, "Your IP is scratching the connection limit. If you need more connections please request a trust and give us a reason on #help.")
 						else:
@@ -292,11 +292,11 @@ class Services:
 								for online in self.query("select nick from online where address = '{0}'".format(arg[0])):
 									nicks.append(online[0])
 									conns += 1
-								if conns > int(limit):
+								if conns > int(limit) and arg[0] != "0.0.0.0":
 									for nick in nicks:
 										self.send(":{0} KILL {1} :G-lined".forma(self.obot, nick))
 									self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.obot, arg[0], limit))
-								elif conns == int(limit):
+								elif conns == int(limit) and arg[0] != "0.0.0.0":
 									for nick in nicks:
 										self.omsg(nick, "Your IP is scratching the connection limit. If you need more connections please request a trust and give us a reason on #help.")
 							else:
@@ -311,11 +311,11 @@ class Services:
 								for online in self.query("select nick from online where address = '{0}'".format(arg[0])):
 									nicks.append(online[0])
 									conns += 1
-								if conns > int(limit):
+								if conns > int(limit) and arg[0] != "0.0.0.0":
 									for nick in nicks:
 										self.send(":{0} KILL {1} :G-lined".forma(self.obot, nick))
 									self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.obot, arg[0], limit))
-								elif conns == int(limit):
+								elif conns == int(limit) and arg[0] != "0.0.0.0":
 									for nick in nicks:
 										self.omsg(nick, "Your IP is scratching the connection limit. If you need more connections please request a trust and give us a reason on #help.")
 							else:
