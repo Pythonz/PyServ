@@ -357,7 +357,7 @@ class Services:
 								entry = True
 								self.omsg(source, "\2[FEEDBACK]\2")
 								self.omsg(source, "\2FROM\2: %s" % str(data[0]))
-								self.omsg(source, "\2MESSAGE\2: " + _mysql.escape_string(str(data[1])))
+								self.omsg(source, "\2MESSAGE\2: " + str(data[1]))
 								self.query("delete from feedback where user = '%s'" % str(data[0]))
 						if not entry:
 							self.omsg(source, "There is no feedback from\2 %s\2" % arg[0])
