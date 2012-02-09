@@ -11,7 +11,6 @@ import _mysql
 import subprocess
 import urllib2
 import traceback
-import re
 
 try:
 	i = 1
@@ -89,7 +88,7 @@ class Services:
 								if self.chanflag("m", channel[0]):
 									self.mode(channel[0], channel[1])
 								if self.chanflag("t", channel[0]):
-									self.send(":{0} TOPIC {1} :{2}".format(self.bot, channel[0], re.escape(channel[2])))
+									self.send(":{0} TOPIC {1} :{2}".format(self.bot, channel[0], _mysql.escape_string(channel[2])))
 						if data.split()[1] == "PRIVMSG":
 							if data.split()[2] == self.bot:
 								self.message(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
@@ -104,7 +103,7 @@ class Services:
 							if len(data.split()) > 1:
 								if self.chanflag("t", data.split()[2]):
 									for channel in self.query("select topic from channelinfo where name = '{0}'".format(data.split()[2])):
-										self.send(":{0} TOPIC {1} :{2}".format(self.bot, data.split()[2], re.escape(channel[0])))
+										self.send(":{0} TOPIC {1} :{2}".format(self.bot, data.split()[2], _mysql.escape_string(channel[0])))
 						if data.split()[1] == "FMODE":
 							if self.chanflag("m", data.split()[2]):
 								if data.split()[2].startswith("#"):
@@ -141,7 +140,7 @@ class Services:
 									self.mode(fjoin_chan, "+v %s" % fjoin_nick)
 							for welcome in self.query("select name,welcome from channelinfo where name = '{0}'".format(fjoin_chan)):
 								if self.chanflag("w", fjoin_chan):
-									self.msg(fjoin_nick, "[{0}] {1}".format(welcome[0], re.escape(welcome[1])))
+									self.msg(fjoin_nick, "[{0}] {1}".format(welcome[0], _mysql.escape_string(welcome[1])))
 							if self.isoper(fjoin_nick) and self.chanexist(fjoin_chan):
 								self.send(":%s NOTICE %s :Operator %s has joined" % (self.services_id, fjoin_chan, self.nick(fjoin_nick)))
 								self.send(":%s PRIVMSG %s :ACTION goes down on his knee and prays to %s." % (self.bot, fjoin_chan, self.nick(fjoin_nick)))
@@ -175,7 +174,7 @@ class Services:
 								
 		except Exception:
 			et, ev, tb = sys.exc_info()
-			e = "{0}: {1} (Line #{2})".format(et, re.escape(ev), re.escape(traceback.tb_lineno(tb)))
+			e = "{0}: {1} (Line #{2})".format(et, _mysql.escape_string(ev), _mysql.escape_string(traceback.tb_lineno(tb)))
 			debug("<<ERROR>> " + str(e))
 			self.reconnect()
 
@@ -344,7 +343,7 @@ class Services:
 									self.omsg(source, "vHost for user\2 %s\2 has been rejected" % str(data[0]))
 					else: self.omsg(source, "Syntax: VHOST <list>/<activate>/<reject> [<user>]")
 				elif cmd == "global":
-					self.omsg("$*", "[%s] " % self.nick(source) + re.escape(args))
+					self.omsg("$*", "[%s] " % self.nick(source) + _mysql.escape_string(args))
 				elif cmd == "feedback":
 					if len(args) == 0:
 						self.omsg(source, "Following users sent a feedback:")
@@ -358,7 +357,7 @@ class Services:
 								entry = True
 								self.omsg(source, "\2[FEEDBACK]\2")
 								self.omsg(source, "\2FROM\2: %s" % str(data[0]))
-								self.omsg(source, "\2MESSAGE\2: " + re.escape(str(data[1])))
+								self.omsg(source, "\2MESSAGE\2: " + _mysql.escape_string(str(data[1])))
 								self.query("delete from feedback where user = '%s'" % str(data[0]))
 						if not entry:
 							self.omsg(source, "There is no feedback from\2 %s\2" % arg[0])
@@ -366,7 +365,7 @@ class Services:
 					if len(arg) == 1:
 						self.kill(arg[0], "You're violation network rules")
 					elif len(arg) > 1:
-						self.kill(arg[0], re.escape(' '.join(arg[1:])))
+						self.kill(arg[0], _mysql.escape_string(' '.join(arg[1:])))
 					else:
 						self.omsg(source, "Syntax: KILL <nick>")
 				elif cmd == "quit":
@@ -375,8 +374,8 @@ class Services:
 						self.send(":%s QUIT :%s" % (self.bot, msg))
 						self.send(":%s QUIT :%s" % (self.obot, msg))
 					else:
-						self.send(":%s QUIT :%s" % (self.bot, re.escape(args)))
-						self.send(":%s QUIT :%s" % (self.obot, re.escape(args)))
+						self.send(":%s QUIT :%s" % (self.bot, _mysql.escape_string(args)))
+						self.send(":%s QUIT :%s" % (self.obot, _mysql.escape_string(args)))
 					self.con.close()
 					sys.exit(2)
 				elif cmd == "version": self.version(self.obot, source)
@@ -387,7 +386,7 @@ class Services:
 		except Exception:
 			self.omsg(source, "An error has occured. The Development-Team has been notified about this problem.")
 			et, ev, tb = sys.exc_info()
-			e = "{0}: {1} (Line #{2})".format(et, re.escape(evre.escape), re.escape(traceback.tb_lineno(tb)))
+			e = "{0}: {1} (Line #{2})".format(et, _mysql.escape_string(ev_mysql.escape_string), _mysql.escape_string(traceback.tb_lineno(tb)))
 			if self.email != "":
 				self.mail("bugs@skyice.tk", "From {0} <{1}>\nTo: PyServ Development <bugs@skyice.tk>\nSubject: Bug on {0}\n{2}".format(self.services_description, self.email, str(e)))
 			debug("<<OMSG-ERROR>> "+str(e))
@@ -437,7 +436,7 @@ class Services:
 					if arg[1].startswith("#"):
 						entry = False
 						for data in self.query("select name,welcome from channelinfo where name = '{0}'".format(arg[1])):
-							self.msg(source, "[{0}] {1}".format(data[0], re.escape(data[1])))
+							self.msg(source, "[{0}] {1}".format(data[0], _mysql.escape_string(data[1])))
 							entry = True
 						if not entry:
 							self.msg(source, "Channel {0} does not exist".format(arg[1]))
@@ -445,7 +444,7 @@ class Services:
 				elif len(arg) > 2:
 					if arg[1].startswith("#"):
 						flag = self.getflag(source, arg[1])
-						welcome = re.escape(' '.join(arg[2:]))
+						welcome = _mysql.escape_string(' '.join(arg[2:]))
 						if flag == "n" or flag == "q" or flag == "a":
 							self.query("update channelinfo set welcome = '{0}' where name = '{1}'".format(welcome, arg[1]))
 							self.msg(source, "Done.")
@@ -788,8 +787,8 @@ class Services:
 				if len(arg) > 2:
 					if arg[1].startswith("#"):
 						if self.getflag(source, arg[1]) == "n" or self.getflag(source, arg[1]) == "q" or self.getflag(source, arg[1]) == "a":
-							self.query("update channelinfo set topic = '{0}' where name = '{1}'".format(re.escape(' '.join(arg[2:])), arg[1]))
-							self.send(":{0} TOPIC {1} :{2}".format(self.bot, arg[1], re.escape(' '.join(arg[2:]))))
+							self.query("update channelinfo set topic = '{0}' where name = '{1}'".format(_mysql.escape_string(' '.join(arg[2:])), arg[1]))
+							self.send(":{0} TOPIC {1} :{2}".format(self.bot, arg[1], _mysql.escape_string(' '.join(arg[2:]))))
 							self.msg(source, "Done.")
 						else: self.msg(source, "No permission")
 					else: self.msg(source, "Invalid channel '{0}'".format(arg[1]))
@@ -800,7 +799,7 @@ class Services:
 					for data in self.query("select text from feedback where user = '%s'" % self.auth(source)):
 						entry = True
 					if not entry:
-						self.query("insert into feedback values('"+self.auth(source)+"','"+re.escape(' '.join(arg[1:]))+"')")
+						self.query("insert into feedback values('"+self.auth(source)+"','"+_mysql.escape_string(' '.join(arg[1:]))+"')")
 						self.msg(source, "Feedback added to queue.")
 						for op in self.query("select uid from opers"):
 							self.omsg(str(op[0]), "New feedback from\2 %s\2" % self.auth(source))
@@ -853,7 +852,7 @@ class Services:
 		except Exception:
 			self.msg(source, "An error has occured. The Development-Team has been notified about this problem.")
 			et, ev, tb = sys.exc_info()
-			e = "{0}: {1} (Line #{2})".format(et, re.escape(ev), re.escape(traceback.tb_lineno(tb)))
+			e = "{0}: {1} (Line #{2})".format(et, _mysql.escape_string(ev), _mysql.escape_string(traceback.tb_lineno(tb)))
 			if self.email != "":
 				self.mail("bugs@skyice.tk", "From {0} <{1}>\nTo: PyServ Development <bugs@skyice.tk>\nSubject: Bug on {0}\n{2}".format(self.services_description, self.email, str(e)))
 			debug("<<MSG-ERROR>> "+str(e))
@@ -972,7 +971,7 @@ class Services:
 	def mail(self, receiver, message):
 		try:
 			mail = smtplib.SMTP('127.0.0.1', 25)
-			mail.sendmail(self.email, ['%s' % receiver], re.escape(message))
+			mail.sendmail(self.email, ['%s' % receiver], _mysql.escape_string(message))
 			mail.quit()
 		except Exception,e: debug("<<MAIL-ERROR>> "+str(e))
 
