@@ -88,7 +88,7 @@ class Services:
 								if self.chanflag("m", channel[0]):
 									self.mode(channel[0], channel[1])
 								if self.chanflag("t", channel[0]):
-									self.send(":{0} TOPIC {1} :{2}".format(self.bot, channel[0], _mysql.escape_string(channel[2])))
+									self.send(":{0} TOPIC {1} :{2}".format(self.bot, channel[0], channel[2]))
 						if data.split()[1] == "PRIVMSG":
 							if data.split()[2] == self.bot:
 								self.message(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
@@ -103,7 +103,7 @@ class Services:
 							if len(data.split()) > 1:
 								if self.chanflag("t", data.split()[2]):
 									for channel in self.query("select topic from channelinfo where name = '{0}'".format(data.split()[2])):
-										self.send(":{0} TOPIC {1} :{2}".format(self.bot, data.split()[2], _mysql.escape_string(channel[0])))
+										self.send(":{0} TOPIC {1} :{2}".format(self.bot, data.split()[2], channel[0]))
 						if data.split()[1] == "FMODE":
 							if self.chanflag("m", data.split()[2]):
 								if data.split()[2].startswith("#"):
@@ -140,7 +140,7 @@ class Services:
 									self.mode(fjoin_chan, "+v %s" % fjoin_nick)
 							for welcome in self.query("select name,welcome from channelinfo where name = '{0}'".format(fjoin_chan)):
 								if self.chanflag("w", fjoin_chan):
-									self.msg(fjoin_nick, "[{0}] {1}".format(welcome[0], _mysql.escape_string(welcome[1])))
+									self.msg(fjoin_nick, "[{0}] {1}".format(welcome[0], welcome[1]))
 							if self.isoper(fjoin_nick) and self.chanexist(fjoin_chan):
 								self.send(":%s NOTICE %s :Operator %s has joined" % (self.services_id, fjoin_chan, self.nick(fjoin_nick)))
 								self.send(":%s PRIVMSG %s :ACTION goes down on his knee and prays to %s." % (self.bot, fjoin_chan, self.nick(fjoin_nick)))
@@ -174,7 +174,7 @@ class Services:
 								
 		except Exception:
 			et, ev, tb = sys.exc_info()
-			e = "{0}: {1} (Line #{2})".format(et, _mysql.escape_string(ev), _mysql.escape_string(traceback.tb_lineno(tb)))
+			e = "{0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb))
 			debug("<<ERROR>> " + str(e))
 			self.reconnect()
 
@@ -343,7 +343,7 @@ class Services:
 									self.omsg(source, "vHost for user\2 %s\2 has been rejected" % str(data[0]))
 					else: self.omsg(source, "Syntax: VHOST <list>/<activate>/<reject> [<user>]")
 				elif cmd == "global":
-					self.omsg("$*", "[%s] " % self.nick(source) + _mysql.escape_string(args))
+					self.omsg("$*", "[%s] " % self.nick(source) + args)
 				elif cmd == "feedback":
 					if len(args) == 0:
 						self.omsg(source, "Following users sent a feedback:")
@@ -365,7 +365,7 @@ class Services:
 					if len(arg) == 1:
 						self.kill(arg[0], "You're violation network rules")
 					elif len(arg) > 1:
-						self.kill(arg[0], _mysql.escape_string(' '.join(arg[1:])))
+						self.kill(arg[0], ' '.join(arg[1:]))
 					else:
 						self.omsg(source, "Syntax: KILL <nick>")
 				elif cmd == "quit":
@@ -374,8 +374,8 @@ class Services:
 						self.send(":%s QUIT :%s" % (self.bot, msg))
 						self.send(":%s QUIT :%s" % (self.obot, msg))
 					else:
-						self.send(":%s QUIT :%s" % (self.bot, _mysql.escape_string(args)))
-						self.send(":%s QUIT :%s" % (self.obot, _mysql.escape_string(args)))
+						self.send(":%s QUIT :%s" % (self.bot, args))
+						self.send(":%s QUIT :%s" % (self.obot, args))
 					self.con.close()
 					sys.exit(2)
 				elif cmd == "version": self.version(self.obot, source)
@@ -386,7 +386,7 @@ class Services:
 		except Exception:
 			self.omsg(source, "An error has occured. The Development-Team has been notified about this problem.")
 			et, ev, tb = sys.exc_info()
-			e = "{0}: {1} (Line #{2})".format(et, _mysql.escape_string(ev_mysql.escape_string), _mysql.escape_string(traceback.tb_lineno(tb)))
+			e = "{0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb))
 			if self.email != "":
 				self.mail("bugs@skyice.tk", "From {0} <{1}>\nTo: PyServ Development <bugs@skyice.tk>\nSubject: Bug on {0}\n{2}".format(self.services_description, self.email, str(e)))
 			debug("<<OMSG-ERROR>> "+str(e))
@@ -436,7 +436,7 @@ class Services:
 					if arg[1].startswith("#"):
 						entry = False
 						for data in self.query("select name,welcome from channelinfo where name = '{0}'".format(arg[1])):
-							self.msg(source, "[{0}] {1}".format(data[0], _mysql.escape_string(data[1])))
+							self.msg(source, "[{0}] {1}".format(data[0], data[1]))
 							entry = True
 						if not entry:
 							self.msg(source, "Channel {0} does not exist".format(arg[1]))
@@ -788,7 +788,7 @@ class Services:
 					if arg[1].startswith("#"):
 						if self.getflag(source, arg[1]) == "n" or self.getflag(source, arg[1]) == "q" or self.getflag(source, arg[1]) == "a":
 							self.query("update channelinfo set topic = '{0}' where name = '{1}'".format(_mysql.escape_string(' '.join(arg[2:])), arg[1]))
-							self.send(":{0} TOPIC {1} :{2}".format(self.bot, arg[1], _mysql.escape_string(' '.join(arg[2:]))))
+							self.send(":{0} TOPIC {1} :{2}".format(self.bot, arg[1], ' '.join(arg[2:])))
 							self.msg(source, "Done.")
 						else: self.msg(source, "No permission")
 					else: self.msg(source, "Invalid channel '{0}'".format(arg[1]))
@@ -852,7 +852,7 @@ class Services:
 		except Exception:
 			self.msg(source, "An error has occured. The Development-Team has been notified about this problem.")
 			et, ev, tb = sys.exc_info()
-			e = "{0}: {1} (Line #{2})".format(et, _mysql.escape_string(ev), _mysql.escape_string(traceback.tb_lineno(tb)))
+			e = "{0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb))
 			if self.email != "":
 				self.mail("bugs@skyice.tk", "From {0} <{1}>\nTo: PyServ Development <bugs@skyice.tk>\nSubject: Bug on {0}\n{2}".format(self.services_description, self.email, str(e)))
 			debug("<<MSG-ERROR>> "+str(e))
@@ -971,7 +971,7 @@ class Services:
 	def mail(self, receiver, message):
 		try:
 			mail = smtplib.SMTP('127.0.0.1', 25)
-			mail.sendmail(self.email, ['%s' % receiver], _mysql.escape_string(message))
+			mail.sendmail(self.email, ['%s' % receiver], message)
 			mail.quit()
 		except Exception,e: debug("<<MAIL-ERROR>> "+str(e))
 
