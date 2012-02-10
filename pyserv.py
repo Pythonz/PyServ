@@ -419,9 +419,15 @@ class Services:
 					self.help(source, "DEVOICE", "Removes voice (+v) flag from you or someone on the channel")
 					self.help(source, "SETTOPIC", "Sets topic for your channel")
 					self.help(source, "WELCOME", "Sets a welcome message for your channel")
+					self.help(source, "SETWHOIS", "Sets cool stuff in your whois")
 					self.help(source, "FEEDBACK", "Sends a feedback to us")
 					self.help(source, "WHOIS", "Shows information about a user")
 				self.help(source, "VERSION", "Shows version of services")
+			elif arg[0].lower() == "setwhois" and self.auth(source) != 0:
+				if len(arg) > 1:
+					self.send(":{uid} SWHOIS {target} :{text}".format(uid=self.bot, target=source, text=' '.join(arg[1:])))
+					self.msg(source, "Done.")
+				else: self.msg(source, "Syntax: SETWHOIS <text>")
 			elif arg[0].lower() == "invite" and self.auth(source) != 0:
 				if len(arg) == 2:
 					if arg[1].startswith("#"):
