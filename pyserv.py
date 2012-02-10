@@ -1048,10 +1048,10 @@ class Services:
 	def showlog(self, source, channel):
 		try:
 			file = open("logs/"+channel, "rb")
-			self.push(source, "*!*@* PRIVMSG "+channel+" :*** Log start")
+			self.push(source, "!@ PRIVMSG "+channel+" :*** Log start")
 			for line in file.readlines():
 				self.push(source, line.rstrip())
-			self.push(source, "*!*@* PRIVMSG "+channel+" :*** Log end")
+			self.push(source, "!@ PRIVMSG "+channel+" :*** Log end")
 			file.close()
 		except: pass
 
