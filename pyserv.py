@@ -13,6 +13,8 @@ import urllib2
 import traceback
 
 try:
+	if not os.access("logs", os.F_OK):
+		os.mkdir("logs")
 	i = 1
 	f = open("version", "r")
 	__version__ = f.read()
@@ -24,6 +26,7 @@ try:
 	config = ConfigParser.RawConfigParser()
 	config.read("pyserv.conf")
 except Exception:
+	et, ev, tb = sys.exc_info()
 	print("<<ERROR>> {0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb)))
 
 def debug(text):
@@ -76,11 +79,9 @@ class Services:
 							self.send(":%s PING %s %s" % (self.services_id, self.services_id, data.split()[2]))
 						if data.split()[1] == "ENDBURST":
 							self.send(":%s UID %s %s Q %s %s TheQBot 0.0.0.0 %s +I :The Q Bot" % (self.services_id, self.bot, time.time(), self.services_name, self.services_name, time.time()))
-							self.send(":%s IDLE Q" % self.services_id)
 							self.send(":%s OPERTYPE Service" % self.bot)
 							self.meta(self.bot, "accountname", "Q")
 							self.send(":%s UID %s %s O %s %s TheOBot 0.0.0.0 %s +I :The O Bot" % (self.services_id, self.obot, time.time(), self.services_name, self.services_name, time.time()))
-							self.send(":%s IDLE O" % self.services_id)
 							self.send(":%s OPERTYPE Service" % self.obot)
 							self.meta(self.obot, "accountname", "O")
 							self.omsg("$*", "Services are now back online. Have a nice day :)")
@@ -91,11 +92,17 @@ class Services:
 									self.mode(channel[0], channel[1])
 								if self.chanflag("t", channel[0]):
 									self.send(":{0} TOPIC {1} :{2}".format(self.bot, channel[0], channel[2]))
+									if self.chanflag("l", channel[0]): self.log("Q", "topic", channel[0], ":"+channel[2])
 						if data.split()[1] == "PRIVMSG":
 							if data.split()[2] == self.bot:
 								self.message(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
 							if data.split()[2] == self.obot:
 								self.omessage(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
+							if data.split()[2].startswith("#") and self.chanflag("l", data.split()[2]):
+								self.log(data.split()[0][1:], "privmsg", data.split()[2], ' '.join(data.split()[3:]))
+						if data.split()[1] == "NOTICE":
+							if data.split()[2].startswith("#") and self.chanflag("l", data.split()[2]):
+								self.log(data.split()[0][1:], "notice", data.split()[2], ' '.join(data.split()[3:]))
 						if data.split()[1] == "NICK":
 							self.query("update online set nick = '%s' where uid = '%s'" % (data.split()[2], str(data.split()[0])[1:]))
 						if data.split()[1] == "QUIT":
@@ -103,12 +110,15 @@ class Services:
 							self.query("delete from online where uid = '%s'" % str(data.split()[0])[1:])
 						if data.split()[1] == "TOPIC":
 							if len(data.split()) > 1:
+								if self.chanflag("l", data.split()[2]): self.log(data.split()[0][1:], "topic", data.split()[2], ' '.join(data.split()[3:]))
 								if self.chanflag("t", data.split()[2]):
 									for channel in self.query("select topic from channelinfo where name = '{0}'".format(data.split()[2])):
 										self.send(":{0} TOPIC {1} :{2}".format(self.bot, data.split()[2], channel[0]))
+										if self.chanflag("l", data.split()[2]): self.log("Q", "topic", data.split()[2], ":"+channel[0])
 						if data.split()[1] == "FMODE":
 							if self.chanflag("m", data.split()[2]):
 								if data.split()[2].startswith("#"):
+									if self.chanflag("l", data.split()[2]): self.log(data.split()[0][1:], "mode", data.split()[2], ' '.join(data.split()[4:]))
 									for channel in self.query("select name,modes from channelinfo where name = '{0}'".format(data.split()[2])):
 										self.mode(channel[0], channel[1])
 							if len(data.split()) > 5:
@@ -124,6 +134,8 @@ class Services:
 						if data.split()[1] == "FJOIN":
 							fjoin_chan = data.split()[2]
 							fjoin_nick = data.split()[5][1:]
+							if self.chanflag("l", fjoin_chan):
+								self.showlog(fjoin_nick, fjoin_chan)
 							if fjoin_nick.startswith(","):
 								fjoin_nick = fjoin_nick[1:]
 							fjoin_user = self.auth(fjoin_nick)
@@ -238,8 +250,8 @@ class Services:
 					_web.close()
 					if __version__ != _version:
 						self.omsg(source, "{0} -> {1}".format(__version__, _version))
-						subprocess.Popen("git add pyserv.conf", shell=True).wait()
-						subprocess.Popen("git commit -m 'Saving config file'", shell=True).wait()
+						subprocess.Popen("git add .", shell=True).wait()
+						subprocess.Popen("git commit -m 'Save'", shell=True).wait()
 						subprocess.Popen("git pull", shell=True).wait()
 						__updates = 0
 						_sql = list()
@@ -778,6 +790,8 @@ class Services:
 						desc.append("Modes enforcement")
 						mode.append("w")
 						desc.append("Welcome message on join")
+						mode.append("l")
+						desc.append("used for channel logs")
 						listed = 0
 						while listed != len(mode):
 							self.msg(source, "{0}: {1}".format(mode[listed], desc[listed]))
@@ -871,11 +885,19 @@ class Services:
 			debug("<<MSG-ERROR>> "+str(e))
 
 	def uid (self, nick):
+		if nick == "Q":
+			return self.bot
+		if nick == "O":
+			return self.obot
 		for data in self.query("select uid from online where nick = '{0}'".format(nick)):
 			return str(data[0])
 		return nick
 
 	def nick (self, source):
+		if source == self.bot:
+			return "Q"
+		if source == self.obot:
+			return "O"
 		for data in self.query("select nick from online where uid = '%s'" % source):
 			return str(data[0])
 		return source
@@ -883,6 +905,8 @@ class Services:
 	def send(self, text):
 		self.con.send(text+"\n")
 		debug(">> %s" % text)
+	def push(self, target, message):
+		self.send(":{uid} PUSH {target} ::{message}".format(uid=self.services_id, target=target, message=message))
 
 	def help(self, target, command, description=""):
 		self.msg(target, command.upper()+" "*int(20-len(command))+description)
@@ -898,12 +922,21 @@ class Services:
 
 	def mode(self, target, mode):
 		self.send(":%s SVSMODE %s %s" % (self.bot, target, mode))
+		if target.startswith("#"):
+			if self.chanflag("l", target):
+				self.log("Q", "mode", target, mode)
 
 	def omode(self, target, mode):
 		self.send(":%s SVSMODE %s %s" % (self.obot, target, mode))
+		if target.startswith("#"):
+			if self.chanflag("l", target):
+				self.log("O", "mode", target, mode)
 
 	def smode(self, target, mode):
 		self.send(":%s SVSMODE %s %s" % (self.services_id, target, mode))
+		if target.startswith("#"):
+			if self.chanflag("l", target):
+				self.log("Q", "mode", target, mode)
 
 	def meta(self, target, meta, content):
 		self.send(":%s METADATA %s %s :%s" % (self.services_id, target, meta, content))
@@ -987,6 +1020,39 @@ class Services:
 			mail.sendmail(self.email, ['%s' % receiver], message)
 			mail.quit()
 		except Exception,e: debug("<<MAIL-ERROR>> "+str(e))
+
+	def log(self, source, msgtype, channel, text=""):
+		try:
+			if msgtype.lower() == "mode" and len(text.split()) > 1:
+				nicks = list()
+				for nick in text.split()[1:]:
+					nicks.append(self.nick(nick))
+				text = "{text} {nicks}".format(text=text.split()[0], nicks=' '.join(nicks))
+			sender = self.nick(source)+"!Log@PyServ"
+			file = open("logs/"+channel, "ab+")
+			lines = file.readlines()
+			if len(lines) > 100:
+				file.close()
+				file = open("logs/"+channel, "wb")
+				i = 49
+				while i != 0:
+					file.write(lines[-i])
+					i -= 1
+				file.write(sender+" "+msgtype.upper()+" "+channel+" "+text+"\n")
+			else:
+				file.write(sender+" "+msgtype.upper()+" "+channel+" "+text+"\n")
+			file.close()
+		except: pass
+
+	def showlog(self, source, channel):
+		try:
+			file = open("logs/"+channel, "rb")
+			self.push(source, "*!*@* PRIVMSG "+channel+" :*** Log start")
+			for line in file.readlines():
+				self.push(source, line.rstrip())
+			self.push(source, "*!*@* PRIVMSG "+channel+" :*** Log end")
+			file.close()
+		except: pass
 
 	def convert_timestamp(self, timestamp):
 		dif = int(timestamp)
