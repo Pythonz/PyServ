@@ -427,7 +427,9 @@ class Services:
 				if len(arg) > 1:
 					self.send(":{uid} SWHOIS {target} :{text}".format(uid=self.bot, target=source, text=' '.join(arg[1:])))
 					self.msg(source, "Done.")
-				else: self.msg(source, "Syntax: SETWHOIS <text>")
+				else:
+					self.send(":{uid} SWHOIS {target} :".format(uid=self.bot, target=source))
+					self.msg(source, "Done.")
 			elif arg[0].lower() == "invite" and self.auth(source) != 0:
 				if len(arg) == 2:
 					if arg[1].startswith("#"):
