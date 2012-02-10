@@ -288,7 +288,7 @@ class Services:
 								conns += 1
 							if conns > 3 and arg[0] != "0.0.0.0":
 								for nick in nicks:
-									self.send(":{0} KILL {1} :G-lined".forma(self.obot, nick))
+									self.send(":{0} KILL {1} :G-lined".format(self.obot, nick))
 								self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.obot, arg[0], limit))
 							elif conns == 3 and arg[0] != "0.0.0.0":
 								for nick in nicks:
@@ -311,7 +311,7 @@ class Services:
 									conns += 1
 								if conns > int(limit) and arg[0] != "0.0.0.0":
 									for nick in nicks:
-										self.send(":{0} KILL {1} :G-lined".forma(self.obot, nick))
+										self.send(":{0} KILL {1} :G-lined".format(self.obot, nick))
 									self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.obot, arg[0], limit))
 								elif conns == int(limit) and arg[0] != "0.0.0.0":
 									for nick in nicks:
@@ -330,7 +330,7 @@ class Services:
 									conns += 1
 								if conns > int(limit) and arg[0] != "0.0.0.0":
 									for nick in nicks:
-										self.send(":{0} KILL {1} :G-lined".forma(self.obot, nick))
+										self.send(":{0} KILL {1} :G-lined".format(self.obot, nick))
 									self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.obot, arg[0], limit))
 								elif conns == int(limit) and arg[0] != "0.0.0.0":
 									for nick in nicks:
