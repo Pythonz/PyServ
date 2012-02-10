@@ -816,6 +816,7 @@ class Services:
 						if self.getflag(source, arg[1]) == "n" or self.getflag(source, arg[1]) == "q" or self.getflag(source, arg[1]) == "a":
 							self.query("update channelinfo set topic = '{0}' where name = '{1}'".format(_mysql.escape_string(' '.join(arg[2:])), arg[1]))
 							self.send(":{0} TOPIC {1} :{2}".format(self.bot, arg[1], ' '.join(arg[2:])))
+							if self.chanflag("l", arg[1]): self.log("Q", "topic", arg[1], ":"+' '.join(arg[2:]))
 							self.msg(source, "Done.")
 						else: self.msg(source, "No permission")
 					else: self.msg(source, "Invalid channel '{0}'".format(arg[1]))
@@ -845,8 +846,8 @@ class Services:
 							for uid in self.query("select nick from temp_nick where user = '{0}'".format(user[0])):
 								for data in self.query("select nick from online where uid = '{0}'".format(uid[0])):
 									online.append(data[0])
-							self.msg(source, "Online Nicks: {0}".format(' '.join(online)))
-							self.msg(source, "Email address: {0}".format(user[1]))
+							self.msg(source, "Online Nicks  : {0}".format(' '.join(online)))
+							self.msg(source, "Email address : {0}".format(user[1]))
 							self.msg(source, "Known on following channels:")
 							self.msg(source, "Channel              Flag")
 							for channel in self.query("select channel,flag from channels where user = '{0}'".format(user[0])):
@@ -862,8 +863,8 @@ class Services:
 									for uid in self.query("select nick from temp_nick where user = '{0}'".format(user[0])):
 										for online_data in self.query("select nick from online where uid = '{0}'".format(uid[0])):
 											online.append(online_data[0])
-									self.msg(source, "Online Nicks: {0}".format(' '.join(online)))
-									self.msg(source, "Email address: {0}".format(account[0]))
+									self.msg(source, "Online Nicks  : {0}".format(' '.join(online)))
+									self.msg(source, "Email address : {0}".format(account[0]))
 									self.msg(source, "Known on following channels:")
 									self.msg(source, "Channel              Flag")
 								for channel in self.query("select channel,flag from channels where user = '{0}'".format(user[0])):
