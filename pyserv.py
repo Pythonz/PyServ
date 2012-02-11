@@ -733,8 +733,6 @@ class Services:
 					self.query("delete from vhosts where user = '%s'" % self.auth(source))
 					self.query("insert into vhosts values ('%s','%s','0')" % (self.auth(source), text.split()[1]))
 					self.msg(source, "Your new vhost\2 %s\2 has been requested" % text.split()[1])
-					for data in self.query("select address from online where uid = '%s'" % source):
-						self.send(":%s CHGHOST %s %s" % (self.bot, source, data[0]))
 					for data in self.query("select uid from opers"):
 						self.msg(data[0], "vHost request received from\2 %s\2" % self.auth(source))
 				elif len(arg) == 1:
