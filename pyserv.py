@@ -125,21 +125,19 @@ class Services:
 										self.send(":{0} TOPIC {1} :{2}".format(self.bot, data.split()[2], channel[0]))
 										if self.chanflag("l", data.split()[2]): self.log("Q", "topic", data.split()[2], ":"+channel[0])
 						if data.split()[1] == "FMODE":
-							if self.chanflag("m", data.split()[2]):
+							if self.chanflag("m", data.split()[2]) and len(data.split()) == 5:
 								if data.split()[2].startswith("#"):
 									if self.chanflag("l", data.split()[2]): self.log(data.split()[0][1:], "mode", data.split()[2], ' '.join(data.split()[4:]))
 									for channel in self.query("select name,modes from channelinfo where name = '{0}'".format(data.split()[2])):
 										self.mode(channel[0], channel[1])
-							if len(data.split()) > 5:
-								if self.chanflag("p", data.split()[2]):
-									for user in data.split()[5:]:
-										for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (data.split()[2], self.auth(user))):
-											if str(flag[0]) == "n":
-												self.mode(data.split()[2], "+q %s" % user)
-											elif str(flag[0]) == "Y":
-												pass
-											else:
-												self.mode(data.split()[2], "+%s %s" % (str(flag[0]), user))
+							if len(data.split()) > 5 and self.chanflag("p", data.split()[2]):
+								for user in data.split()[5:]:
+									for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (data.split()[2], self.auth(user))):											if str(flag[0]) == "n":
+											self.mode(data.split()[2], "+q %s" % user)
+										elif str(flag[0]) == "Y":
+											pass
+										else:
+											self.mode(data.split()[2], "+%s %s" % (str(flag[0]), user))
 						if data.split()[1] == "FJOIN":
 							fjoin_chan = data.split()[2]
 							fjoin_nick = data.split()[5][1:]
