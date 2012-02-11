@@ -255,6 +255,7 @@ class Services:
 					self.ohelp(source, "DELLOGS")
 					self.ohelp(source, "RELOAD")
 					self.ohelp(source, "UPDATE")
+					self.ohelp(source, "RESTART", "[REASON]")
 					self.ohelp(source, "QUIT", "[REASON]")
 					self.ohelp(source, "VERSION")
 				elif cmd == "dellogs":
