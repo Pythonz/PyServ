@@ -33,7 +33,7 @@ def debug(text):
 	if config.get("OTHER", "debug") == "1":
 		print(str(text))
 
-def perror(text)
+def perror(text):
 	try:
 		debug(text)
 		file = open("error.log", "ab")
