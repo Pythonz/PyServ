@@ -60,6 +60,7 @@ class Services:
 			self.query("delete from temp_nick")
 			self.query("delete from opers")
 			self.query("delete from online")
+			self.query("delete from chanlist")
 			self.con = socket.socket()
 			self.con.connect((self.server_address, int(self.server_port)))
 			self.send("SERVER %s %s 0 %s :%s" % (self.services_name, self.server_password, self.services_id, self.services_description))
@@ -106,8 +107,6 @@ class Services:
 						if data.split()[1] == "NICK":
 							self.query("update online set nick = '%s' where uid = '%s'" % (data.split()[2], str(data.split()[0])[1:]))
 						if data.split()[1] == "QUIT":
-							self.query("delete from temp_nick where nick = '%s'" % str(data.split()[0])[1:])
-							self.query("delete from online where uid = '%s'" % str(data.split()[0])[1:])
 							for qchan in self.query("select * from chanlist where uid = '{0}'".format(data.split()[0][1:])):
 								if self.chanflag("l", qchan[1]):
 									if len(data.split()) == 2:
@@ -115,6 +114,8 @@ class Services:
 									else:
 										self.log(qchan[0], "quit", qchan[1], ' '.join(data.split()[2:])[1:])
 							self.query("delete from chanlist where uid = '{0}'".format(data.split()[0][1:]))
+							self.query("delete from temp_nick where nick = '%s'" % str(data.split()[0])[1:])
+							self.query("delete from online where uid = '%s'" % str(data.split()[0])[1:])
 						if data.split()[1] == "TOPIC":
 							if len(data.split()) > 1:
 								if self.chanflag("l", data.split()[2]): self.log(data.split()[0][1:], "topic", data.split()[2], ' '.join(data.split()[3:]))
