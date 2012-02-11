@@ -131,7 +131,7 @@ class Services:
 									for channel in self.query("select name,modes from channelinfo where name = '{0}'".format(data.split()[2])):
 										self.mode(channel[0], channel[1])
 							if len(data.split()) > 5:
-								 self.chanflag("p", data.split()[2]):
+								if self.chanflag("p", data.split()[2]):
 									for user in data.split()[5:]:
 										for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (data.split()[2], self.auth(user))):
 											if str(flag[0]) == "n":
