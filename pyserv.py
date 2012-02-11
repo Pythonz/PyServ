@@ -239,10 +239,14 @@ class Services:
 					self.ohelp(source, "FEEDBACK", "[USER]")
 					self.ohelp(source, "KILL", "NICK")
 					self.ohelp(source, "TRUST", "IP [LIMIT]")
+					self.ohelp(source, "DELLOGS")
 					self.ohelp(source, "RELOAD")
 					self.ohelp(source, "UPDATE")
 					self.ohelp(source, "QUIT", "[REASON]")
 					self.ohelp(source, "VERSION")
+				elif cmd == "dellogs":
+					subprocess.Popen("rm -rf logs/*", shell=True)
+					self.omsg(source, "Done.")
 				elif cmd == "reload":
 					config.read("pyserv.conf")
 					self.mysql_host = config.get("MYSQL", "host")
