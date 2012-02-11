@@ -33,6 +33,9 @@ def debug(text):
 	if config.get("OTHER", "debug") == "1":
 		print(str(text))
 
+def shell(text):
+	subprocess.Popen(text+" >> /dev/null", shell=True).wait()
+
 def perror(text):
 	try:
 		debug(text)
@@ -69,7 +72,7 @@ class Services:
 			self.query("delete from opers")
 			self.query("delete from online")
 			self.query("delete from chanlist")
-			subprocess.Popen("rm -rf logs/*", shell=True).wait()
+			shell("rm -rf logs/*").wait()
 			self.con = socket.socket()
 			self.con.connect((self.server_address, int(self.server_port)))
 			self.send("SERVER %s %s 0 %s :%s" % (self.services_name, self.server_password, self.services_id, self.services_description))
@@ -259,7 +262,7 @@ class Services:
 					self.ohelp(source, "QUIT", "[REASON]")
 					self.ohelp(source, "VERSION")
 				elif cmd == "dellogs":
-					subprocess.Popen("rm -rf logs/*", shell=True).wait()
+					shell("rm -rf logs/*").wait()
 					self.omsg(source, "Done.")
 				elif cmd == "reload":
 					config.read("pyserv.conf")
@@ -286,9 +289,9 @@ class Services:
 					_web.close()
 					if __version__ != _version:
 						self.omsg(source, "{0} -> {1}".format(__version__, _version))
-						subprocess.Popen("git add .", shell=True).wait()
-						subprocess.Popen("git commit -m 'Save'", shell=True).wait()
-						subprocess.Popen("git pull", shell=True).wait()
+						shell("git add .").wait()
+						shell("git commit -m 'Save'").wait()
+						shell("git pull").wait()
 						__updates = 0
 						_sql = list()
 						for doc in os.listdir("sql/updates"):
@@ -298,13 +301,13 @@ class Services:
 							_files = __updates - _updates
 							while _files != 0:
 								self.omsg(source, " - Insert '{0}'".format(_sql[-_files]))
-								subprocess.Popen("mysql -u {0} -p{1} {2} < sql/updates/{3}".format(self.mysql_user, self.mysql_passwd, self.mysql_name, _sql[-_files]), shell=True).wait()
+								shell("mysql -u {0} -p{1} {2} < sql/updates/{3}".format(self.mysql_user, self.mysql_passwd, self.mysql_name, _sql[-_files])).wait()
 								_files -= 1
 						msg = "We are restarting for an update, please be patient. We are back as soon as possible."
 						self.send(":%s QUIT :%s" % (self.bot, msg))
 						self.send(":%s QUIT :%s" % (self.obot, msg))
 						self.con.close()
-						if os.access("pyserv.pid", os.F_OK): subprocess.Popen("sh pyserv restart", shell=True).wait()
+						if os.access("pyserv.pid", os.F_OK): shell("sh pyserv restart").wait()
 						else: sys.exit(0)
 					else: self.omsg(source, "No update available.")
 				elif cmd == "trust":
@@ -431,7 +434,7 @@ class Services:
 						self.send(":%s QUIT :%s" % (self.bot, args))
 						self.send(":%s QUIT :%s" % (self.obot, args))
 					self.con.close()
-					if os.access("pyserv.pid", os.F_OK): subprocess.Popen("sh pyserv restart", shell=True).wait()
+					if os.access("pyserv.pid", os.F_OK): shell("sh pyserv restart").wait()
 					else: sys.exit(0)
 				elif cmd == "quit":
 					if os.access("pyserv.pid", os.F_OK):
@@ -443,7 +446,7 @@ class Services:
 							self.send(":%s QUIT :%s" % (self.bot, args))
 							self.send(":%s QUIT :%s" % (self.obot, args))
 						self.con.close()
-						subprocess.Popen("sh pyserv stop", shell=True).wait()
+						shell("sh pyserv stop").wait()
 					else: self.omsg(source, "You are running in debug mode, only restart is possible!")
 				elif cmd == "version": self.version(self.obot, source)
 				else:
