@@ -33,6 +33,14 @@ def debug(text):
 	if config.get("OTHER", "debug") == "1":
 		print(str(text))
 
+def perror(text)
+	try:
+		debug(text)
+		file = open("error.log", "ab")
+		file.write(text+"\n")
+		file.close()
+	except: pass
+
 class Services:
 	def __init__(self):
 		self.mysql_host = config.get("MYSQL", "host")
@@ -295,7 +303,8 @@ class Services:
 						self.send(":%s QUIT :%s" % (self.bot, msg))
 						self.send(":%s QUIT :%s" % (self.obot, msg))
 						self.con.close()
-						sys.exit(2)
+						if os.access("pyserv.pid", os.F_OK): subprocess.Popen("sh pyserv restart", shell=True).wait()
+						else: sys.exit(0)
 					else: self.omsg(source, "No update available.")
 				elif cmd == "trust":
 					if len(arg) == 0:
@@ -412,16 +421,29 @@ class Services:
 						self.kill(arg[0], ' '.join(arg[1:]))
 					else:
 						self.omsg(source, "Syntax: KILL <nick>")
-				elif cmd == "quit":
+				elif cmd == "restart":
 					if len(arg) == 0:
-						msg = "services shutdown"
+						msg = "services restart"
 						self.send(":%s QUIT :%s" % (self.bot, msg))
 						self.send(":%s QUIT :%s" % (self.obot, msg))
 					else:
 						self.send(":%s QUIT :%s" % (self.bot, args))
 						self.send(":%s QUIT :%s" % (self.obot, args))
 					self.con.close()
-					sys.exit(2)
+					if os.access("pyserv.pid", os.F_OK): subprocess.Popen("sh pyserv restart", shell=True).wait()
+					else: sys.exit(0)
+				elif cmd == "quit":
+					if os.access("pyserv.pid", os.F_OK):
+						if len(arg) == 0:
+							msg = "services shutdown"
+							self.send(":%s QUIT :%s" % (self.bot, msg))
+							self.send(":%s QUIT :%s" % (self.obot, msg))
+						else:
+							self.send(":%s QUIT :%s" % (self.bot, args))
+							self.send(":%s QUIT :%s" % (self.obot, args))
+						self.con.close()
+						subprocess.Popen("sh pyserv stop", shell=True).wait()
+					else: self.omsg(source, "You are running in debug mode, only restart is possible!")
 				elif cmd == "version": self.version(self.obot, source)
 				else:
 					self.omsg(source, "Unknown command {0}. Use HELP for more information".format(cmd.upper()))

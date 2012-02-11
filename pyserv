@@ -1,0 +1,56 @@
+#!/bin/sh
+case $1 in
+	start)
+		if [ ! -f pyserv.pid ]; then
+			python pyserv.py >> /dev/null &
+			pid=$!
+			echo $pid > pyserv.pid
+			echo "PyServ started into background (PID: $pid)"
+		else
+			echo "PyServ is already running"
+		fi
+		;;
+	stop)
+		if [ -f pyserv.pid ]; then
+			pid=$(cat pyserv.pid)
+			kill -9 $pid
+			rm -f pyserv.pid
+			echo "PyServ is stopped (PID: $pid)"
+		else
+			echo "PyServ is not running"
+		fi
+		;;
+	restart)
+		if [ -f pyserv.pid ]; then
+			sh pyserv stop
+			sh pyserv start
+		else
+			sh pyserv start
+		fi
+		;;
+	force-start)
+		rm -f pyserv.pid
+		sh pyserv start
+		;;
+	debug)
+		while [ 1 ]; do
+			python pyserv.py
+		done
+		;;
+	status)
+		if [ -f pyserv.pid ]; then
+			pid=$(cat pyserv.pid)
+			status="PyServ seems to be crashed"
+			for data in $(ps | grep $pid); do
+				status="PyServ is running"
+			done
+		else
+			status="PyServ is not running"
+		fi
+		echo $status
+		;;
+	*)
+		echo "start | stop | restart | force-start | debug | status"
+		;;
+esac
+	
