@@ -61,6 +61,7 @@ class Services:
 			self.query("delete from opers")
 			self.query("delete from online")
 			self.query("delete from chanlist")
+			subprocess.Popen("rm -rf logs/*", shell=True).wait()
 			self.con = socket.socket()
 			self.con.connect((self.server_address, int(self.server_port)))
 			self.send("SERVER %s %s 0 %s :%s" % (self.services_name, self.server_password, self.services_id, self.services_description))
@@ -248,7 +249,7 @@ class Services:
 					self.ohelp(source, "QUIT", "[REASON]")
 					self.ohelp(source, "VERSION")
 				elif cmd == "dellogs":
-					subprocess.Popen("rm -rf logs/*", shell=True)
+					subprocess.Popen("rm -rf logs/*", shell=True).wait()
 					self.omsg(source, "Done.")
 				elif cmd == "reload":
 					config.read("pyserv.conf")
