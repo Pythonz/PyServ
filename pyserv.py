@@ -141,6 +141,8 @@ class Services:
 						if data.split()[1] == "FJOIN":
 							fjoin_chan = data.split()[2]
 							fjoin_nick = data.split()[5][1:]
+							if fjoin_nick.find(",") != -1:
+								fjoin_nick = fjoin_nick.split(",")[1]
 							self.query("insert into chanlist value ('{0}','{1}')".format(fjoin_nick, fjoin_chan))
 							if self.chanflag("l", fjoin_chan):
 								self.showlog(fjoin_nick, fjoin_chan)
