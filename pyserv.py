@@ -125,9 +125,10 @@ class Services:
 										self.send(":{0} TOPIC {1} :{2}".format(self.bot, data.split()[2], channel[0]))
 										if self.chanflag("l", data.split()[2]): self.log("Q", "topic", data.split()[2], ":"+channel[0])
 						if data.split()[1] == "FMODE":
+							if self.chanflag("l", data.split()[2]) and len(data.split()) > 4:
+								self.log(data.split()[0][1:], "mode", data.split()[2], ' '.join(data.split()[4:]))
 							if self.chanflag("m", data.split()[2]) and len(data.split()) == 5:
 								if data.split()[2].startswith("#"):
-									if self.chanflag("l", data.split()[2]): self.log(data.split()[0][1:], "mode", data.split()[2], ' '.join(data.split()[4:]))
 									for channel in self.query("select name,modes from channelinfo where name = '{0}'".format(data.split()[2])):
 										self.mode(channel[0], channel[1])
 							if len(data.split()) > 5:
