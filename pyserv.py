@@ -213,6 +213,10 @@ class Services:
 							limit = 3
 							for trust in self.query("select `limit` from trust where address = '%s'" % data.split()[8]):
 								limit = int(trust[0])
+								if data.split()[7][1:] == "~":
+									for nick in nicks:
+										self.send(":{0} KILL {1} :G-lined".format(self.obot, nick))
+										self.send(":{0} GLINE *@{1} 1800 :You ignored the trust rules. Run an identd before you connect again.".format(self.obot, data.split()[8]))
 							if conns > limit and data.split()[8] != "0.0.0.0":
 								for nick in nicks:
 									self.send(":{0} KILL {1} :G-lined".format(self.obot, nick))
