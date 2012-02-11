@@ -1030,8 +1030,8 @@ class Services:
 			entry = True
 		if not entry:
 			for data in self.query("select address from online where uid = '%s'" % target):
-			hostname, alias, ipaddr = socket.gethostbyaddr(data[0])
-			self.send(":%s CHGHOST %s %s" % (self.bot, target, hostname))
+				hostname, alias, ipaddr = socket.gethostbyaddr(data[0])
+				self.send(":%s CHGHOST %s %s" % (self.bot, target, hostname))
 
 	def version(self, source, target):
 		self.send(":%s NOTICE %s :PyServ v%s" % (source, target, __version__))
