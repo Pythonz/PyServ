@@ -735,7 +735,7 @@ class Services:
 					self.msg(source, "Your new vhost\2 %s\2 has been requested" % text.split()[1])
 					for data in self.query("select address from online where uid = '%s'" % target):
 						hostname, alias, ipaddr = socket.gethostbyaddr(data[0])
-						self.send(":%s CHGHOST %s %s" % (self.bot, target, hostname))
+						self.send(":%s CHGHOST %s %s" % (self.bot, source, hostname))
 					for data in self.query("select uid from opers"):
 						self.msg(data[0], "vHost request received from\2 %s\2" % self.auth(source))
 				elif len(arg) == 1:
@@ -743,7 +743,7 @@ class Services:
 					self.msg(source, "Done.")
 					for data in self.query("select address from online where uid = '%s'" % target):
 						hostname, alias, ipaddr = socket.gethostbyaddr(data[0])
-						self.send(":%s CHGHOST %s %s" % (self.bot, target, hostname))
+						self.send(":%s CHGHOST %s %s" % (self.bot, source, hostname))
 				else:
 					self.msg(source, "Syntax: VHOST <vhost>")
 			elif text.lower().split()[0] == "request" and self.auth(source) != 0:
