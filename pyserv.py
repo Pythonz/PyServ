@@ -328,6 +328,8 @@ class Services:
 							for online in self.query("select nick from online where address = '{0}'".format(arg[0])):
 								nicks.append(online[0])
 								conns += 1
+							for nick in nicks:
+								self.msg(self.uid(nick), "Your trust has been set to '3'.")
 							if conns > 3 and arg[0] != "0.0.0.0":
 								for nick in nicks:
 									self.send(":{0} KILL {1} :G-lined".format(self.obot, nick))
@@ -351,6 +353,8 @@ class Services:
 								for online in self.query("select nick from online where address = '{0}'".format(arg[0])):
 									nicks.append(online[0])
 									conns += 1
+								for nick in nicks:
+									self.send(":{0} KILL {1} :G-lined".format(self.obot, nick))
 								if conns > int(limit) and arg[0] != "0.0.0.0":
 									for nick in nicks:
 										self.send(":{0} KILL {1} :G-lined".format(self.obot, nick))
@@ -370,6 +374,8 @@ class Services:
 								for online in self.query("select nick from online where address = '{0}'".format(arg[0])):
 									nicks.append(online[0])
 									conns += 1
+								for nick in nicks:
+									self.msg(self.uid(nick), "Your trust has been set to '{0}'.".format(limit))
 								if conns > int(limit) and arg[0] != "0.0.0.0":
 									for nick in nicks:
 										self.send(":{0} KILL {1} :G-lined".format(self.obot, nick))
