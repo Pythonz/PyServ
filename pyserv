@@ -7,7 +7,16 @@ case $1 in
 			echo $pid > pyserv.pid
 			echo "PyServ started into background (PID: $pid)"
 		else
-			echo "PyServ is already running"
+			pid=$(cat pyserv.pid)
+			status="false"
+			for data in $(ps | grep $pid); do
+				status="true"
+			done
+			if [ $status = "false" ]; then
+				sh pyserv start
+			else
+				echo "PyServ is already running"
+			fi
 		fi
 		;;
 	stop)
@@ -28,10 +37,6 @@ case $1 in
 			sh pyserv start
 		fi
 		;;
-	force-start)
-		rm -f pyserv.pid
-		sh pyserv start
-		;;
 	debug)
 		while [ 1 ]; do
 			python pyserv.py
@@ -50,7 +55,7 @@ case $1 in
 		echo $status
 		;;
 	*)
-		echo "start | stop | restart | force-start | debug | status"
+		echo "start | stop | restart | debug | status"
 		;;
 esac
 	
