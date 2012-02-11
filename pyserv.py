@@ -108,6 +108,13 @@ class Services:
 						if data.split()[1] == "QUIT":
 							self.query("delete from temp_nick where nick = '%s'" % str(data.split()[0])[1:])
 							self.query("delete from online where uid = '%s'" % str(data.split()[0])[1:])
+							for qchan in self.query("select * from chanlist where uid = '{0}'".format(data.split()[0][1:])):
+								if self.chanflag("l", qchan[1]):
+									if len(data.split()) == 2:
+										self.log(qchan[0], "quit", qchan[1])
+									else:
+										self.log(qchan[0], "quit", qchan[1], ' '.join(data.split()[2:])[1:])
+							self.query("delete from chanlist where uid = '{0}'".format(data.split()[0][1:]))
 						if data.split()[1] == "TOPIC":
 							if len(data.split()) > 1:
 								if self.chanflag("l", data.split()[2]): self.log(data.split()[0][1:], "topic", data.split()[2], ' '.join(data.split()[3:]))
@@ -134,8 +141,10 @@ class Services:
 						if data.split()[1] == "FJOIN":
 							fjoin_chan = data.split()[2]
 							fjoin_nick = data.split()[5][1:]
+							self.query("insert into chanlist value ('{0}','{1}')".format(fjoin_nick, fjoin_chan))
 							if self.chanflag("l", fjoin_chan):
 								self.showlog(fjoin_nick, fjoin_chan)
+								self.log(fjoin_nick, "join", fjoin_chan)
 							if fjoin_nick.startswith(","):
 								fjoin_nick = fjoin_nick[1:]
 							fjoin_user = self.auth(fjoin_nick)
@@ -158,6 +167,15 @@ class Services:
 							if self.isoper(fjoin_nick) and self.chanexist(fjoin_chan):
 								self.send(":%s NOTICE %s :Operator %s has joined" % (self.services_id, fjoin_chan, self.nick(fjoin_nick)))
 								self.send(":%s PRIVMSG %s :ACTION goes down on his knee and prays to %s." % (self.bot, fjoin_chan, self.nick(fjoin_nick)))
+						if data,split()[1] == "PART":
+							pnick = data.split()[0][1:]
+							pchan = data.split()[2]
+							self.query("delete from chanlist where uid = '{0}' and channel = '{1}'".format(pnick, pchan))
+							if self.chanflag("l", pchan):
+								if len(data.split()) == 3:
+									self.log(pnick, "part", pchan)
+								else:
+									self.log(pnick, "part", pchan, ' '.join(data.split()[3:])[1:])
 						if data.split()[1] == "OPERTYPE":
 							uid = data.split()[0][1:]
 							self.query("insert into opers values ('%s')" % uid)
@@ -1050,7 +1068,11 @@ class Services:
 			file = open("logs/"+channel, "rb")
 			self.push(source, "!@ PRIVMSG "+channel+" :*** Log start")
 			for line in file.readlines():
-				self.push(source, line.rstrip())
+				if line.split("!")[0] == self.nick(source):
+					if line.split()[1] != "PART" and line.split()[1] != "JOIN" and line.split()[1] != "QUIT":
+						self.push(source, line.rstrip())
+				else:
+					self.push(source, line.rstrip())
 			self.push(source, "!@ PRIVMSG "+channel+" :*** Log end")
 			file.close()
 		except: pass
