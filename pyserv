@@ -13,6 +13,7 @@ case $1 in
 				status="true"
 			done
 			if [ $status = "false" ]; then
+				rm -f pyserv.pid
 				sh pyserv start
 			else
 				echo "PyServ is already running"
