@@ -289,7 +289,7 @@ class Services:
 					_web.close()
 					if __version__ != _version:
 						self.omsg(source, "{0} -> {1}".format(__version__, _version))
-						shell("git add .")
+						shell("git add pyserv.conf")
 						shell("git commit -m 'Save'")
 						shell("git pull")
 						__updates = 0
