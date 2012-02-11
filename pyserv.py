@@ -98,7 +98,6 @@ class Services:
 							self.send(":%s OPERTYPE Service" % self.obot)
 							self.meta(self.obot, "accountname", "O")
 							self.omsg("$*", "Services are now back online. Have a nice day :)")
-							self.version(self.obot, "$*")
 							for channel in self.query("select name,modes,topic from channelinfo"):
 								self.join(str(channel[0]))
 								if self.chanflag("m", channel[0]):
@@ -159,8 +158,9 @@ class Services:
 								fjoin_nick = fjoin_nick.split(",")[1]
 							self.query("insert into chanlist value ('{0}','{1}')".format(fjoin_nick, fjoin_chan))
 							if self.chanflag("l", fjoin_chan):
-								self.showlog(fjoin_nick, fjoin_chan)
-								self.log(fjoin_nick, "join", fjoin_chan)
+								if data.split()[5].startswith(","):
+									self.showlog(fjoin_nick, fjoin_chan)
+									self.log(fjoin_nick, "join", fjoin_chan)
 							if fjoin_nick.startswith(","):
 								fjoin_nick = fjoin_nick[1:]
 							fjoin_user = self.auth(fjoin_nick)
@@ -1027,6 +1027,7 @@ class Services:
 		self.send(":%s NOTICE %s :PyServ v%s" % (source, target, __version__))
 		self.send(":%s NOTICE %s :Uptime: %s" % (source, target, self.convert_timestamp(time.time() - _started)))
 		self.send(":%s NOTICE %s :Running on: %s %s %s" % (source, target, os.uname()[0], os.uname()[2], os.uname()[-1]))
+		self.send(":%s NOTICE %s :Developed by Pythonz (https://github.com/Pythonz). Suggestions to pythonz@skyice.tk." % (source, target))
 
 	def flag(self, target):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
