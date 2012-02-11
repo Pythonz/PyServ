@@ -1077,7 +1077,7 @@ class Services:
 				if line.split()[1] != "PART" and line.split()[1] != "JOIN" and line.split()[1] != "QUIT":
 					self.push(source, line.rstrip())
 				else:
-					self.push(source, "!@ PRIVMSG "+channel+" :"+line.rstrip())
+					self.push(source, "*!@ PRIVMSG "+channel+" :"+line.rstrip())
 			self.push(source, "!@ PRIVMSG "+channel+" :*** Log end")
 			file.close()
 		except: pass
