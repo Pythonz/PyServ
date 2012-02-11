@@ -733,13 +733,17 @@ class Services:
 					self.query("delete from vhosts where user = '%s'" % self.auth(source))
 					self.query("insert into vhosts values ('%s','%s','0')" % (self.auth(source), text.split()[1]))
 					self.msg(source, "Your new vhost\2 %s\2 has been requested" % text.split()[1])
-					self.vhost(source)
+					for data in self.query("select address from online where uid = '%s'" % target):
+						hostname, alias, ipaddr = socket.gethostbyaddr(data[0])
+						self.send(":%s CHGHOST %s %s" % (self.bot, target, hostname))
 					for data in self.query("select uid from opers"):
 						self.msg(data[0], "vHost request received from\2 %s\2" % self.auth(source))
 				elif len(arg) == 1:
 					self.query("delete from vhosts where user = '%s'" % self.auth(source))
 					self.msg(source, "Done.")
-					self.vhost(source)
+					for data in self.query("select address from online where uid = '%s'" % target):
+						hostname, alias, ipaddr = socket.gethostbyaddr(data[0])
+						self.send(":%s CHGHOST %s %s" % (self.bot, target, hostname))
 				else:
 					self.msg(source, "Syntax: VHOST <vhost>")
 			elif text.lower().split()[0] == "request" and self.auth(source) != 0:
@@ -1023,15 +1027,9 @@ class Services:
 			self.send(":%s KILL %s :Killed (%s (%s))" % (self.obot, target, self.services_name, reason))
 
 	def vhost(self, target):
-		entry = False
 		for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(target)):
 			self.send(":%s CHGHOST %s %s" % (self.bot, target, str(data[0])))
 			self.msg(target, "Your vhost\2 %s\2 has been activated" % str(data[0]))
-			entry = True
-		if not entry:
-			for data in self.query("select address from online where uid = '%s'" % target):
-				hostname, alias, ipaddr = socket.gethostbyaddr(data[0])
-				self.send(":%s CHGHOST %s %s" % (self.bot, target, hostname))
 
 	def version(self, source, target):
 		self.send(":%s NOTICE %s :PyServ v%s" % (source, target, __version__))
