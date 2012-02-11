@@ -1031,7 +1031,7 @@ class Services:
 				entry = True
 			if not entry:
 				for data in self.query("select address from online where uid = '%s'" % target):
-					self.send(":%s CHGHOST %s %s" % (self.bot, target, socket.getfqdn(data[0])))
+					self.send(":%s CHGHOST %s %s" % (self.bot, target, data[0]))
 		except Exception:
 			et, ev, tb = sys.exc_info()
 			e = "{0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb))
