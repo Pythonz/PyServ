@@ -167,7 +167,7 @@ class Services:
 							if self.isoper(fjoin_nick) and self.chanexist(fjoin_chan):
 								self.send(":%s NOTICE %s :Operator %s has joined" % (self.services_id, fjoin_chan, self.nick(fjoin_nick)))
 								self.send(":%s PRIVMSG %s :ACTION goes down on his knee and prays to %s." % (self.bot, fjoin_chan, self.nick(fjoin_nick)))
-						if data,split()[1] == "PART":
+						if data.split()[1] == "PART":
 							pnick = data.split()[0][1:]
 							pchan = data.split()[2]
 							self.query("delete from chanlist where uid = '{0}' and channel = '{1}'".format(pnick, pchan))
