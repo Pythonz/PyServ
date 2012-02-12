@@ -2,6 +2,9 @@
 case $1 in
 	start)
 		if [ ! -f pyserv.pid ]; then
+			if [ -f pyserv.pyc ]; then
+				rm -f pyserv.pyc
+			fi
 			python pyserv.py >> /dev/null &
 			pid=$!
 			echo $pid > pyserv.pid
@@ -25,6 +28,9 @@ case $1 in
 			pid=$(cat pyserv.pid)
 			kill -9 $pid
 			rm -f pyserv.pid
+			if [ -f pyserv.pyc ]; then
+				rm -f pyserv.pyc
+			fi
 			echo "PyServ is stopped (PID: $pid)"
 		else
 			echo "PyServ is not running"
