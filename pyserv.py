@@ -782,7 +782,7 @@ class Services:
 					for data in self.query("select host from online where uid = '%s'" % source):
 						self.send(":%s CHGHOST %s %s" % (self.bot, source, data[0]))
 					for data in self.query("select uid from opers"):
-						self.msg(data[0], "vHost request received from\2 %s\2" % self.auth(source))
+						self.omsg(data[0], "vHost request received from\2 %s\2" % self.auth(source))
 				elif len(arg) == 1:
 					self.query("delete from vhosts where user = '%s'" % self.auth(source))
 					self.msg(source, "Done.")
