@@ -508,7 +508,7 @@ class Services:
 					if arg[1].startswith("#"):
 						user = arg[1][1:]
 						sender = self.auth(source)
-						message = _mysql.escape_string(' '.join(arg[2:])
+						message = _mysql.escape_string(' '.join(arg[2:]))
 						entry = False
 						for data in self.query("select name from users where name = '%s'" % ):
 							user = data[0]
