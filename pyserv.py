@@ -396,6 +396,7 @@ class Services:
 						if arg[0].lower() == "list":
 							for data in self.query("select user,vhost from vhosts where active = '0'"):
 								self.omsg(source, "User: %s\t|\tRequested vHost: %s" % (str(data[0]), str(data[1])))
+						else: self.omsg(source, "Syntax: VHOST <list>/<activate>/<reject> [<user>] [reason]")
 					elif len(arg) == 2:
 						if arg[0].lower() == "activate":
 							for data in self.query("select user,vhost from vhosts where active = '0' and user = '%s'" % arg[1]):
@@ -405,6 +406,7 @@ class Services:
 								if uid != 0:
 									self.vhost(uid)
 									self.memo(data[0])
+						else: self.omsg(source, "Syntax: VHOST <list>/<activate>/<reject> [<user>] [reason]")
 					elif len(arg) > 2:
 						if arg[0].lower() == "reject":
 							for data in self.query("select * from vhosts where active = '0' and user = '%s'" % arg[1]):
@@ -412,6 +414,7 @@ class Services:
 								self.omsg(source, "vHost for user\2 %s\2 has been rejected" % str(data[0]))
 								self.query("insert into memo values ('%s', 'Q', 'Your vHost\2 %s\2 has been rejected. Reason: %s')" % (data[0], data[1], _mysql.escape_string(' '.join(arg[2:]))))
 								self.memo(data[0])
+						else: self.omsg(source, "Syntax: VHOST <list>/<activate>/<reject> [<user>] [reason]")
 					else: self.omsg(source, "Syntax: VHOST <list>/<activate>/<reject> [<user>] [reason]")
 				elif cmd == "global":
 					self.omsg("$*", "[%s] " % self.nick(source) + args)
