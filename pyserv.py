@@ -204,7 +204,7 @@ class Services:
 								self.send(":{uid} IDLE {source} 0 0".format(uid=data.split()[2], source=data.split()[0][1:]))
 						if data.split()[1] == "UID":
 							self.query("delete from temp_nick where nick = '%s'" % data.split()[2])
-							self.query("insert into online values ('%s','%s','%s')" % (data.split()[2], data.split()[4], data.split()[8]))
+							self.query("insert into online values ('%s','%s','%s','%s')" % (data.split()[2], data.split()[4], data.split()[8], data.split()[6]))
 							conns = 0
 							nicks = list()
 							for connection in self.query("select nick from online where address = '%s'" % data.split()[8]):
@@ -779,12 +779,14 @@ class Services:
 					self.query("delete from vhosts where user = '%s'" % self.auth(source))
 					self.query("insert into vhosts values ('%s','%s','0')" % (self.auth(source), text.split()[1]))
 					self.msg(source, "Your new vhost\2 %s\2 has been requested" % text.split()[1])
+					for data in self.query("select host from online where uid = '%s'" % source):
+						self.send(":%s CHGHOST %s %s" % (self.bot, source, data[0]))
 					for data in self.query("select uid from opers"):
 						self.msg(data[0], "vHost request received from\2 %s\2" % self.auth(source))
 				elif len(arg) == 1:
 					self.query("delete from vhosts where user = '%s'" % self.auth(source))
 					self.msg(source, "Done.")
-					for data in self.query("select address from online where uid = '%s'" % source):
+					for data in self.query("select host from online where uid = '%s'" % source):
 						self.send(":%s CHGHOST %s %s" % (self.bot, source, data[0]))
 				else:
 					self.msg(source, "Syntax: VHOST <vhost>")
