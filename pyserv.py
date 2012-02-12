@@ -519,7 +519,7 @@ class Services:
 							self.memo(user)
 						else: self.msg(source, "Can't find user %s." % arg[1])
 					else:
-						user = self.auth(arg[1])
+						user = self.auth(self.uid(arg[1]))
 						sender = self.auth(source)
 						message = _mysql.escape_string(' '.join(arg[2:]))
 						entry = False
