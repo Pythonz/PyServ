@@ -517,7 +517,7 @@ class Services:
 							self.query("insert into memo values ('%s', '%s', '%s')" % (user, sender, message))
 							self.msg(source, "Done.")
 							self.memo(user)
-						else: self.msg(source "Can't find user %s." % arg[1])
+						else: self.msg(source, "Can't find user %s." % arg[1])
 					else:
 						user = self.auth(arg[1])
 						sender = self.auth(source)
@@ -530,7 +530,7 @@ class Services:
 							self.query("insert into memo values ('%s', '%s', '%s')" % (user, sender, message))
 							self.msg(source, "Done.")
 							self.memo(user)
-						else: self.msg(source "Can't find user %s." % arg[1])
+						else: self.msg(source, "Can't find user %s." % arg[1])
 				else: self.msg(source, "Syntax: MEMO <user> <message>")
 			elif arg[0].lower() == "setwhois" and self.auth(source) != 0:
 				if len(arg) > 1:
