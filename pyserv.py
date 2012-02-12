@@ -896,7 +896,7 @@ class Services:
 						else:
 							username = self.auth(self.uid(arg[2]))
 							entry = False
-							for data in self.query("select channel,user,flag from channels where user = '%s'" % username):
+							for data in self.query("select channel,user,flag from channels where user = '%s' and channel = '%s'" % (username, channel)):
 								self.msg(source, "Flags for "+data[1]+" on "+data[0]+": +"+data[2])
 								entry = True
 							if username != 0 and not entry: self.msg(source, "User "+username+" is not known on "+channel+".")
