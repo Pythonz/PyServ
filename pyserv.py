@@ -502,6 +502,8 @@ class Services:
 					self.help(source, "DEPROTECT", "Removes admin (+a) flag from you or someone on the channel")
 					self.help(source, "OP", "Sets op (+o) flag to you or someone on the channel")
 					self.help(source, "DEOP", "Removes op (+o) flag from you or someone on the channel")
+					self.help(source, "HALFOP", "Sets halfop (+h) flag to you or someone on the channel")
+					self.help(source, "DEHALFOP", "Removes halfop (+h) flag from you or someone on the channel")
 					self.help(source, "VOICE", "Sets voice (+v) flag to you or someone on the channel")
 					self.help(source, "DEVOICE", "Removes voice (+v) flag from you or someone on the channel")
 					self.help(source, "SETTOPIC", "Sets topic for your channel")
@@ -669,12 +671,12 @@ class Services:
 						else: self.msg(source, "Denied.")
 					else: self.msg(source, "Invalid channel")
 				else: self.msg(source, "Syntax: DEOP <#channel> [<nick> [<nick>]]")
-			elif arg[0].lower() == "voice" and self.auth(source) != 0:
+			elif arg[0].lower() == "halfop" and self.auth(source) != 0:
 				if len(arg) == 2:
 					if arg[1].startswith("#"):
 						flag = self.getflag(source, arg[1])
-						if flag == "n" or flag == "q" or flag == "a" or flag == "o" or flag == "v":
-							self.mode(arg[1], "+v {0}".format(source))
+						if flag == "n" or flag == "q" or flag == "a" or flag == "o" or flag =="h":
+							self.mode(arg[1], "+h {0}".format(source))
 							self.msg(source, "Done.")
 						else: self.msg(source, "Denied.")
 					else: self.msg(source, "Invalid channel")
@@ -682,6 +684,42 @@ class Services:
 					if arg[1].startswith("#"):
 						flag = self.getflag(source, arg[1])
 						if flag == "n" or flag == "q" or flag == "a" or flag == "o":
+							self.mode(arg[1], "+{0} {1}".format("h"*len(arg[2:]), ' '.join(arg[2:])))
+							self.msg(source, "Done.")
+						else: self.msg(source, "Denied.")
+					else: self.msg(source, "Invalid channel")
+				else: self.msg(source, "Syntax: HALFOP <#channel> [<nick> [<nick>]]")
+			elif arg[0].lower() == "dehalfop" and self.auth(source) != 0:
+				if len(arg) == 2:
+					if arg[1].startswith("#"):
+						flag = self.getflag(source, arg[1])
+						if flag == "n" or flag == "q" or flag == "a" or flag == "o" or flag == "h":
+							self.mode(arg[1], "-h {0}".format(source))
+							self.msg(source, "Done.")
+						else: self.msg(source, "Denied.")
+					else: self.msg(source, "Invalid channel")
+				elif len(arg) > 2:
+					if arg[1].startswith("#"):
+						flag = self.getflag(source, arg[1])
+						if flag == "n" or flag == "q" or flag == "a" or flag == "o":
+							self.mode(arg[1], "-{0} {1}".format("h"*len(arg[2:]), ' '.join(arg[2:])))
+							self.msg(source, "Done.")
+						else: self.msg(source, "Denied.")
+					else: self.msg(source, "Invalid channel")
+				else: self.msg(source, "Syntax: DEHALFOP <#channel> [<nick> [<nick>]]")
+			elif arg[0].lower() == "voice" and self.auth(source) != 0:
+				if len(arg) == 2:
+					if arg[1].startswith("#"):
+						flag = self.getflag(source, arg[1])
+						if flag == "n" or flag == "q" or flag == "a" or flag == "o" or flag == "h" or flag == "v":
+							self.mode(arg[1], "+v {0}".format(source))
+							self.msg(source, "Done.")
+						else: self.msg(source, "Denied.")
+					else: self.msg(source, "Invalid channel")
+				elif len(arg) > 2:
+					if arg[1].startswith("#"):
+						flag = self.getflag(source, arg[1])
+						if flag == "n" or flag == "q" or flag == "a" or flag == "o" or flag == "h":
 							self.mode(arg[1], "+{0} {1}".format("v"*len(arg[2:]), ' '.join(arg[2:])))
 							self.msg(source, "Done.")
 						else: self.msg(source, "Denied.")
@@ -691,7 +729,7 @@ class Services:
 				if len(arg) == 2:
 					if arg[1].startswith("#"):
 						flag = self.getflag(source, arg[1])
-						if flag == "n" or flag == "a" or flag == "o" or flag == "v":
+						if flag == "n" or flag == "a" or flag == "o" or flag == "h" or flag == "v":
 							self.mode(arg[1], "-v {0}".format(source))
 							self.msg(source, "Done.")
 						else: self.msg(source, "Denied.")
@@ -699,7 +737,7 @@ class Services:
 				elif len(arg) > 2:
 					if arg[1].startswith("#"):
 						flag = self.getflag(source, arg[1])
-						if flag == "n" or flag == "a" or flag == "o":
+						if flag == "n" or flag == "a" or flag == "o" or flag == "h":
 							self.mode(arg[1], "-{0} {1}".format("v"*len(arg[2:]), ' '.join(arg[2:])))
 							self.msg(source, "Done.")
 						else: self.msg(source, "Denied.")
@@ -709,7 +747,7 @@ class Services:
 				if len(arg) == 3:
 					if arg[1].startswith("#"):
 						flag = self.getflag(source, arg[1])
-						if flag == "n" or flag == "a" or flag =="o":
+						if flag == "n" or flag == "q" or flag == "a" or flag =="o"or flag =="h":
 							if arg[2].lower() != "q" and not self.isoper(self.uid(arg[2])):
 								self.send(":{0} KICK {1} {2} :{2}".format(self.bot, arg[1], arg[2]))
 								self.msg(source, "Done.")
@@ -719,7 +757,7 @@ class Services:
 				elif len(arg) > 3:
 					if arg[1].startswith("#"):
 						flag = self.getflag(source, arg[1])
-						if flag == "n" or flag == "a" or flag =="o":
+						if flag == "n" or flag == "q" or flag == "a" or flag =="o"or flag =="h":
 							if arg[2].lower() != "q" and not self.isoper(self.uid(arg[2])):
 								self.send(":{0} KICK {1} {2} :{3}".format(self.bot, arg[1], arg[2], ' '.join(arg[3:])))
 								self.msg(source, "Done.")
