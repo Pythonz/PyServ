@@ -899,8 +899,8 @@ class Services:
 							for data in self.query("select channel,user,flag from channels where user = '%s'" % username):
 								self.msg(source, "Flags for "+data[1]+" on "+data[0]+": +"+data[2])
 								entry = True
-							if user != 0 and not entry: self.msg(source, "User "+username+" is not known on "+channel+".")
-							if user == 0: self.msg(source, "Can't find user "+username+".")
+							if username != 0 and not entry: self.msg(source, "User "+username+" is not known on "+channel+".")
+							if username == 0: self.msg(source, "Can't find user "+username+".")
 					else: self.msg(source, "Invalid channel")
 				elif len(arg) == 4:
 					channel = text.split()[1]
