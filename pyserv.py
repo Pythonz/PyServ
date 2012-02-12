@@ -510,7 +510,7 @@ class Services:
 						sender = self.auth(source)
 						message = _mysql.escape_string(' '.join(arg[2:]))
 						entry = False
-						for data in self.query("select name from users where name = '%s'" % ):
+						for data in self.query("select name from users where name = '%s'" % user):
 							user = data[0]
 							entry = True
 						if entry:
@@ -523,7 +523,7 @@ class Services:
 						sender = self.auth(source)
 						message = _mysql.escape_string(' '.join(arg[2:])
 						entry = False
-						for data in self.query("select name from users where name = '%s'" % ):
+						for data in self.query("select name from users where name = '%s'" % user):
 							user = data[0]
 							entry = True
 						if entry:

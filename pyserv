@@ -46,7 +46,13 @@ case $1 in
 		;;
 	debug)
 		while [ 1 ]; do
+			if [ -f pyserv.pyc ]; then
+				rm -f pyserv.pyc
+			fi
 			python pyserv.py
+			if [ -f pyserv.pyc ]; then
+				rm -f pyserv.pyc
+			fi
 		done
 		;;
 	status)
