@@ -847,6 +847,8 @@ class Services:
 							self.query("delete from channels where channel = '%s' and user = '%s'" % (channel, username))
 							self.query("insert into channels values ('%s','%s','%s')" % (channel, username, text.split()[3]))
 							self.msg(source, "[%s] %s has been with mode +%s" % (channel, username, text.split()[3]))
+							if self.sid(username) != 0:
+								self.flag(self.sid(username))
 						else: self.msg(source, "An error has happened")
 					else: self.msg(source, "An error has happened")
 				else: self.msg(source, "Syntax: CHANLEV <#channel> [<user> [<flag>]]")
