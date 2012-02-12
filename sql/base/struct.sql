@@ -18,3 +18,5 @@ DROP TABLE IF EXISTS `trust`;
 CREATE TABLE IF NOT EXISTS `trust` (address text, `limit` text);
 DROP TABLE IF EXISTS `chanlist`;
 CREATE TABLE IF NOT EXISTS `chanlist` (uid text, channel text);
+DROP TABLE IF EXISTS `memo`;
+CREATE TABLE IF NOT EXISTS `memo` (user text, source text, message text);

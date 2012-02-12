@@ -244,6 +244,7 @@ class Services:
 			self.msg(uid, "You are now logged in as %s" % content)
 			self.vhost(uid)
 			self.flag(uid)
+			self.memo(content)
 
 	def omessage(self, source, text):
 		try:
@@ -393,19 +394,19 @@ class Services:
 								self.omsg(source, "User: %s\t|\tRequested vHost: %s" % (str(data[0]), str(data[1])))
 					elif len(arg) == 2:
 						if arg[0].lower() == "activate":
-							for data in self.query("select user from vhosts where active = '0'"):
-								if arg[1].lower() == str(data[0]).lower():
-									self.query("update vhosts set active = '1' where user = '%s'" % str(data[0]))
-									for user in self.query("select nick from temp_nick where user = '%s'" % str(data[0])):
-										for vhost in self.query("select vhost from vhosts where user = '%s' and active = '1'" % str(data[0])):
-											self.send(":%s CHGHOST %s %s" % (self.bot, str(user[0]), str(vhost[0])))
-											self.msg(str(user[0]), "Your vhost\2 %s\2 has been activated" % str(vhost[0]))
-									self.omsg(source, "vHost for user \2%s\2 has been activated" % str(data[0]))
+							for data in self.query("select user,vhost from vhosts where active = '0' and user = '%s'" % arg[1]):
+								self.query("update vhosts set active = '1' where user = '%s'" % str(data[0]))
+								uid = self.sid(data[0])
+								self.query("insert into memo values ('%s', 'Q', 'Your vHost \'%s\' has been activated.')" % (data[0], data[1]))
+								if uid != 0:
+									self.vhost(uid)
+									self.memo(data[0])
 						if arg[0].lower() == "reject":
-							for data in self.query("select user from vhosts where active = '0'"):
-								if arg[1].lower() == str(data[0]).lower():
-									self.query("delete from vhosts where user = '%s'" % str(data[0]))
-									self.omsg(source, "vHost for user\2 %s\2 has been rejected" % str(data[0]))
+							for data in self.query("select * from vhosts where active = '0' and user = '%s'" % arg[1]):
+								self.query("delete from vhosts where user = '%s'" % str(data[0]))
+								self.omsg(source, "vHost for user\2 %s\2 has been rejected" % str(data[0]))
+								self.query("insert into memo values ('%s', 'Q', 'Your vHost \'%s\' has been rejected.')" % (data[0], data[1]))
+								self.memo(data[0])
 					else: self.omsg(source, "Syntax: VHOST <list>/<activate>/<reject> [<user>]")
 				elif cmd == "global":
 					self.omsg("$*", "[%s] " % self.nick(source) + args)
@@ -498,9 +499,39 @@ class Services:
 					self.help(source, "SETTOPIC", "Sets topic for your channel")
 					self.help(source, "WELCOME", "Sets a welcome message for your channel")
 					self.help(source, "SETWHOIS", "Sets cool stuff in your whois")
+					self.help(source, "MEMO", "Send another user a memo")
 					self.help(source, "FEEDBACK", "Sends a feedback to us")
 					self.help(source, "WHOIS", "Shows information about a user")
 				self.help(source, "VERSION", "Shows version of services")
+			elif arg[0].lower() == "memo" and self.auth(source) != 0:
+				if len(arg) > 2:
+					if arg[1].startswith("#"):
+						user = arg[1][1:]
+						sender = self.auth(source)
+						message = _mysql.escape_string(' '.join(arg[2:])
+						entry = False
+						for data in self.query("select name from users where name = '%s'" % ):
+							user = data[0]
+							entry = True
+						if entry:
+							self.query("insert into memo values ('%s', '%s', '%s')" % (user, sender, message))
+							self.msg(source, "Done.")
+							self.memo(user)
+						else: self.msg(source "Can't find user %s." % arg[1])
+					else:
+						user = self.auth(arg[1])
+						sender = self.auth(source)
+						message = _mysql.escape_string(' '.join(arg[2:])
+						entry = False
+						for data in self.query("select name from users where name = '%s'" % ):
+							user = data[0]
+							entry = True
+						if entry:
+							self.query("insert into memo values ('%s', '%s', '%s')" % (user, sender, message))
+							self.msg(source, "Done.")
+							self.memo(user)
+						else: self.msg(source "Can't find user %s." % arg[1])
+				else: self.msg(source, "Syntax: MEMO <user> <message>")
 			elif arg[0].lower() == "setwhois" and self.auth(source) != 0:
 				if len(arg) > 1:
 					self.send(":{uid} SWHOIS {target} :{text}".format(uid=self.bot, target=source, text=' '.join(arg[1:])))
@@ -734,6 +765,7 @@ class Services:
 							self.meta(source, "accountname", str(data[0]))
 							self.vhost(source)
 							self.flag(source)
+							self.memo(str(data[0]))
 					if not exists:
 						self.msg(source, "Wrong username or invalid password.")
 				else:
@@ -1013,6 +1045,19 @@ class Services:
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
 			return str(data[0])
 		return 0
+
+	def sid(self, nick):
+		for data in self.query("select nick from temp_nick where user = '%s'" % nick):
+			return str(data[0])
+		return 0
+
+	def memo(self, user):
+		if self.sid(user) != 0:
+			for data in self.query("select source,message from memo where user = '%s'" % user):
+				self.msg(source, "\2[MEMO]\2")
+				self.msg(source, "\2FROM:\2 %s" % data[0])
+				self.msg(source, "\2MESSAGE:\2 %s" % data[1])
+				self.query("delete from memo where user = '%s' and source = '%s' and message = '%s'" % (user, data[0], _mysql.escape_string(data[1])))
 
 	def chanexist(self, channel):
 		for data in self.query("select name from channelinfo where name = '%s'" % channel):
