@@ -866,7 +866,7 @@ class Services:
 								self.send(":{0} PART {1} :Channel {1} has been deleted.".format(self.bot, data[0]))
 						else: self.msg(source, "No permission")
 					else: self.msg(source, "Invalid channel '{0}'".format(arg[1]))
-				else: self.msg(source, "Syntax: REMOVE <#channel>")							
+				else: self.msg(source, "Syntax: REMOVE <#channel>")
 			elif arg[0].lower() == "chanlev" and self.auth(source) != 0:
 				if len(arg) == 2:
 					if arg[1].startswith("#"):
@@ -879,28 +879,71 @@ class Services:
 							self.msg(source, "End of list.")
 						else: self.msg(source, "Denied.")
 					else: self.msg(source, "Invalid channel")
+				elif len(arg) == 3:
+					channel = arg[1]
+					if channel.startswith("#"):
+						if arg[2].startswith("#"):
+							username = arg[2][1:]
+							entry = False
+							user = False
+							for data in self.query("select name from users where name = '%s'" % username):
+								user = True
+							for data in self.query("select channel,user,flag from channels where user = '%s'" % username):
+								self.msg(source, "Flags for #"+data[1]+" on "+data[0]+": +"+data[2])
+								entry = True
+							if user and not entry: self.msg(source, "User #"+username+" is not known on "+channel+".")
+							elif not user: self.msg(source, "Can't find user #"+username+".")
+						else:
+							username = self.auth(self.uid(arg[2]))
+							entry = False
+							user = False
+							for data in self.query("select name from users where name = '%s'" % username):
+								user = True
+							for data in self.query("select channel,user,flag from channels where user = '%s'" % username):
+								self.msg(source, "Flags for "+data[1]+" on "+data[0]+": +"+data[2])
+								entry = True
+							if user and not entry: self.msg(source, "User "+username+" is not known on "+channel+".")
+							elif not user: self.msg(source, "Can't find user "+username+".")
+					else: self.msg(source, "Invalid channel")
 				elif len(arg) == 4:
 					channel = text.split()[1]
-					entry = False
-					for channels in self.query("select channel from channels where user = '%s' and flag = 'n'" % self.auth(source)):
-						if channel.lower() == str(channels[0]).lower():
-							entry = True
-							channel = str(channels[0])
-					if entry:
-						user = False
-						for data in self.query("select name from users"):
-							if text.lower().split()[2] == str(data[0]).lower():
-								username = str(data[0])
-								user = True
-						if user and str(self.auth(source)).lower() != username.lower():
-							self.query("delete from channels where channel = '%s' and user = '%s'" % (channel, username))
-							self.query("insert into channels values ('%s','%s','%s')" % (channel, username, text.split()[3]))
-							self.msg(source, "[%s] %s has been with mode +%s" % (channel, username, text.split()[3]))
-							if self.sid(username) != 0:
-								for data in self.query("select nick from temp_nick where user = '%s'" % username):
-									self.flag(data[0])
-						else: self.msg(source, "An error has happened")
-					else: self.msg(source, "An error has happened")
+					if channel.startswith("#"):
+						entry = False
+						for channels in self.query("select channel from channels where user = '%s' and flag = 'n'" % self.auth(source)):
+							if channel.lower() == str(channels[0]).lower():
+								entry = True
+								channel = str(channels[0])
+						if entry:
+							if arg[2].startswith("#"):
+								username = arg[2][1:]
+								entry = False
+								for data in self.query("select name from users where name = '%s'" % username):
+									if str(self.auth(source)).lower() != username.lower():
+										self.query("delete from channels where channel = '%s' and user = '%s'" % (channel, username))
+										self.query("insert into channels values ('%s','%s','%s')" % (channel, username, text.split()[3]))
+										if self.sid(username) != 0:
+											for data in self.query("select nick from temp_nick where user = '%s'" % username):
+												self.flag(data[0])
+										self.msg(source, "Done.")
+									else: self.msg(source, "You cannot change your own flags!")
+									entry = True
+								if not entry: self.msg(source, "Can't find user "+arg[2]+".")
+							else:
+								username = self.auth(self.uid(arg[2]))
+								if username != 0:
+									for data in self.query("select name from users where name = '%s'" % username):
+										if str(self.auth(source)).lower() != username.lower():
+											self.query("delete from channels where channel = '%s' and user = '%s'" % (channel, username))
+											self.query("insert into channels values ('%s','%s','%s')" % (channel, username, text.split()[3]))
+											if self.sid(username) != 0:
+												for data in self.query("select nick from temp_nick where user = '%s'" % username):
+													self.flag(data[0])
+											self.msg(source, "Done.")
+										else: self.msg(source, "You cannot change your own flags!")
+										entry = True
+									if not entry: self.msg(source, "Can't find user "+arg[2]+".")
+						else: self.msg(source, "Denied.")
+					else: self.msg(source, "Invalid channel")
 				else: self.msg(source, "Syntax: CHANLEV <#channel> [<user> [<flag>]]")
 			elif arg[0].lower() == "chanmode" and self.auth(source) != 0:
 				if len(arg) == 2:
