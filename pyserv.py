@@ -1052,7 +1052,8 @@ class Services:
 		return 0
 
 	def memo(self, user):
-		if self.sid(user) != 0:
+		source = self.sid(user)
+		if source != 0:
 			for data in self.query("select source,message from memo where user = '%s'" % user):
 				self.msg(source, "\2[MEMO]\2")
 				self.msg(source, "\2FROM:\2 %s" % data[0])
