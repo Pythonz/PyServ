@@ -401,7 +401,7 @@ class Services:
 							for data in self.query("select user,vhost from vhosts where active = '0' and user = '%s'" % arg[1]):
 								self.query("update vhosts set active = '1' where user = '%s'" % str(data[0]))
 								uid = self.sid(data[0])
-								self.query("insert into memo values ('%s', 'Q', 'Your vHost \'%s\' has been activated.')" % (data[0], data[1]))
+								self.query("insert into memo values ('%s', 'Q', 'Your vHost\2 %s\2 has been activated.')" % (data[0], data[1]))
 								if uid != 0:
 									self.vhost(uid)
 									self.memo(data[0])
@@ -409,7 +409,7 @@ class Services:
 							for data in self.query("select * from vhosts where active = '0' and user = '%s'" % arg[1]):
 								self.query("delete from vhosts where user = '%s'" % str(data[0]))
 								self.omsg(source, "vHost for user\2 %s\2 has been rejected" % str(data[0]))
-								self.query("insert into memo values ('%s', 'Q', 'Your vHost \'%s\' has been rejected.')" % (data[0], data[1]))
+								self.query("insert into memo values ('%s', 'Q', 'Your vHost\2 %s\2 has been rejected.')" % (data[0], data[1]))
 								self.memo(data[0])
 					else: self.omsg(source, "Syntax: VHOST <list>/<activate>/<reject> [<user>]")
 				elif cmd == "global":
