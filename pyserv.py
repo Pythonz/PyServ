@@ -896,14 +896,11 @@ class Services:
 						else:
 							username = self.auth(self.uid(arg[2]))
 							entry = False
-							user = False
-							for data in self.query("select name from users where name = '%s'" % username):
-								user = True
 							for data in self.query("select channel,user,flag from channels where user = '%s'" % username):
 								self.msg(source, "Flags for "+data[1]+" on "+data[0]+": +"+data[2])
 								entry = True
-							if user and not entry: self.msg(source, "User "+username+" is not known on "+channel+".")
-							elif not user: self.msg(source, "Can't find user "+username+".")
+							if user != 0 and not entry: self.msg(source, "User "+username+" is not known on "+channel+".")
+							if user == 0: self.msg(source, "Can't find user "+username+".")
 					else: self.msg(source, "Invalid channel")
 				elif len(arg) == 4:
 					channel = text.split()[1]
