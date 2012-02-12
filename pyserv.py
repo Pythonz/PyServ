@@ -888,18 +888,20 @@ class Services:
 							user = False
 							for data in self.query("select name from users where name = '%s'" % username):
 								user = True
-							for data in self.query("select channel,user,flag from channels where user = '%s'" % username):
-								self.msg(source, "Flags for #"+data[1]+" on "+data[0]+": +"+data[2])
+							for data in self.query("select channel,flag from channels where user = '%s' and channel = '%s'" % (username, channel)):
+								self.msg(source, "Flags for #"+username+" on "+data[0]+": +"+data[0])
+								channel = data[0]
 								entry = True
 							if user and not entry: self.msg(source, "User #"+username+" is not known on "+channel+".")
 							elif not user: self.msg(source, "Can't find user #"+username+".")
 						else:
 							username = self.auth(self.uid(arg[2]))
 							entry = False
-							for data in self.query("select channel,user,flag from channels where user = '%s' and channel = '%s'" % (username, channel)):
-								self.msg(source, "Flags for "+data[1]+" on "+data[0]+": +"+data[2])
+							for data in self.query("select channel,flag from channels where user = '%s' and channel = '%s'" % (username, channel)):
+								self.msg(source, "Flags for "+arg[2]+" on "+data[0]+": +"+data[2])
+								channel = data[0]
 								entry = True
-							if username != 0 and not entry: self.msg(source, "User "+username+" is not known on "+channel+".")
+							if username != 0 and not entry: self.msg(source, "User "+arg[2]+" is not known on "+channel+".")
 							if username == 0: self.msg(source, "Can't find user "+arg[2]+".")
 					else: self.msg(source, "Invalid channel")
 				elif len(arg) == 4:
