@@ -897,7 +897,8 @@ class Services:
 							self.query("insert into channels values ('%s','%s','%s')" % (channel, username, text.split()[3]))
 							self.msg(source, "[%s] %s has been with mode +%s" % (channel, username, text.split()[3]))
 							if self.sid(username) != 0:
-								self.flag(self.sid(username))
+								for data in self.query("select nick from temp_nick where user = '%s'" % username):
+									self.flag(data[0])
 						else: self.msg(source, "An error has happened")
 					else: self.msg(source, "An error has happened")
 				else: self.msg(source, "Syntax: CHANLEV <#channel> [<user> [<flag>]]")
