@@ -29,4 +29,4 @@ class ovhost(pyserv.Command):
 					self.query("insert into memo values ('%s', 'Q', 'Your vHost\2 %s\2 has been rejected. Reason: %s')" % (data[0], data[1], _mysql.escape_string(' '.join(arg[2:]))))
 					self.memo(data[0])
 			else: self.msg(source, "Syntax: OVHOST <list>/<activate>/<reject> [<user>] [reason]")
-		else: self.msg(source, "Syntax: VHOST <list>/<activate>/<reject> [<user>] [reason]")
+		else: self.msg(source, "Syntax: OVHOST <list>/<activate>/<reject> [<user>] [reason]")
