@@ -115,9 +115,9 @@ class Services:
 											exec("cmd_auth = commands.%s.%s().auth" % (cmd, cmd))
 											if not cmd_auth:
 												if len(data.split()) == 4:
-													exec("commands.%s.%s().onCommand('%s', '')" % (cmd, cmd, data.split()[0][1:]))
+													exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', ''))" % (cmd, cmd, data.split()[0][1:]))
 												if len(data.split()) > 4:
-													exec("commands.%s.%s().onCommand('%s', '%s')" % (cmd, cmd, data.split()[0][1:], ' '.join(data.split()[4:])))
+													exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', '%s'))" % (cmd, cmd, data.split()[0][1:], ' '.join(data.split()[4:])))
 											if cmd_auth:
 												if self.auth(data.split()[0][1:]):
 													if len(data.split()) == 4:
@@ -1262,12 +1262,18 @@ class Services:
 		return "%s seconds" % seconds
 
 class Command:
+	import sys
+	import os
+	import ConfigParser
+	import time
+	import hashlib
+	import smtplib
+	import _mysql
+	import traceback
 	help = "unknown"
 	oper = 0
 	auth = 0
 	def __init__(self):
-		import ConfigParser
-		import _mysql
 		self.mysql_host = config.get("MYSQL", "host")
 		self.mysql_port = config.getint("MYSQL", "port")
 		self.mysql_name = config.get("MYSQL", "name")
