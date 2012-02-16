@@ -2,7 +2,7 @@ import pyserv
 
 class vhost(pyserv.Command):
 	help = "Request a vHost for your account"
-	def onCommand(self, source, args)
+	def onCommand(self, source, args):
 		arg = args.split()
 		if len(arg) == 1:
 			if len(arg[0]) < 5:
