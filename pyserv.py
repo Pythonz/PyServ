@@ -293,11 +293,11 @@ class Services:
 						exec("cmd_auth = commands.%s.%s().nauth" % (command, command))
 						exec("cmd_oper = commands.%s.%s().oper" % (command, command))
 						exec("cmd_help = commands.%s.%s().help" % (command, command))
-						if not cmd_auth:
+						if cmd_auth == 0:
 							self.help(source, command, cmd_help)
-						if cmd_auth and not cmd_oper and self.auth(source):
+						if cmd_auth == 1 and cmd_oper == 0 and self.auth(source) != 0:
 							self.help(source, command, cmd_help)
-						if cmd_oper and self.isoper(source):
+						if cmd_oper == 1 and self.isoper(source) != 0:
 							self.help(source, command, cmd_help+" \2(oper only)\2")
 				if self.isoper(source):
 					self.help(source, "RELOAD", "Reloads the config \2(oper only)\2")
