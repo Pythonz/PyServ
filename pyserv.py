@@ -124,7 +124,7 @@ class Services:
 														exec("commands.%s.%s().onCommand('%s', '')" % (cmd, cmd, data.split()[0][1:]))
 													if len(data.split()) > 4:
 														exec("commands.%s.%s().onCommand('%s', '%s')" % (cmd, cmd, data.split()[0][1:], ' '.join(data.split()[4:])))
-												else: self.msg(data.split()[0]{1:], "Unknown command {0}. Please try HELP for more information.".format(cmd.upper()))
+												else: self.msg(data.split()[0][1:], "Unknown command {0}. Please try HELP for more information.".format(cmd.upper()))
 										if oper == 1:
 											if self.isoper(data.split()[0][1:]):
 												if len(data.split()) == 4:
