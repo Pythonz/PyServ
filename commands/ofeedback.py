@@ -9,7 +9,7 @@ class ofeedback(pyserv.Command):
 			self.msg(source, "Following users sent a feedback:")
 			for data in self.query("select user from feedback"):
 				self.msg(source, str(data[0]))
-			self.msg(source, "To read a feedback: FEEDBACK <user>")
+			self.msg(source, "To read a feedback: OFEEDBACK <user>")
 		else:
 			entry = False
 			for data in self.query("select user,text from feedback"):
