@@ -276,7 +276,7 @@ class Services:
 			
 	def metadata(self, uid, string, content):
 		if string == "accountname":
-			self.query("delete from temp_nick where nick = '%s'" % (uid, content))
+			self.query("delete from temp_nick where nick = '%s'" % uid)
 			self.query("insert into temp_nick values ('%s','%s')" % (uid, content))
 			self.msg(uid, "You are now logged in as %s" % content)
 			self.vhost(uid)
