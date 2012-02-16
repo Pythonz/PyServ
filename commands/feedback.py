@@ -3,7 +3,7 @@ import pyserv
 class feedback(pyserv.Command):
 	help = "Sends your feedback about us to us"
 	nauth = 1
-	def onCommand(self, source, args)
+	def onCommand(self, source, args):
 		import _mysql
 		if len(args) > 0:
 			entry = False
