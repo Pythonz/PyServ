@@ -12,7 +12,7 @@ import subprocess
 import urllib2
 import traceback
 import thread
-
+import commands
 
 try:
 	if not os.access("logs", os.F_OK):
@@ -79,7 +79,6 @@ class Services:
 			self.send("SERVER %s %s 0 %s :%s" % (self.services_name, self.server_password, self.services_id, self.services_description))
 			self.send(":%s BURST" % self.services_id)
 			self.send(":%s ENDBURST" % self.services_id)
-			import commands
 			thread.start_new_thread(self.sendcache, (self.con,))
 			
 			while 1:
