@@ -276,7 +276,7 @@ class Services:
 			
 	def metadata(self, uid, string, content):
 		if string == "accountname":
-			self.query("delete from temp_nick where nick = '%s' or user = '%s'" % (uid, content))
+			self.query("delete from temp_nick where nick = '%s'" % (uid, content))
 			self.query("insert into temp_nick values ('%s','%s')" % (uid, content))
 			self.msg(uid, "You are now logged in as %s" % content)
 			self.vhost(uid)
@@ -1310,7 +1310,7 @@ class Command:
 	def auth(self, target):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
 			return str(data[0])
-		return 0
+		return target
 
 	def sid(self, nick):
 		for data in self.query("select nick from temp_nick where user = '%s'" % nick):
