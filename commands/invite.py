@@ -2,7 +2,7 @@ import pyserv
 
 class invite(pyserv.Command):
 	help="Invites you into a channel"
-	auth = 1
+	nauth = 1
 	def onCommand(self, source, args):
 		arg = args.split()
 		if len(arg) == 1:

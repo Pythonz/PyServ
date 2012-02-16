@@ -2,7 +2,7 @@ import pyserv
 
 class setwhois(pyserv.Command):
 	help = "Sets cool stuff in your whois"
-	auth = 1
+	nauth = 1
 	def onCommand(self, source, args):
 		arg = args.split()
 		if len(arg) > 0:

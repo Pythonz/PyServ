@@ -2,7 +2,7 @@ import pyserv
 
 class memo(pyserv.Command):
 	help = "Send another user a memo"
-	auth = 1
+	nauth = 1
 	def onCommand(self, source, args):
 		arg = args.split()
 		if len(arg) > 1:

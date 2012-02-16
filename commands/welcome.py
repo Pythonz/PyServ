@@ -1,7 +1,7 @@
 import pyserv
 
 class welcome(pyserv.Command):
-	auth = 1
+	nauth = 1
 	help = "Sets a welcome message for your channel"
 	def onCommand(self, source, args):
 		arg = args.split()

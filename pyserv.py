@@ -112,7 +112,7 @@ class Services:
 										iscmd = True
 										exec("oper = commands.%s.%s().oper" % (cmd, cmd))
 										if oper == 0:
-											exec("cmd_auth = commands.%s.%s().auth" % (cmd, cmd))
+											exec("cmd_auth = commands.%s.%s().nauth" % (cmd, cmd))
 											if not cmd_auth:
 												if len(data.split()) == 4:
 													exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', ''))" % (cmd, cmd, data.split()[0][1:]))
@@ -314,7 +314,7 @@ class Services:
 				self.help(source, "VERSION", "Shows version of services")
 				for command in dir(commands):
 					if not command.startswith("__") and not command.endswith("__") and not command == "commands" and os.access("commands/"+command+".py", os.F_OK):
-						exec("cmd_auth = commands.%s.%s().auth" % (command, command))
+						exec("cmd_auth = commands.%s.%s().nauth" % (command, command))
 						exec("cmd_oper = commands.%s.%s().oper" % (command, command))
 						exec("cmd_help = commands.%s.%s().help" % (command, command))
 						if not cmd_auth:
@@ -1227,7 +1227,7 @@ class Command:
 	import traceback
 	help = "unknown"
 	oper = 0
-	auth = 0
+	nauth = 0
 	def __init__(self):
 		self.mysql_host = config.get("MYSQL", "host")
 		self.mysql_port = config.getint("MYSQL", "port")
@@ -1304,7 +1304,7 @@ class Command:
 	def auth(self, target):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
 			return str(data[0])
-		return target
+		return 0
 
 	def sid(self, nick):
 		for data in self.query("select nick from temp_nick where user = '%s'" % nick):

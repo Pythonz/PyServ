@@ -1,7 +1,7 @@
 import pyserv
 
 class owner(pyserv.Command):
-	auth = 1
+	nauth = 1
 	help = "Sets your owner (+q) flag"
 	def onCommand(self, source, args):
 		arg = args.split()
