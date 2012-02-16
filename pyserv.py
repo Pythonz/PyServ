@@ -498,12 +498,6 @@ class Services:
 						else: self.msg(source, "Denied.")
 					else: self.msg(source, "Invalid channel")
 				else: self.msg(source, "Syntax: KICK <#channel> <user> [,<user>] [reason]")
-			elif arg[0].lower() == "newpass" and self.auth(source) != 0:
-				if len(arg) == 2:
-					self.query("update users set pass = '%s' where name = '%s'" % (self.hash(arg[1]), self.auth(source)))
-					self.msg(source, """Your new password is "%s". Remember it!""" % arg[1])
-				else:
-					self.msg(source, "Syntax: NEWPASS <password>")
 			elif arg[0].lower() == "hello":
 				if self.auth(source) != 0:
 					self.msg(source, "HELLO is not available once you have authed.")
