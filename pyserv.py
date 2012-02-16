@@ -285,8 +285,11 @@ class Services:
 
 	def message(self, source, text):
 		try:
-			arg = text.split()
-			if text.lower().split()[0] == "help":
+			cmd = text.lower().split()[0]
+			if len(text.split()) > 1:
+				arg = text.split()[1:]
+				args = ' '.join(text.split()[1:])
+			if cmd[0] == "help":
 				self.help(source, "HELP", "Shows information about all commands that are available to you")
 				for command in dir(commands):
 					if not command.startswith("__") and not command.endswith("__") and not command == "commands" and os.access("commands/"+command+".py", os.F_OK):
@@ -304,79 +307,73 @@ class Services:
 					self.help(source, "UPDATE", "Updates the services \2(oper only)\2")
 					self.help(source, "RESTART", "Restarts the services \2(oper only)\2")
 					self.help(source, "QUIT", "Shutdowns the services \2(oper only)\2")
-			if self.isoper(source):
-				cmd = text.lower().split()[0]
-				arg = text.split()[1:]
-				args = ' '.join(text.split()[1:])
-				if cmd == "reload":
-					config.read("pyserv.conf")
-					self.mysql_host = config.get("MYSQL", "host")
-					self.mysql_port = config.getint("MYSQL", "port")
-					self.mysql_name = config.get("MYSQL", "name")
-					self.mysql_user = config.get("MYSQL", "user")
-					self.mysql_passwd = config.get("MYSQL", "passwd")
-					self.server_name = config.get("SERVER", "name")
-					self.server_address = config.get("SERVER", "address")
-					self.server_port = config.get("SERVER", "port")
-					self.server_id = config.get("SERVER", "id")
-					self.server_password = config.get("SERVER", "password")
-					self.services_name = config.get("SERVICES", "name")
-					self.services_id = config.get("SERVICES", "id")
-					self.services_description = config.get("SERVICES", "description")
-					self.debug = config.get("OTHER", "debug")
-					self.email = config.get("OTHER", "email")
-					self.regmail = config.get("OTHER", "regmail")
-					self.msg(source, "Done.")
-				elif cmd == "update":
-					_web = urllib2.urlopen("https://raw.github.com/Pythonz/PyServ/master/version")
-					_version = _web.read()
-					_web.close()
-					if __version__ != _version:
-						self.msg(source, "{0} -> {1}".format(__version__, _version))
-						shell("git add pyserv.conf")
-						shell("git commit -m 'Save'")
-						shell("git pull")
-						__updates = 0
-						_sql = list()
-						for doc in os.listdir("sql/updates"):
-							_sql.append(doc)
-							__updates += 1
-						if __updates > _updates:
-							_files = __updates - _updates
-							while _files != 0:
-								self.msg(source, " - insert '{0}'".format(_sql[-_files]))
-								file = open("sql/updates/{0}".format(_sql[-_files]))
-								for line in file.readlines():
-									self.query(line)
-								file.close()
-								_files -= 1
-							self.msg(source, "Done.")
-						msg = "We are restarting for an update, please be patient. We are back as soon as possible."
-						self.send(":%s QUIT :%s" % (self.bot, msg))
-						self.con.close()
-						if os.access("pyserv.pid", os.F_OK): shell("sh pyserv restart")
-						else: sys.exit(0)
-				elif cmd == "restart":
+			if cmd == "reload":
+				config.read("pyserv.conf")
+				self.mysql_host = config.get("MYSQL", "host")
+				self.mysql_port = config.getint("MYSQL", "port")
+				self.mysql_name = config.get("MYSQL", "name")
+				self.mysql_user = config.get("MYSQL", "user")
+				self.mysql_passwd = config.get("MYSQL", "passwd")
+				self.server_name = config.get("SERVER", "name")
+				self.server_address = config.get("SERVER", "address")
+				self.server_port = config.get("SERVER", "port")
+				self.server_id = config.get("SERVER", "id")
+				self.server_password = config.get("SERVER", "password")
+				self.services_name = config.get("SERVICES", "name")
+				self.services_id = config.get("SERVICES", "id")
+				self.services_description = config.get("SERVICES", "description")
+				self.debug = config.get("OTHER", "debug")
+				self.email = config.get("OTHER", "email")
+				self.regmail = config.get("OTHER", "regmail")
+				self.msg(source, "Done.")
+			elif cmd == "update":
+				_web = urllib2.urlopen("https://raw.github.com/Pythonz/PyServ/master/version")
+				_version = _web.read()
+				_web.close()
+				if __version__ != _version:
+					self.msg(source, "{0} -> {1}".format(__version__, _version))
+					shell("git add pyserv.conf")
+					shell("git commit -m 'Save'")
+					shell("git pull")
+					__updates = 0
+					_sql = list()
+					for doc in os.listdir("sql/updates"):
+						_sql.append(doc)
+						__updates += 1
+					if __updates > _updates:
+						_files = __updates - _updates
+						while _files != 0:
+							self.msg(source, " - insert '{0}'".format(_sql[-_files]))
+							file = open("sql/updates/{0}".format(_sql[-_files]))
+							for line in file.readlines():
+								self.query(line)
+							file.close()
+							_files -= 1
+						self.msg(source, "Done.")
+					msg = "We are restarting for an update, please be patient. We are back as soon as possible."
+					self.send(":%s QUIT :%s" % (self.bot, msg))
+					self.con.close()
+					if os.access("pyserv.pid", os.F_OK): shell("sh pyserv restart")
+					else: sys.exit(0)
+			elif cmd == "restart":
+				if len(arg) == 0:
+					msg = "services restart"
+					self.send(":%s QUIT :%s" % (self.bot, msg))
+				else:
+					self.send(":%s QUIT :%s" % (self.bot, args))
+				self.con.close()
+				if os.access("pyserv.pid", os.F_OK): shell("sh pyserv restart")
+				else: sys.exit(0)
+			elif cmd == "quit":
+				if os.access("pyserv.pid", os.F_OK):
 					if len(arg) == 0:
-						msg = "services restart"
+						msg = "services shutdown"
 						self.send(":%s QUIT :%s" % (self.bot, msg))
 					else:
 						self.send(":%s QUIT :%s" % (self.bot, args))
 					self.con.close()
-					if os.access("pyserv.pid", os.F_OK): shell("sh pyserv restart")
-					else: sys.exit(0)
-				elif cmd == "quit":
-					if os.access("pyserv.pid", os.F_OK):
-						if len(arg) == 0:
-							msg = "services shutdown"
-							self.send(":%s QUIT :%s" % (self.bot, msg))
-						else:
-							self.send(":%s QUIT :%s" % (self.bot, args))
-						self.con.close()
-						shell("sh pyserv stop")
-					else: self.msg(source, "You are running in debug mode, only restart is possible!")
-				else:
-					self.msg(source, "Unknown command {0}. Use HELP for more information".format(cmd.upper()))
+					shell("sh pyserv stop")
+				else: self.msg(source, "You are running in debug mode, only restart is possible!")
 			else:
 				self.msg(source, "Unknown command {0}. Please try HELP for more information.".format(text.split()[0].upper()))
 		except Exception:
