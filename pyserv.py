@@ -111,10 +111,19 @@ class Services:
 								for cmd in dir(commands):
 									if not cmd.startswith("__") and not cmd.endswith("__") and cmd.lower() == data.split()[3][1:].lower():
 										iscmd = True
-										if len(data.split()) == 4:
-											exec("commands.%s.%s().onCommand('%s', '')" % (cmd, cmd, data.split()[0][1:]))
-										if len(data.split()) > 4:
-											exec("commands.%s.%s().onCommand('%s', '%s')" % (cmd, cmd, data.split()[0][1:], ' '.join(data.split()[4:])))
+										exec("oper = commands.%s.%s().oper" % (cmd, cmd))
+										if oper == 0:
+											if len(data.split()) == 4:
+												exec("commands.%s.%s().onCommand('%s', '')" % (cmd, cmd, data.split()[0][1:]))
+											if len(data.split()) > 4:
+												exec("commands.%s.%s().onCommand('%s', '%s')" % (cmd, cmd, data.split()[0][1:], ' '.join(data.split()[4:])))
+										if oper == 1:
+											if self.isoper(data.split()[0][1:]):
+												if len(data.split()) == 4:
+													exec("commands.%s.%s().onCommand('%s', '')" % (cmd, cmd, data.split()[0][1:]))
+												if len(data.split()) > 4:
+													exec("commands.%s.%s().onCommand('%s', '%s')" % (cmd, cmd, data.split()[0][1:], ' '.join(data.split()[4:])))
+											else: self.msg(data.split()[0][1:], "You do not have sufficient privileges to use '{0}'".format(data.split()[3][1:].upper()))
 								if not iscmd:
 									self.message(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
 							if data.split()[2].startswith("#") and self.chanflag("l", data.split()[2]):
@@ -245,15 +254,14 @@ class Services:
 		self.run()
 
 	def sendcache(self, sock):
+		file = open("commands/cache.txt", "w")
+		file.write("")
+		file.close()
+		file = open("commands/cache.txt", "r")
 		while 1:
-			file = open("commands/cache.txt", "r")
 			for line in file.readlines():
-				line = line.rstrip()
-				sock.send(line+"\n")
-			file.close()
-			file = open("commands/cache.txt", "w")
-			file.write("")
-			file.close()
+				sock.send(line.rstrip()+"\n")
+		file.close()
 			
 	def metadata(self, uid, string, content):
 		if string == "accountname":
@@ -299,6 +307,10 @@ class Services:
 					self.help(source, "FEEDBACK", "Sends a feedback to us")
 					self.help(source, "WHOIS", "Shows information about a user")
 				self.help(source, "VERSION", "Shows version of services")
+				for command in dir(commands):
+					if not command.startswith("__") and not command.endswith("__") and not command.lower() == "commands":
+						exec("cmd_desc = commands.%s.%s().description" % (cmd, cmd))
+						self.help(source, command, cmd_desc)
 			elif arg[0].lower() == "memo" and self.auth(source) != 0:
 				if len(arg) > 2:
 					if arg[1].startswith("#"):
