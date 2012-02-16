@@ -107,13 +107,16 @@ class Services:
 									if self.chanflag("l", channel[0]): self.log("Q", "topic", channel[0], ":"+channel[2])
 						if data.split()[1] == "PRIVMSG":
 							if data.split()[2] == self.bot:
+								iscmd = False
 								for cmd in dir(commands):
 									if not cmd.startswith("__") and not cmd.endswith("__") and cmd.lower() == data.split()[3][1:].lower():
+										iscmd = True
 										if len(data.split()) == 4:
 											exec("commands.%s.%s().onCommand('%s', '')" % (cmd, cmd, data.split()[0][1:]))
-										if len(data.split()) >= 5:
+										if len(data.split()) > 4:
 											exec("commands.%s.%s().onCommand('%s', '%s')" % (cmd, cmd, data.split()[0][1:], ' '.join(data.split()[4:])))
-								self.message(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
+								if not iscmd:
+									self.message(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
 							if data.split()[2].startswith("#") and self.chanflag("l", data.split()[2]):
 								self.log(data.split()[0][1:], "privmsg", data.split()[2], ' '.join(data.split()[3:]))
 						if data.split()[1] == "NOTICE":
@@ -246,7 +249,7 @@ class Services:
 			file = open("commands/cache.txt", "r")
 			for line in file.readlines():
 				line = line.rstrip()
-				sock.send(":"+self.bot+" "+line+"\n")
+				sock.send(line+"\n")
 			file.close()
 			file = open("commands/cache.txt", "w")
 			file.write("")
@@ -1106,9 +1109,6 @@ class Services:
 	def help(self, target, command, description=""):
 		self.msg(target, command.upper()+" "*int(20-len(command))+description)
 
-	def ohelp(self, target, command, description=""):
-		self.msg(target, command.upper()+" "*int(20-len(command))+description)
-
 	def msg(self, target, text):
 		self.send(":%s NOTICE %s :%s" % (self.bot, target, text))
 
@@ -1283,14 +1283,29 @@ class Command:
 	def __init__(self):
 		import ConfigParser
 		import _mysql
-		self.config = ConfigParser.RawConfigParser()
-		self.config.read("pyserv.conf")
+		self.mysql_host = config.get("MYSQL", "host")
+		self.mysql_port = config.getint("MYSQL", "port")
+		self.mysql_name = config.get("MYSQL", "name")
+		self.mysql_user = config.get("MYSQL", "user")
+		self.mysql_passwd = config.get("MYSQL", "passwd")
+		self.server_name = config.get("SERVER", "name")
+		self.server_address = config.get("SERVER", "address")
+		self.server_port = config.get("SERVER", "port")
+		self.server_id = config.get("SERVER", "id")
+		self.server_password = config.get("SERVER", "password")
+		self.services_name = config.get("SERVICES", "name")
+		self.services_id = config.get("SERVICES", "id")
+		self.services_description = config.get("SERVICES", "description")
+		self.debug = config.get("OTHER", "debug")
+		self.email = config.get("OTHER", "email")
+		self.regmail = config.get("OTHER", "regmail")
+		self.bot = "%sAAAAAA" % self.services_id
 
 	def onCommand(self, uid, arguments):
 		pass
 
 	def query(self, string):
-		Smysql = _mysql.connect(host=self.config.get("MYSQL","host"), port=self.config.getint("MYSQL","port"), db=self.config.get("MYSQL","name"), user=self.config.get("MYSQL","user"), passwd=self.config.get("MYSQL","passwd"))
+		Smysql = _mysql.connect(host=self.mysql_host, port=self.mysql_port, db=self.mysql_name, user=self.mysql_user, passwd=self.mysql_passwd)
 		Smysql.query(str(string))
 		result = Smysql.store_result()
 		try:
@@ -1299,11 +1314,201 @@ class Command:
 			pass
 		finally:
 			Smysql.close()
+	def uid (self, nick):
+		if nick == "Q":
+			return self.bot
+		for data in self.query("select uid from online where nick = '{0}'".format(nick)):
+			return str(data[0])
+		return nick
+
+	def nick (self, source):
+		if source == self.bot:
+			return "Q"
+		for data in self.query("select nick from online where uid = '%s'" % source):
+			return str(data[0])
+		return source
+
+	def send(self, text):
+		self.con.send(text+"\n")
+		debug(">> %s" % text)
+	def push(self, target, message):
+		self.send(":{uid} PUSH {target} ::{message}".format(uid=self.services_id, target=target, message=message))
+
+	def help(self, target, command, description=""):
+		self.msg(target, command.upper()+" "*int(20-len(command))+description)
+
+	def msg(self, target, text):
+		self.send(":%s NOTICE %s :%s" % (self.bot, target, text))
+
+	def mode(self, target, mode):
+		self.send(":%s SVSMODE %s %s" % (self.bot, target, mode))
+		if target.startswith("#"):
+			if self.chanflag("l", target):
+				self.log("Q", "mode", target, mode)
+
+	def smode(self, target, mode):
+		self.send(":%s SVSMODE %s %s" % (self.services_id, target, mode))
+		if target.startswith("#"):
+			if self.chanflag("l", target):
+				self.log("Q", "mode", target, mode)
+
+	def meta(self, target, meta, content):
+		self.send(":%s METADATA %s %s :%s" % (self.services_id, target, meta, content))
+
+	def auth(self, target):
+		for data in self.query("select user from temp_nick where nick = '%s'" % target):
+			return str(data[0])
+		return 0
+
+	def sid(self, nick):
+		for data in self.query("select nick from temp_nick where user = '%s'" % nick):
+			return str(data[0])
+		return 0
+
+	def memo(self, user):
+		source = self.sid(user)
+		if source != 0:
+			for data in self.query("select source,message from memo where user = '%s'" % user):
+				self.msg(source, "\2[MEMO]\2")
+				self.msg(source, "\2FROM:\2 %s" % data[0])
+				self.msg(source, "\2MESSAGE:\2 %s" % data[1])
+				self.query("delete from memo where user = '%s' and source = '%s' and message = '%s'" % (user, data[0], _mysql.escape_string(data[1])))
+
+	def chanexist(self, channel):
+		for data in self.query("select name from channelinfo where name = '%s'" % channel):
+			return True
+		return False
+
+	def join(self, channel):
+		self.send(":%s JOIN %s" % (self.bot, channel))
+		self.smode(channel, "+r")
+		self.smode(channel, "+q %s" % self.bot)
+
+	def kill(self, target, reason):
+		if target.lower() != "o" and target.lower() != "q":
+			self.send(":%s KILL %s :Killed (%s (%s))" % (self.bot, target, self.services_name, reason))
+
+	def vhost(self, target):
+		for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(target)):
+			self.send(":%s CHGHOST %s %s" % (self.bot, target, str(data[0])))
+			self.msg(target, "Your vhost\2 %s\2 has been activated" % str(data[0]))
+
+	def version(self, source):
+		self.msg(source, "PyServ v%s" % __version__)
+		self.msg(source, "Uptime: %s" % (self.convert_timestamp(time.time() - _started)))
+		self.msg(source, "Running on: %s %s %s" % (os.uname()[0], os.uname()[2], os.uname()[-1]))
+		self.msg(source, "Developed by Pythonz (https://github.com/Pythonz). Suggestions to pythonz@skyice.tk.")
+
+	def flag(self, target):
+		for data in self.query("select user from temp_nick where nick = '%s'" % target):
+			for flag in self.query("select flag,channel from channels where user = '%s'" % str(data[0])):
+				if str(flag[0]) == "n":
+					self.mode(str(flag[1]), "+q %s" % target)
+				elif str(flag[0]) == "Y":
+					pass
+				else:
+					self.mode(str(flag[1]), "+%s %s" % (str(flag[0]), target))
+
+	def getflag(self, target, channel):
+		for data in self.query("select user from temp_nick where nick = '%s'" % target):
+			for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (channel, data[0])):
+				return flag[0]
+		return 0
+
+	def chanflag(self, flag, channel):
+		for data in self.query("select flags from channelinfo where name = '{0}'".format(channel)):
+			if data[0].find(flag) != -1:
+				return True
+		return False
+
+	def isoper(self, target):
+		isoper = False
+		for data in self.query("select * from opers where uid = '%s'" % target):
+			isoper = True 
+		return isoper
+
+	def hash(self, string):
+		sha1 = hashlib.sha1()
+		sha1.update(str(string))
+		return str(sha1.hexdigest())
+
+	def mail(self, receiver, message):
+		try:
+			mail = smtplib.SMTP('127.0.0.1', 25)
+			mail.sendmail(self.email, ['%s' % receiver], message)
+			mail.quit()
+		except Exception,e: debug("<<MAIL-ERROR>> "+str(e))
+
+	def log(self, source, msgtype, channel, text=""):
+		try:
+			if msgtype.lower() == "mode" and len(text.split()) > 1:
+				nicks = list()
+				for nick in text.split()[1:]:
+					nicks.append(self.nick(nick))
+				text = "{text} {nicks}".format(text=text.split()[0], nicks=' '.join(nicks))
+			sender = self.nick(source)+"!Log@PyServ"
+			file = open("logs/"+channel, "ab+")
+			lines = file.readlines()
+			if len(lines) > 100:
+				file.close()
+				file = open("logs/"+channel, "wb")
+				i = 49
+				while i != 0:
+					file.write(lines[-i])
+					i -= 1
+				file.write(sender+" "+msgtype.upper()+" "+channel+" "+text+"\n")
+			else:
+				file.write(sender+" "+msgtype.upper()+" "+channel+" "+text+"\n")
+			file.close()
+		except: pass
+
+	def showlog(self, source, channel):
+		try:
+			file = open("logs/"+channel, "rb")
+			self.push(source, "!@ PRIVMSG "+channel+" :*** Log start")
+			for line in file.readlines():
+				if line.split()[1] != "PART" and line.split()[1] != "JOIN" and line.split()[1] != "QUIT":
+					self.push(source, line.rstrip())
+				else:
+					self.push(source, "*!@ PRIVMSG "+channel+" :"+line.rstrip())
+			self.push(source, "!@ PRIVMSG "+channel+" :*** Log end")
+			file.close()
+		except: pass
+
+	def convert_timestamp(self, timestamp):
+		dif = int(timestamp)
+		days = 0
+		hours = 0
+		minutes = 0
+		seconds = 0
+		if dif == 86400 or dif > 86400:
+			days = int(dif)/86400
+			dif = int(dif)-int(days)*86400
+		if dif == 3600 or dif > 3600:
+			hours = int(dif)/3600
+			dif = int(dif)-int(hours)*3600
+		if dif == 60 or dif > 60:
+			minutes = int(dif)/60
+			dif = int(dif)-int(minutes)*60
+		seconds = dif
+		if days > 0: return "%s days %s hours %s minutes %s seconds" % (days, hours, minutes, seconds)
+		if hours > 0: return "%s hours %s minutes %s seconds" % (hours, minutes, seconds)
+		if minutes > 0: return "%s minutes %s seconds" % (minutes, seconds)
+		return "%s seconds" % seconds
 
 	def send(self, text):
 		file = open("commands/cache.txt", "a")
 		file.write("{0}\n".format(str(text)))
 		file.close()
+
+	def metadata(self, uid, string, content):
+		if string == "accountname":
+			self.query("delete from temp_nick where nick = '%s' or user = '%s'" % (uid, content))
+			self.query("insert into temp_nick values ('%s','%s')" % (uid, content))
+			self.msg(uid, "You are now logged in as %s" % content)
+			self.vhost(uid)
+			self.flag(uid)
+			self.memo(content)
 		
 
 if __name__ == "__main__":
