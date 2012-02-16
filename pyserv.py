@@ -262,14 +262,16 @@ class Services:
 		self.run()
 
 	def sendcache(self, sock):
-		file = open("commands/cache.txt", "w")
-		file.write("")
-		file.close()
-		file = open("commands/cache.txt", "r")
-		while 1:
-			for line in file.readlines():
-				sock.send(line.rstrip()+"\n")
-		file.close()
+		try:
+			file = open("commands/cache.txt", "w")
+			file.write("")
+			file.close()
+			file = open("commands/cache.txt", "r")
+			while 1:
+				for line in file.readlines():
+					sock.send(line.rstrip()+"\n")
+			file.close()
+		except: pass
 			
 	def metadata(self, uid, string, content):
 		if string == "accountname":
@@ -295,10 +297,7 @@ class Services:
 					self.help(source, "CHANLEV", "Edits your channel records")
 					self.help(source, "CHANMODE", "Sets modes for your channel")
 					self.help(source, "CHANFLAGS", "Sets flags for your channel")
-					self.help(source, "INVITE", "Invites you into a channel")
 					self.help(source, "KICK", "Kicks someone from the channel")
-					self.help(source, "SYNC", "Syncs your flags on all channels")
-					self.help(source, "OWNER", "Sets your owner (+q) flag")
 					self.help(source, "DEOWNER", "Removes your owner (+q) flag")
 					self.help(source, "PROTECT", "Sets admin (+a) flag to you or someone on the channel")
 					self.help(source, "DEPROTECT", "Removes admin (+a) flag from you or someone on the channel")
@@ -309,59 +308,22 @@ class Services:
 					self.help(source, "VOICE", "Sets voice (+v) flag to you or someone on the channel")
 					self.help(source, "DEVOICE", "Removes voice (+v) flag from you or someone on the channel")
 					self.help(source, "SETTOPIC", "Sets topic for your channel")
-					self.help(source, "WELCOME", "Sets a welcome message for your channel")
 					self.help(source, "FEEDBACK", "Sends a feedback to us")
 					self.help(source, "WHOIS", "Shows information about a user")
 				self.help(source, "VERSION", "Shows version of services")
 				for command in dir(commands):
 					if not command.startswith("__") and not command.endswith("__") and not command == "commands" and os.access("commands/"+command+".py", os.F_OK):
 						exec("cmd_auth = commands.%s.%s().auth" % (command, command))
+						exec("cmd_oper = commands.%s.%s().oper" % (command, command))
 						exec("cmd_help = commands.%s.%s().help" % (command, command))
 						if not cmd_auth:
 							self.help(source, command, cmd_help)
-						if cmd_auth and self.auth(source):
+						if cmd_auth and not cmd_oper and self.auth(source):
 							self.help(source, command, cmd_help)
-			elif arg[0].lower() == "invite" and self.auth(source) != 0:
-				if len(arg) == 2:
-					if arg[1].startswith("#"):
-						if self.getflag(source, arg[1]) != 0:
-							self.send(":{0} INVITE {1} {2}".format(self.bot, source, arg[1]))
-							self.msg(source, "Done.")
-						else: self.msg(source, "Denied.")
-					else: self.msg(source, "Invalid channel")
-				else: self.msg(source, "Syntax: INVITE <#channel>")
-			elif arg[0].lower() == "welcome" and self.auth(source) != 0:
-				if len(arg) == 2:
-					if arg[1].startswith("#"):
-						entry = False
-						for data in self.query("select name,welcome from channelinfo where name = '{0}'".format(arg[1])):
-							self.msg(source, "[{0}] {1}".format(data[0], data[1]))
-							entry = True
-						if not entry:
-							self.msg(source, "Channel {0} does not exist".format(arg[1]))
-					else: self.msg(source, "Invalid channel")
-				elif len(arg) > 2:
-					if arg[1].startswith("#"):
-						flag = self.getflag(source, arg[1])
-						welcome = _mysql.escape_string(' '.join(arg[2:]))
-						if flag == "n" or flag == "q" or flag == "a":
-							self.query("update channelinfo set welcome = '{0}' where name = '{1}'".format(welcome, arg[1]))
-							self.msg(source, "Done.")
-						else: self.msg(source, "Denied.")
-					else: self.msg(source, "Invalid channel")
-				else: self.msg(source, "Syntax: WELCOME <#channel> [<text>]")
-			elif arg[0].lower() == "sync" and self.auth(source) != 0:
-				self.flag(source)
-				self.msg(source, "Done.")
+						if cmd_oper and self.isoper(source):
+							self.help(source, command, cmd_help+" \2(oper only)\2)
 			elif arg[0].lower() == "owner" and self.auth(source) != 0:
-				if len(arg) == 2:
-					if arg[1].startswith("#"):
-						if self.getflag(source, arg[1]) == "n" or self.getflag(source, arg[1]) == "q":
-							self.mode(arg[1], "+q {0}".format(source))
-							self.msg(source, "Done.")
-						else: self.msg(source, "Denied.")
-					else: self.msg(source, "Invalid channel")
-				else: self.msg(source, "Syntax: OWNER <#channel>")
+
 			elif arg[0].lower() == "deowner" and self.auth(source) != 0:
 				if len(arg) == 2:
 					if arg[1].startswith("#"):

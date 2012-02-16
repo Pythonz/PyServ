@@ -5,7 +5,7 @@ class memo(pyserv.Command):
 	auth = 1
 	def onCommand(self, source, args):
 		arg = args.split()
-		if len(arg) > 2:
+		if len(arg) > 1:
 			if arg[0].startswith("#"):
 				user = arg[0][1:]
 				sender = self.auth(source)
