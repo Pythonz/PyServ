@@ -355,6 +355,7 @@ class Services:
 					self.con.close()
 					if os.access("pyserv.pid", os.F_OK): shell("sh pyserv restart")
 					else: sys.exit(0)
+				else: self.msg(source, "No update available.")
 			elif cmd == "restart" and self.isoper(source):
 				if len(arg) == 0:
 					msg = "services restart"
