@@ -289,7 +289,7 @@ class Services:
 			if len(text.split()) > 1:
 				arg = text.split()[1:]
 				args = ' '.join(text.split()[1:])
-			if cmd[0] == "help":
+			if cmd == "help":
 				self.help(source, "HELP", "Shows information about all commands that are available to you")
 				for command in dir(commands):
 					if not command.startswith("__") and not command.endswith("__") and not command == "commands" and os.access("commands/"+command+".py", os.F_OK):
@@ -307,7 +307,7 @@ class Services:
 					self.help(source, "UPDATE", "Updates the services \2(oper only)\2")
 					self.help(source, "RESTART", "Restarts the services \2(oper only)\2")
 					self.help(source, "QUIT", "Shutdowns the services \2(oper only)\2")
-			if cmd == "reload":
+			elif cmd == "reload" and self.isoper(source):
 				config.read("pyserv.conf")
 				self.mysql_host = config.get("MYSQL", "host")
 				self.mysql_port = config.getint("MYSQL", "port")
@@ -326,7 +326,7 @@ class Services:
 				self.email = config.get("OTHER", "email")
 				self.regmail = config.get("OTHER", "regmail")
 				self.msg(source, "Done.")
-			elif cmd == "update":
+			elif cmd == "update" and self.isoper(source):
 				_web = urllib2.urlopen("https://raw.github.com/Pythonz/PyServ/master/version")
 				_version = _web.read()
 				_web.close()
@@ -355,7 +355,7 @@ class Services:
 					self.con.close()
 					if os.access("pyserv.pid", os.F_OK): shell("sh pyserv restart")
 					else: sys.exit(0)
-			elif cmd == "restart":
+			elif cmd == "restart" and self.isoper(source):
 				if len(arg) == 0:
 					msg = "services restart"
 					self.send(":%s QUIT :%s" % (self.bot, msg))
@@ -364,7 +364,7 @@ class Services:
 				self.con.close()
 				if os.access("pyserv.pid", os.F_OK): shell("sh pyserv restart")
 				else: sys.exit(0)
-			elif cmd == "quit":
+			elif cmd == "quit" and self.isoper(source):
 				if os.access("pyserv.pid", os.F_OK):
 					if len(arg) == 0:
 						msg = "services shutdown"
