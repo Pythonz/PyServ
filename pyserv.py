@@ -322,8 +322,6 @@ class Services:
 							self.help(source, command, cmd_help)
 						if cmd_oper and self.isoper(source):
 							self.help(source, command, cmd_help+" \2(oper only)\2")
-			elif arg[0].lower() == "owner" and self.auth(source) != 0:
-
 			elif arg[0].lower() == "deowner" and self.auth(source) != 0:
 				if len(arg) == 2:
 					if arg[1].startswith("#"):
