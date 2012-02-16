@@ -308,7 +308,7 @@ class Services:
 				self.help(source, "VERSION", "Shows version of services")
 				for command in dir(commands):
 					if not command.startswith("__") and not command.endswith("__") and not command.lower() == "commands":
-						exec("cmd_desc = commands.%s.%s().description" % (cmd, cmd))
+						exec("cmd_desc = commands.%s.%s().description" % (command, command))
 						self.help(source, command, cmd_desc)
 			elif arg[0].lower() == "memo" and self.auth(source) != 0:
 				if len(arg) > 2:
