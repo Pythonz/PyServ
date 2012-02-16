@@ -110,9 +110,9 @@ class Services:
 								for cmd in dir(commands):
 									if not cmd.startswith("__") and not cmd.endswith("__") and cmd.lower() == data.split()[3][1:].lower():
 										if len(data.split()) == 4:
-											exec("commands.%s.%s.onCommand('%s', '')" % (cmd, cmd, data.split()[0][1:]))
+											exec("commands.%s.%s().onCommand('%s', '')" % (cmd, cmd, data.split()[0][1:]))
 										if len(data.split()) >= 5:
-											exec("commands.%s.%s.onCommand('%s', '%s')" % (cmd, cmd, data.split()[0][1:], ' '.join(data.split()[4:])))
+											exec("commands.%s.%s().onCommand('%s', '%s')" % (cmd, cmd, data.split()[0][1:], ' '.join(data.split()[4:])))
 								self.message(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
 							if data.split()[2].startswith("#") and self.chanflag("l", data.split()[2]):
 								self.log(data.split()[0][1:], "privmsg", data.split()[2], ' '.join(data.split()[3:]))
