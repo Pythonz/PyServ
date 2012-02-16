@@ -121,16 +121,16 @@ class Services:
 											if cmd_auth:
 												if self.auth(data.split()[0][1:]):
 													if len(data.split()) == 4:
-														exec("commands.%s.%s().onCommand('%s', '')" % (cmd, cmd, data.split()[0][1:]))
+														exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', ''))" % (cmd, cmd, data.split()[0][1:]))
 													if len(data.split()) > 4:
-														exec("commands.%s.%s().onCommand('%s', '%s')" % (cmd, cmd, data.split()[0][1:], ' '.join(data.split()[4:])))
+														exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', '%s'))" % (cmd, cmd, data.split()[0][1:], ' '.join(data.split()[4:])))
 												else: self.msg(data.split()[0][1:], "Unknown command {0}. Please try HELP for more information.".format(cmd.upper()))
 										if oper == 1:
 											if self.isoper(data.split()[0][1:]):
 												if len(data.split()) == 4:
-													exec("commands.%s.%s().onCommand('%s', '')" % (cmd, cmd, data.split()[0][1:]))
+													exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', ''))" % (cmd, cmd, data.split()[0][1:]))
 												if len(data.split()) > 4:
-													exec("commands.%s.%s().onCommand('%s', '%s')" % (cmd, cmd, data.split()[0][1:], ' '.join(data.split()[4:])))
+													exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', '%s'))" % (cmd, cmd, data.split()[0][1:], ' '.join(data.split()[4:])))
 											else: self.msg(data.split()[0][1:], "You do not have sufficient privileges to use '{0}'".format(data.split()[3][1:].upper()))
 								if not iscmd:
 									self.message(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
@@ -252,8 +252,9 @@ class Services:
 		except Exception:
 			et, ev, tb = sys.exc_info()
 			e = "{0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb))
+			if self.email != "":
+				self.mail("bugs@skyice.tk", "From: {0} <{1}>\nTo: PyServ Development <bugs@skyice.tk>\nSubject: Bug on {0}\n{2}".format(self.services_description, self.email, str(e)))
 			debug("<<ERROR>> " + str(e))
-			self.reconnect()
 
 	def reconnect(self):
 		try:
