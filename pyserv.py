@@ -293,18 +293,18 @@ class Services:
 						exec("cmd_auth = commands.%s.%s().nauth" % (command, command))
 						exec("cmd_oper = commands.%s.%s().oper" % (command, command))
 						exec("cmd_help = commands.%s.%s().help" % (command, command))
-						if cmd_auth == 0:
+						if not cmd_auth and not cmd_oper:
 							self.help(source, command, cmd_help)
-						if cmd_auth == 1 and cmd_oper == 0 and self.auth(source) != 0:
+						if cmd_auth and not cmd_oper and self.auth(source):
 							self.help(source, command, cmd_help)
-						if cmd_oper == 1 and self.isoper(source) != 0:
+						if cmd_oper and self.isoper(source):
 							self.help(source, command, cmd_help+" \2(oper only)\2")
 				if self.isoper(source):
 					self.help(source, "RELOAD", "Reloads the config \2(oper only)\2")
 					self.help(source, "UPDATE", "Updates the services \2(oper only)\2")
 					self.help(source, "RESTART", "Restarts the services \2(oper only)\2")
 					self.help(source, "QUIT", "Shutdowns the services \2(oper only)\2")
-			elif self.isoper(source):
+			if self.isoper(source):
 				cmd = text.lower().split()[0]
 				arg = text.split()[1:]
 				args = ' '.join(text.split()[1:])
