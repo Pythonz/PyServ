@@ -288,19 +288,11 @@ class Services:
 			arg = text.split()
 			if text.lower().split()[0] == "help":
 				self.help(source, "HELP", "Shows information about all commands that are available to you")
-				self.help(source, "AUTH", "Authes you")
-				self.help(source, "HELLO", "Creates an account")
 				if self.auth(source) != 0:
 					self.help(source, "VHOST", "Requests a vHost for your Account")
 					self.help(source, "REQUEST", "Request for a channel")
 					self.help(source, "REMOVE", "Removes a channel")
-					self.help(source, "CHANLEV", "Edits your channel records")
-					self.help(source, "CHANMODE", "Sets modes for your channel")
-					self.help(source, "CHANFLAGS", "Sets flags for your channel")
-					self.help(source, "KICK", "Kicks someone from the channel")
-					self.help(source, "SETTOPIC", "Sets topic for your channel")
 					self.help(source, "FEEDBACK", "Sends a feedback to us")
-					self.help(source, "WHOIS", "Shows information about a user")
 				self.help(source, "VERSION", "Shows version of services")
 				for command in dir(commands):
 					if not command.startswith("__") and not command.endswith("__") and not command == "commands" and os.access("commands/"+command+".py", os.F_OK):
@@ -313,52 +305,6 @@ class Services:
 							self.help(source, command, cmd_help)
 						if cmd_oper and self.isoper(source):
 							self.help(source, command, cmd_help+" \2(oper only)\2")
-			elif arg[0].lower() == "kick" and self.auth(source) != 0:
-				if len(arg) == 3:
-					if arg[1].startswith("#"):
-						flag = self.getflag(source, arg[1])
-						if flag == "n" or flag == "q" or flag == "a" or flag =="o"or flag =="h":
-							if arg[2].lower() != "q" and not self.isoper(self.uid(arg[2])):
-								self.send(":{0} KICK {1} {2} :{2}".format(self.bot, arg[1], arg[2]))
-								self.msg(source, "Done.")
-							else: self.msg(source, "Denied.")
-						else: self.msg(source, "Denied.")
-					else: self.msg(source, "Invalid channel")
-				elif len(arg) > 3:
-					if arg[1].startswith("#"):
-						flag = self.getflag(source, arg[1])
-						if flag == "n" or flag == "q" or flag == "a" or flag =="o"or flag =="h":
-							if arg[2].lower() != "q" and not self.isoper(self.uid(arg[2])):
-								self.send(":{0} KICK {1} {2} :{3}".format(self.bot, arg[1], arg[2], ' '.join(arg[3:])))
-								self.msg(source, "Done.")
-							else: self.msg(source, "Denied.")
-						else: self.msg(source, "Denied.")
-					else: self.msg(source, "Invalid channel")
-				else: self.msg(source, "Syntax: KICK <#channel> <user> [,<user>] [reason]")
-			elif arg[0].lower() == "hello":
-				if self.auth(source) != 0:
-					self.msg(source, "HELLO is not available once you have authed.")
-					return 0
-				if len(arg) == 3:
-					exists = False
-					for data in self.query("select name from users where email = '%s' or name = '%s'" % (arg[1], self.nick(source))):
-							exists = True
-					if not exists:
-						if arg[1].find("@") != -1 and arg[1].find(".") != -1 and arg[1].lower() == arg[2].lower():
-							self.query("insert into users values ('%s','%s','%s')" % (self.nick(source), self.hash(hash(arg[1])), arg[1]))
-							self.msg(source, "The account %s has been created successfully. You can login now with /msg Q auth account password" % self.nick(source))
-							if self.regmail == "1":
-								self.msg(source, "An email had been send to you with your password!")
-								self.mail(arg[1], """From: %s <%s>\nTo: %s <%s>\nSubject: Your account on %s\n\nWelcome to %s\nYour account data:\n\nUser: %s\nPassword: %s\n\nAuth via "/msg Q auth %s %s"\nChange your password as soon as possible with "/msg Q newpass NEWPASS"!""" % (self.services_description, self.email, self.nick(source), arg[1], self.services_description, self.services_description, self.nick(source), hash(arg[1]), self.nick(source), hash(arg[1])))
-							else:
-								self.msg(source, """Use "/msg Q auth %s %s" to auth""" % (self.nick(source), hash(arg[1])))
-								self.msg(source, "Change your password as soon as possible!")
-						else:
-							self.msg(source, "Invalid email %s!" % arg[1])
-					else:
-						self.msg(source, "The account %s already exists or your email %s is used!" % (self.nick(source),arg[1]))
-				else:
-					self.msg(source, "Syntax: HELLO <email> <email>")
 			elif text.lower().split()[0] == "auth":
 				if self.auth(source) != 0:
 					self.msg(source, "AUTH is not available once you have authed.");
@@ -431,159 +377,6 @@ class Services:
 						else: self.msg(source, "No permission")
 					else: self.msg(source, "Invalid channel '{0}'".format(arg[1]))
 				else: self.msg(source, "Syntax: REMOVE <#channel>")
-			elif arg[0].lower() == "chanlev" and self.auth(source) != 0:
-				if len(arg) == 2:
-					if arg[1].startswith("#"):
-						if self.getflag(source, arg[1]) != "0":
-							channel = text.split()[1]
-							self.msg(source, "Known users on {0}:".format(channel))
-							self.msg(source, "Username               Flag")
-							for data in self.query("select user,flag from channels where channel='{0}'".format(channel)):
-								self.msg(source, " {0} {1} {2}".format(data[0], " "*int(24-len(data[0])), data[1]))
-							self.msg(source, "End of list.")
-						else: self.msg(source, "Denied.")
-					else: self.msg(source, "Invalid channel")
-				elif len(arg) == 3:
-					channel = arg[1]
-					if channel.startswith("#"):
-						if arg[2].startswith("#"):
-							username = arg[2][1:]
-							entry = False
-							user = False
-							for data in self.query("select name from users where name = '%s'" % username):
-								user = True
-							for data in self.query("select channel,flag from channels where user = '%s' and channel = '%s'" % (username, channel)):
-								self.msg(source, "Flags for #"+username+" on "+data[0]+": +"+data[1])
-								channel = data[0]
-								entry = True
-							if user and not entry: self.msg(source, "User #"+username+" is not known on "+channel+".")
-							elif not user: self.msg(source, "Can't find user #"+username+".")
-						else:
-							username = self.auth(self.uid(arg[2]))
-							entry = False
-							for data in self.query("select channel,flag from channels where user = '%s' and channel = '%s'" % (username, channel)):
-								self.msg(source, "Flags for "+arg[2]+" on "+data[0]+": +"+data[1])
-								channel = data[0]
-								entry = True
-							if username != 0 and not entry: self.msg(source, "User "+arg[2]+" is not known on "+channel+".")
-							if username == 0: self.msg(source, "Can't find user "+arg[2]+".")
-					else: self.msg(source, "Invalid channel")
-				elif len(arg) == 4:
-					channel = text.split()[1]
-					if channel.startswith("#"):
-						entry = False
-						for channels in self.query("select channel from channels where user = '%s' and flag = 'n'" % self.auth(source)):
-							if channel.lower() == str(channels[0]).lower():
-								entry = True
-								channel = str(channels[0])
-						if entry:
-							if arg[2].startswith("#"):
-								username = arg[2][1:]
-								entry = False
-								for data in self.query("select name from users where name = '%s'" % username):
-									if str(self.auth(source)).lower() != username.lower():
-										self.query("delete from channels where channel = '%s' and user = '%s'" % (channel, username))
-										self.query("insert into channels values ('%s','%s','%s')" % (channel, username, text.split()[3]))
-										if self.sid(username) != 0:
-											for data in self.query("select nick from temp_nick where user = '%s'" % username):
-												self.flag(data[0])
-										self.msg(source, "Done.")
-									else: self.msg(source, "You cannot change your own flags!")
-									entry = True
-								if not entry: self.msg(source, "Can't find user "+arg[2]+".")
-							else:
-								username = self.auth(self.uid(arg[2]))
-								if username != 0:
-									for data in self.query("select name from users where name = '%s'" % username):
-										if str(self.auth(source)).lower() != username.lower():
-											self.query("delete from channels where channel = '%s' and user = '%s'" % (channel, username))
-											self.query("insert into channels values ('%s','%s','%s')" % (channel, username, text.split()[3]))
-											if self.sid(username) != 0:
-												for data in self.query("select nick from temp_nick where user = '%s'" % username):
-													self.flag(data[0])
-											self.msg(source, "Done.")
-										else: self.msg(source, "You cannot change your own flags!")
-										entry = True
-									if not entry: self.msg(source, "Can't find user "+arg[2]+".")
-						else: self.msg(source, "Denied.")
-					else: self.msg(source, "Invalid channel")
-				else: self.msg(source, "Syntax: CHANLEV <#channel> [<user> [<flag>]]")
-			elif arg[0].lower() == "chanmode" and self.auth(source) != 0:
-				if len(arg) == 2:
-					if arg[1].startswith("#"):
-						if self.getflag(source, arg[1]) == "n" or self.getflag(source, arg[1]) == "q" or self.getflag(source, arg[1]) == "a":
-							for channel in self.query("select name,modes from channelinfo where name = '{0}'".format(arg[1])):
-								self.msg(source, "Current modes for {0}: {1}".format(channel[0], channel[1]))
-						else:
-							self.msg(source, "No permission")
-					else:
-						self.msg(source, "Invalid channel '{0}'".format(arg[1]))
-				elif len(arg) == 3:
-					modes = arg[2]
-					if arg[1].startswith("#"):
-						if self.getflag(source, arg[1]) == "n" or self.getflag(source, arg[1]) == "q" or self.getflag(source, arg[1]) == "a":
-							for channel in self.query("select name from channelinfo where name = '{0}'".format(arg[1])):
-								self.query("update channelinfo set modes = '{0}' where name = '{1}'".format(modes, channel[0]))
-								self.mode(channel[0], modes)
-								self.msg(source, "New modes for {0}: {1}".format(channel[0], modes))
-						else:
-							self.msg(source, "No permission")
-					else:
-						self.msg(source, "Invalid channel '{0}'".format(arg[1]))
-				else:
-					self.msg(source, "Syntax: CHANMODE <#channel> [<modes>]")
-			elif arg[0].lower() == "chanflags" and self.auth(source) != 0:
-				if len(arg) == 2:
-					if arg[1].startswith("#"):
-						if self.getflag(source, arg[1]) == "n" or self.getflag(source, arg[1]) == "q" or self.getflag(source, arg[1]) == "a":
-							for channel in self.query("select name,flags from channelinfo where name = '{0}'".format(arg[1])):
-								self.msg(source, "Current flags for {0}: {1}".format(channel[0], channel[1]))
-						else:
-							self.msg(source, "No permission")
-					elif arg[1] == "?":
-						mode = list()
-						desc = list()
-						mode.append("p")
-						desc.append("Channel rights Protection")
-						mode.append("v")
-						desc.append("Autovoice in channel")
-						mode.append("t")
-						desc.append("Topic save")
-						mode.append("m")
-						desc.append("Modes enforcement")
-						mode.append("w")
-						desc.append("Welcome message on join")
-						mode.append("l")
-						desc.append("used for channel logs")
-						listed = 0
-						while listed != len(mode):
-							self.msg(source, "{0}: {1}".format(mode[listed], desc[listed]))
-							listed += 1
-					else:
-						self.msg(source, "Invalid channel '{0}'".format(arg[1]))
-				elif len(arg) == 3:
-					if arg[1].startswith("#"):
-						if self.getflag(source, arg[1]) == "n" or self.getflag(source, arg[1]) == "a":
-							for channel in self.query("select name from channelinfo where name = '{0}'".format(arg[1])):
-								self.query("update channelinfo set flags = '{0}' where name = '{1}'".format(arg[2], channel[0]))
-								self.msg(source, "New flags for {0}: {1}".format(channel[0], arg[2]))
-						else:
-							self.msg(source, "No permission")
-					else:
-						self.msg(source, "Invalid channel '{0}'".format(arg[1]))
-				else:
-					self.msg(source, "Syntax: CHANFLAGS <#channel> [<flags>]")
-			elif arg[0].lower() == "settopic" and self.auth(source) != 0:
-				if len(arg) > 2:
-					if arg[1].startswith("#"):
-						if self.getflag(source, arg[1]) == "n" or self.getflag(source, arg[1]) == "q" or self.getflag(source, arg[1]) == "a":
-							self.query("update channelinfo set topic = '{0}' where name = '{1}'".format(_mysql.escape_string(' '.join(arg[2:])), arg[1]))
-							self.send(":{0} TOPIC {1} :{2}".format(self.bot, arg[1], ' '.join(arg[2:])))
-							if self.chanflag("l", arg[1]): self.log("Q", "topic", arg[1], ":"+' '.join(arg[2:]))
-							self.msg(source, "Done.")
-						else: self.msg(source, "No permission")
-					else: self.msg(source, "Invalid channel '{0}'".format(arg[1]))
-				else: self.msg(source, "Syntax: SETTOPIC <#channel> <topic>")
 			elif arg[0].lower() == "feedback" and self.auth(source) != 0:
 				if len(arg) > 1:
 					entry = False
@@ -598,45 +391,6 @@ class Services:
 						self.msg(source, "You already sent a feedback. Please wait until an operator read it.")
 				else:
 					self.msg(source, "FEEDBACK <text>")
-			elif arg[0].lower() == "whois" and self.auth(source) != 0:
-				entry = False
-				if len(arg) == 2:
-					if arg[1].startswith("#"):
-						for user in self.query("select name,email from users where name = '{0}'".format(arg[1][1:])):
-							entry = True
-							self.msg(source, "-Information for account {0}:".format(user[0]))
-							online = list()
-							for uid in self.query("select nick from temp_nick where user = '{0}'".format(user[0])):
-								for data in self.query("select nick from online where uid = '{0}'".format(uid[0])):
-									online.append(data[0])
-							self.msg(source, "Online Nicks  : {0}".format(' '.join(online)))
-							self.msg(source, "Email address : {0}".format(user[1]))
-							self.msg(source, "Known on following channels:")
-							self.msg(source, "Channel              Flag")
-							for channel in self.query("select channel,flag from channels where user = '{0}'".format(user[0])):
-								self.msg(source, " {0}{1}{2}".format(channel[0], " "*int(20-len(channel[0])), channel[1]))
-							self.msg(source, "End of list.")
-					else:
-						for data in self.query("select uid from online where nick = '{0}'".format(arg[1])):
-							for user in self.query("select user from temp_nick where nick = '{0}'".format(data[0])):
-								entry = True
-								for account in self.query("select email from users where name = '{0}'".format(user[0])):
-									self.msg(source, "-Information for account {0}:".format(user[0]))
-									online = list()
-									for uid in self.query("select nick from temp_nick where user = '{0}'".format(user[0])):
-										for online_data in self.query("select nick from online where uid = '{0}'".format(uid[0])):
-											online.append(online_data[0])
-									self.msg(source, "Online Nicks  : {0}".format(' '.join(online)))
-									self.msg(source, "Email address : {0}".format(account[0]))
-									self.msg(source, "Known on following channels:")
-									self.msg(source, "Channel              Flag")
-								for channel in self.query("select channel,flag from channels where user = '{0}'".format(user[0])):
-									self.msg(source, " {0}{1}{2}".format(channel[0], " "*int(20-len(channel[0])), channel[1]))
-								self.msg(source, "End of list.")
-					if not entry:
-						self.msg(source, "Can\'t find user {0}".format(arg[1]))
-				else:
-					self.msg(source, "Syntax: WHOIS <nick>/<#account>")
 			elif arg[0].lower() == "version": self.version(source)
 			elif self.isoper(source):
 				cmd = text.lower().split()[0]
