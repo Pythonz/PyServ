@@ -1264,6 +1264,7 @@ class Services:
 class Command:
 	help = "unknown"
 	oper = 0
+	auth = 0
 	def __init__(self):
 		import ConfigParser
 		import _mysql
