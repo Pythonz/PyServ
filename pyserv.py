@@ -288,12 +288,6 @@ class Services:
 			arg = text.split()
 			if text.lower().split()[0] == "help":
 				self.help(source, "HELP", "Shows information about all commands that are available to you")
-				if self.auth(source) != 0:
-					self.help(source, "VHOST", "Requests a vHost for your Account")
-					self.help(source, "REQUEST", "Request for a channel")
-					self.help(source, "REMOVE", "Removes a channel")
-					self.help(source, "FEEDBACK", "Sends a feedback to us")
-				self.help(source, "VERSION", "Shows version of services")
 				for command in dir(commands):
 					if not command.startswith("__") and not command.endswith("__") and not command == "commands" and os.access("commands/"+command+".py", os.F_OK):
 						exec("cmd_auth = commands.%s.%s().nauth" % (command, command))
@@ -305,114 +299,16 @@ class Services:
 							self.help(source, command, cmd_help)
 						if cmd_oper and self.isoper(source):
 							self.help(source, command, cmd_help+" \2(oper only)\2")
-			elif text.lower().split()[0] == "auth":
-				if self.auth(source) != 0:
-					self.msg(source, "AUTH is not available once you have authed.");
-					return 0
-				if len(text.split()) == 3:
-					exists = False
-					for data in self.query("select name,pass from users where name = '%s'" % text.split()[1]):
-						if self.hash(text.split()[2]) == str(data[1]):
-							exists = True
-							for user in self.query("select nick from temp_nick where user = '%s'" % str(data[0])):
-								self.msg(str(user[0]), "Someone else has authed with your account")
-							self.query("insert into temp_nick values ('%s','%s')" % (source, str(data[0])))
-							self.msg(source, "You are now logged in as %s" % str(data[0]))
-							self.meta(source, "accountname", str(data[0]))
-							self.vhost(source)
-							self.flag(source)
-							self.memo(str(data[0]))
-					if not exists:
-						self.msg(source, "Wrong username or invalid password.")
-				else:
-					self.msg(source, "Syntax: AUTH <username> <password>")
-			elif text.lower().split()[0] == "vhost" and self.auth(source) != 0:
-				if len(text.split()) == 2:
-					if len(arg[1]) < 5:
-						self.msg(source, "Your vhost is too short.")
-					elif arg[1].find(".") == -1:
-						self.msg(source, "Invalid vhost. Where's the dot?")
-					elif arg[1][-2] == "." or arg[1][-1] == ".":
-						self.msg(source, "Domain ending is too short.")
-					else:
-						self.query("delete from vhosts where user = '%s'" % self.auth(source))
-						self.query("insert into vhosts values ('%s','%s','0')" % (self.auth(source), text.split()[1]))
-						self.msg(source, "Your new vhost\2 %s\2 has been requested" % text.split()[1])
-						for data in self.query("select host from online where uid = '%s'" % source):
-							self.send(":%s CHGHOST %s %s" % (self.bot, source, data[0]))
-						for data in self.query("select uid from opers"):
-							self.msg(data[0], "vHost request received from\2 %s\2" % self.auth(source))
-				elif len(arg) == 1:
-					self.query("delete from vhosts where user = '%s'" % self.auth(source))
-					self.msg(source, "Done.")
-					for data in self.query("select host from online where uid = '%s'" % source):
-						self.send(":%s CHGHOST %s %s" % (self.bot, source, data[0]))
-				else:
-					self.msg(source, "Syntax: VHOST <vhost>")
-			elif text.lower().split()[0] == "request" and self.auth(source) != 0:
-				if len(text.split()) == 2 and text.split()[1].startswith("#"):
-					exists = False
-					for data in self.query("select channel from channels"):
-						if text.lower().split()[1] == str(data[0]).lower():
-							exists = True
-					if not exists:
-						self.query("insert into channelinfo values ('%s', '', '', '', '')" % text.split()[1])
-						self.query("insert into channels values ('%s','%s','n')" % (text.split()[1], self.auth(source)))
-						self.join(text.split()[1])
-						self.smode(text.split()[1], "+q {0}".format(source))
-						self.msg(source, "Channel \2%s\2 has been registered for you" % text.split()[1])
-					else:
-						self.msg(source, "Channel \2%s\2 is already registered" % text.split()[1])
-				else:
-					self.msg(source, "An error has happened while registering channel \2%s\2 for you, %s." % (text.split()[1], self.auth(source)))
-			elif arg[0].lower() == "remove" and self.auth(source) != 0:
-				if len(arg) == 2:
-					if arg[1].startswith("#"):
-						if self.getflag(source, arg[1]) == "n":
-							for data in self.query("select name from channelinfo where name = '{0}'".format(arg[1])):
-								self.query("delete from channels where channel = '{0}'".format(data[0]))
-								self.query("delete from channelinfo where name = '{0}'".format(data[0]))
-								self.msg(source, "Channel {0} has been deleted.".format(data[0]))
-								self.send(":{0} PART {1} :Channel {1} has been deleted.".format(self.bot, data[0]))
-						else: self.msg(source, "No permission")
-					else: self.msg(source, "Invalid channel '{0}'".format(arg[1]))
-				else: self.msg(source, "Syntax: REMOVE <#channel>")
-			elif arg[0].lower() == "feedback" and self.auth(source) != 0:
-				if len(arg) > 1:
-					entry = False
-					for data in self.query("select text from feedback where user = '%s'" % self.auth(source)):
-						entry = True
-					if not entry:
-						self.query("insert into feedback values('"+self.auth(source)+"','"+_mysql.escape_string(' '.join(arg[1:]))+"')")
-						self.msg(source, "Feedback added to queue.")
-						for op in self.query("select uid from opers"):
-							self.msg(str(op[0]), "New feedback from\2 %s\2" % self.auth(source))
-					else:
-						self.msg(source, "You already sent a feedback. Please wait until an operator read it.")
-				else:
-					self.msg(source, "FEEDBACK <text>")
-			elif arg[0].lower() == "version": self.version(source)
+				if self.isoper(source):
+					self.help(source, "RELOAD", "Reloads the config \2(oper only)\2")
+					self.help(source, "UPDATE", "Updates the services \2(oper only)\2")
+					self.help(source, "RESTART", "Restarts the services \2(oper only)\2")
+					self.help(source, "QUIT", "Shutdowns the services \2(oper only)\2")
 			elif self.isoper(source):
 				cmd = text.lower().split()[0]
 				arg = text.split()[1:]
 				args = ' '.join(text.split()[1:])
-				if cmd == "help":
-					self.msg(source, "For Operators:")
-					self.help(source, "VHOST", "{LIST|ACTIVATE|REJECT} USER")
-					self.help(source, "GLOBAL", "MESSAGE")
-					self.help(source, "FEEDBACK", "[USER]")
-					self.help(source, "KILL", "NICK")
-					self.help(source, "TRUST", "IP [LIMIT]")
-					self.help(source, "DELLOGS")
-					self.help(source, "RELOAD")
-					self.help(source, "UPDATE")
-					self.help(source, "RESTART", "[REASON]")
-					self.help(source, "QUIT", "[REASON]")
-					self.help(source, "VERSION")
-				elif cmd == "dellogs":
-					shell("rm -rf logs/*")
-					self.msg(source, "Done.")
-				elif cmd == "reload":
+				if cmd == "reload":
 					config.read("pyserv.conf")
 					self.mysql_host = config.get("MYSQL", "host")
 					self.mysql_port = config.getint("MYSQL", "port")
@@ -460,132 +356,6 @@ class Services:
 						self.con.close()
 						if os.access("pyserv.pid", os.F_OK): shell("sh pyserv restart")
 						else: sys.exit(0)
-					else: self.msg(source, "No update available.")
-				elif cmd == "trust":
-					if len(arg) == 0:
-						for trust in self.query("select * from trust"):
-							self.msg(source, "IP: {0}          Limit: {1}".format(trust[0], trust[1]))
-					elif len(arg) == 1:
-						entry = False
-						for trust in self.query("select * from trust where address = '{0}'".format(arg[0])):
-							entry = True
-							self.query("delete from trust where address = '{0}'".format(trust[0]))
-						if entry:
-							self.msg(source, "Trust for {0} has been deleted.".format(arg[0]))
-							conns = 0
-							nicks = list()
-							for online in self.query("select nick from online where address = '{0}'".format(arg[0])):
-								nicks.append(online[0])
-								conns += 1
-							for nick in nicks:
-								self.msg(self.uid(nick), "Your trust has been set to '3'.")
-							if conns > 3 and arg[0] != "0.0.0.0":
-								for nick in nicks:
-									self.send(":{0} KILL {1} :G-lined".format(self.bot, nick))
-								self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.bot, arg[0], limit))
-							elif conns == 3 and arg[0] != "0.0.0.0":
-								for nick in nicks:
-									self.msg(nick, "Your IP is scratching the connection limit. If you need more connections please request a trust and give us a reason on #help.")
-						else:
-							self.msg(source, "Trust for {0} does not exist.".format(arg[0]))
-					elif len(arg) == 2:
-						entry = False
-						for trust in self.query("select * from trust where address = '{0}'".format(arg[0])):
-							entry = True
-						if entry:
-							limit = filter(lambda x: x.isdigit(), arg[1])
-							if limit != "":
-								self.query("update trust set `limit` = '{0}' where address = '{1}'".format(limit, arg[0]))
-								self.msg(source, "Trust for {0} has been set to {1}.".format(arg[0], limit))
-								conns = 0
-								nicks = list()
-								for online in self.query("select nick from online where address = '{0}'".format(arg[0])):
-									nicks.append(online[0])
-									conns += 1
-								for nick in nicks:
-									self.send(":{0} KILL {1} :G-lined".format(self.bot, nick))
-								if conns > int(limit) and arg[0] != "0.0.0.0":
-									for nick in nicks:
-										self.send(":{0} KILL {1} :G-lined".format(self.bot, nick))
-									self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.bot, arg[0], limit))
-								elif conns == int(limit) and arg[0] != "0.0.0.0":
-									for nick in nicks:
-										self.msg(nick, "Your IP is scratching the connection limit. If you need more connections please request a trust and give us a reason on #help.")
-							else:
-								self.msg(source, "Invalid limit")
-						else:
-							limit = filter(lambda x: x.isdigit(), arg[1])
-							if limit != "":
-								self.query("insert into  trust values ('{1}','{0}')".format(limit, arg[0]))
-								self.msg(source, "Trust for {0} has been set to {1}.".format(arg[0], limit))
-								conns = 0
-								nicks = list()
-								for online in self.query("select nick from online where address = '{0}'".format(arg[0])):
-									nicks.append(online[0])
-									conns += 1
-								for nick in nicks:
-									self.msg(self.uid(nick), "Your trust has been set to '{0}'.".format(limit))
-								if conns > int(limit) and arg[0] != "0.0.0.0":
-									for nick in nicks:
-										self.send(":{0} KILL {1} :G-lined".format(self.bot, nick))
-									self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.bot, arg[0], limit))
-								elif conns == int(limit) and arg[0] != "0.0.0.0":
-									for nick in nicks:
-										self.msg(nick, "Your IP is scratching the connection limit. If you need more connections please request a trust and give us a reason on #help.")
-							else:
-								self.msg(source, "Invalid limit")
-					else: self.msg(source, "TRUST [<address> [<limit>]]")
-				elif cmd == "vhost":
-					if len(arg) == 1:
-						if arg[0].lower() == "list":
-							for data in self.query("select user,vhost from vhosts where active = '0'"):
-								self.msg(source, "User: %s\t|\tRequested vHost: %s" % (str(data[0]), str(data[1])))
-						else: self.msg(source, "Syntax: VHOST <list>/<activate>/<reject> [<user>] [reason]")
-					elif len(arg) == 2:
-						if arg[0].lower() == "activate":
-							for data in self.query("select user,vhost from vhosts where active = '0' and user = '%s'" % arg[1]):
-								self.query("update vhosts set active = '1' where user = '%s'" % str(data[0]))
-								uid = self.sid(data[0])
-								self.query("insert into memo values ('%s', 'Q', 'Your vHost\2 %s\2 has been activated.')" % (data[0], data[1]))
-								if uid != 0:
-									self.vhost(uid)
-									self.memo(data[0])
-						else: self.msg(source, "Syntax: VHOST <list>/<activate>/<reject> [<user>] [reason]")
-					elif len(arg) > 2:
-						if arg[0].lower() == "reject":
-							for data in self.query("select * from vhosts where active = '0' and user = '%s'" % arg[1]):
-								self.query("delete from vhosts where user = '%s'" % str(data[0]))
-								self.msg(source, "vHost for user\2 %s\2 has been rejected" % str(data[0]))
-								self.query("insert into memo values ('%s', 'Q', 'Your vHost\2 %s\2 has been rejected. Reason: %s')" % (data[0], data[1], _mysql.escape_string(' '.join(arg[2:]))))
-								self.memo(data[0])
-						else: self.msg(source, "Syntax: VHOST <list>/<activate>/<reject> [<user>] [reason]")
-					else: self.msg(source, "Syntax: VHOST <list>/<activate>/<reject> [<user>] [reason]")
-				elif cmd == "global":
-					self.msg("$*", "[%s] " % self.nick(source) + args)
-				elif cmd == "feedback":
-					if len(args) == 0:
-						self.msg(source, "Following users sent a feedback:")
-						for data in self.query("select user from feedback"):
-							self.msg(source, str(data[0]))
-						self.msg(source, "To read a feedback: FEEDBACK <user>")
-					else:
-						entry = False
-						for data in self.query("select user,text from feedback"):
-							if arg[0].lower() == str(data[0]).lower():
-								entry = True
-								self.msg(source, "\2[FEEDBACK]\2")
-								self.msg(source, "\2FROM\2: %s" % str(data[0]))
-								self.msg(source, "\2MESSAGE\2: " + str(data[1]))
-								self.query("delete from feedback where user = '%s'" % str(data[0]))
-						if not entry:
-							self.msg(source, "There is no feedback from\2 %s\2" % arg[0])
-				elif cmd == "kill":
-					if len(arg) == 1:
-						self.kill(arg[0], "You're violation network rules")
-					elif len(arg) > 1:
-						self.kill(arg[0], ' '.join(arg[1:]))
-					else:
-						self.msg(source, "Syntax: KILL <nick>")
 				elif cmd == "restart":
 					if len(arg) == 0:
 						msg = "services restart"
@@ -672,9 +442,9 @@ class Services:
 		source = self.sid(user)
 		if source != 0:
 			for data in self.query("select source,message from memo where user = '%s'" % user):
-				self.msg(source, "\2[MEMO]\2")
-				self.msg(source, "\2FROM:\2 %s" % data[0])
-				self.msg(source, "\2MESSAGE:\2 %s" % data[1])
+				self.msg(source, "[MEMO]")
+				self.msg(source, "FROM: %s" % data[0])
+				self.msg(source, "MESSAGE: %s" % data[1])
 				self.query("delete from memo where user = '%s' and source = '%s' and message = '%s'" % (user, data[0], _mysql.escape_string(data[1])))
 
 	def chanexist(self, channel):
@@ -905,9 +675,9 @@ class Command:
 		source = self.sid(user)
 		if source != 0:
 			for data in self.query("select source,message from memo where user = '%s'" % user):
-				self.msg(source, "\2[MEMO]\2")
-				self.msg(source, "\2FROM:\2 %s" % data[0])
-				self.msg(source, "\2MESSAGE:\2 %s" % data[1])
+				self.msg(source, "[MEMO]")
+				self.msg(source, "FROM: %s" % data[0])
+				self.msg(source, "MESSAGE: %s" % data[1])
 				self.query("delete from memo where user = '%s' and source = '%s' and message = '%s'" % (user, data[0], _mysql.escape_string(data[1])))
 
 	def chanexist(self, channel):
