@@ -315,7 +315,7 @@ class Services:
 				self.help(source, "VERSION", "Shows version of services")
 				for command in dir(commands):
 					if not command.startswith("__") and not command.endswith("__") and not command.lower() == "commands":
-						exec("cmd_auth = boolean(commands.%s.%s().auth)" % (command, command))
+						exec("cmd_auth = bool(commands.%s.%s().auth)" % (command, command))
 						exec("cmd_help = commands.%s.%s().help" % (command, command))
 						if not cmd_auth:
 							self.help(source, command, cmd_help)
