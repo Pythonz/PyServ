@@ -83,8 +83,7 @@ class Services:
 			thread.start_new_thread(self.sendcache, (self.con,))
 			
 			while 1:
-				recv = str()
-				self.con.recv_into(recv)
+				recv = self.con.recv(25600)
 				if not recv:
 					self.reconnect()
 					return 0
