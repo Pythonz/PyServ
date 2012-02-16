@@ -112,10 +112,19 @@ class Services:
 										iscmd = True
 										exec("oper = commands.%s.%s().oper" % (cmd, cmd))
 										if oper == 0:
-											if len(data.split()) == 4:
-												exec("commands.%s.%s().onCommand('%s', '')" % (cmd, cmd, data.split()[0][1:]))
-											if len(data.split()) > 4:
-												exec("commands.%s.%s().onCommand('%s', '%s')" % (cmd, cmd, data.split()[0][1:], ' '.join(data.split()[4:])))
+											exec("cmd_auth = commands.%s.%s().auth" % (cmd, cmd))
+											if not cmd_auth:
+												if len(data.split()) == 4:
+													exec("commands.%s.%s().onCommand('%s', '')" % (cmd, cmd, data.split()[0][1:]))
+												if len(data.split()) > 4:
+													exec("commands.%s.%s().onCommand('%s', '%s')" % (cmd, cmd, data.split()[0][1:], ' '.join(data.split()[4:])))
+											if cmd_auth:
+												if self.auth(data.split()[0][1:]):
+													if len(data.split()) == 4:
+														exec("commands.%s.%s().onCommand('%s', '')" % (cmd, cmd, data.split()[0][1:]))
+													if len(data.split()) > 4:
+														exec("commands.%s.%s().onCommand('%s', '%s')" % (cmd, cmd, data.split()[0][1:], ' '.join(data.split()[4:])))
+												else: self.msg(source, "Unknown command {0}. Please try HELP for more information.".format(cmd.upper()))
 										if oper == 1:
 											if self.isoper(data.split()[0][1:]):
 												if len(data.split()) == 4:
@@ -301,51 +310,17 @@ class Services:
 					self.help(source, "DEVOICE", "Removes voice (+v) flag from you or someone on the channel")
 					self.help(source, "SETTOPIC", "Sets topic for your channel")
 					self.help(source, "WELCOME", "Sets a welcome message for your channel")
-					self.help(source, "SETWHOIS", "Sets cool stuff in your whois")
-					self.help(source, "MEMO", "Send another user a memo")
 					self.help(source, "FEEDBACK", "Sends a feedback to us")
 					self.help(source, "WHOIS", "Shows information about a user")
 				self.help(source, "VERSION", "Shows version of services")
 				for command in dir(commands):
 					if not command.startswith("__") and not command.endswith("__") and not command.lower() == "commands":
-						exec("cmd_desc = commands.%s.%s().description" % (command, command))
-						self.help(source, command, cmd_desc)
-			elif arg[0].lower() == "memo" and self.auth(source) != 0:
-				if len(arg) > 2:
-					if arg[1].startswith("#"):
-						user = arg[1][1:]
-						sender = self.auth(source)
-						message = _mysql.escape_string(' '.join(arg[2:]))
-						entry = False
-						for data in self.query("select name from users where name = '%s'" % user):
-							user = data[0]
-							entry = True
-						if entry:
-							self.query("insert into memo values ('%s', '%s', '%s')" % (user, sender, message))
-							self.msg(source, "Done.")
-							self.memo(user)
-						else: self.msg(source, "Can't find user %s." % arg[1])
-					else:
-						user = self.auth(self.uid(arg[1]))
-						sender = self.auth(source)
-						message = _mysql.escape_string(' '.join(arg[2:]))
-						entry = False
-						for data in self.query("select name from users where name = '%s'" % user):
-							user = data[0]
-							entry = True
-						if entry:
-							self.query("insert into memo values ('%s', '%s', '%s')" % (user, sender, message))
-							self.msg(source, "Done.")
-							self.memo(user)
-						else: self.msg(source, "Can't find user %s." % arg[1])
-				else: self.msg(source, "Syntax: MEMO <user> <message>")
-			elif arg[0].lower() == "setwhois" and self.auth(source) != 0:
-				if len(arg) > 1:
-					self.send(":{uid} SWHOIS {target} :{text}".format(uid=self.bot, target=source, text=' '.join(arg[1:])))
-					self.msg(source, "Done.")
-				else:
-					self.send(":{uid} SWHOIS {target} :".format(uid=self.bot, target=source))
-					self.msg(source, "Done.")
+						exec("cmd_auth = commands.%s.%s().auth" % (command, command))
+						exec("cmd_help = commands.%s.%s().help" % (command, command))
+						if not cmd_auth:
+							self.help(source, command, cmd_help)
+						if cmd_auth and self.auth(source):
+							self.help(source, command, cmd_help)
 			elif arg[0].lower() == "invite" and self.auth(source) != 0:
 				if len(arg) == 2:
 					if arg[1].startswith("#"):
@@ -1287,8 +1262,6 @@ class Services:
 		return "%s seconds" % seconds
 
 class Command:
-	description = "unknown"
-	usage = "unknown"
 	help = "unknown"
 	oper = 0
 	def __init__(self):
@@ -1520,6 +1493,9 @@ class Command:
 			self.vhost(uid)
 			self.flag(uid)
 			self.memo(content)
+
+	def unknown(self, target):
+		self.msg(target, "Unknown command "+__name__.split(".")[-1].upper()+". Please try HELP for more information.")
 		
 
 if __name__ == "__main__":
