@@ -763,7 +763,7 @@ class Services:
 						self.msg(source, "Can\'t find user {0}".format(arg[1]))
 				else:
 					self.msg(source, "Syntax: WHOIS <nick>/<#account>")
-			elif arg[0].lower() == "version": self.version(self.bot, source)
+			elif arg[0].lower() == "version": self.version(source)
 			elif self.isoper(source):
 				cmd = text.lower().split()[0]
 				arg = text.split()[1:]
@@ -977,7 +977,6 @@ class Services:
 						self.con.close()
 						shell("sh pyserv stop")
 					else: self.msg(source, "You are running in debug mode, only restart is possible!")
-				elif cmd == "version": self.version(source)
 				else:
 					self.msg(source, "Unknown command {0}. Use HELP for more information".format(cmd.upper()))
 			else:
