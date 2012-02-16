@@ -109,7 +109,7 @@ class Services:
 						if data.split()[1] == "PRIVMSG":
 							if data.split()[2] == self.bot:
 								for cmd in dir(commands):
-									if not cmd.startswith("__") and not cmd.endswith("__") and cmd.lower() == data.split()[2].lower()
+									if not cmd.startswith("__") and not cmd.endswith("__") and cmd.lower() == data.split()[2].lower():
 										exec("commands.%s.%s(%s, %s)" % (cmd, cmd, data.split()[0][1:], ' '.join(data.split()[3:])[1:]))
 								self.message(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
 							if data.split()[2].startswith("#") and self.chanflag("l", data.split()[2]):
