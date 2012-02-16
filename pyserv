@@ -2,6 +2,7 @@
 case $1 in
 	start)
 		if [ ! -f pyserv.pid ]; then
+			rm -f commands/*.pyc
 			if [ -f pyserv.pyc ]; then
 				rm -f pyserv.pyc
 			fi
@@ -28,6 +29,7 @@ case $1 in
 			pid=$(cat pyserv.pid)
 			kill -9 $pid
 			rm -f pyserv.pid
+			rm -f commands/*.pyc
 			if [ -f pyserv.pyc ]; then
 				rm -f pyserv.pyc
 			fi
@@ -49,7 +51,9 @@ case $1 in
 			if [ -f pyserv.pyc ]; then
 				rm -f pyserv.pyc
 			fi
+			rm -f commands/*.pyc
 			python pyserv.py
+			rm -f commands/*.pyc
 			if [ -f pyserv.pyc ]; then
 				rm -f pyserv.pyc
 			fi
