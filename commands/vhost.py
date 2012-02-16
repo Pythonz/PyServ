@@ -2,6 +2,7 @@ import pyserv
 
 class vhost(pyserv.Command):
 	help = "Request a vHost for your account"
+	nauth = 1
 	def onCommand(self, source, args):
 		arg = args.split()
 		if len(arg) == 1:
