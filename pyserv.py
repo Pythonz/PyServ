@@ -11,6 +11,8 @@ import _mysql
 import subprocess
 import urllib2
 import traceback
+import thread
+
 
 try:
 	if not os.access("logs", os.F_OK):
@@ -63,7 +65,6 @@ class Services:
 		self.email = config.get("OTHER", "email")
 		self.regmail = config.get("OTHER", "regmail")
 		self.bot = "%sAAAAAA" % self.services_id
-		self.obot = "%sAAAAAB" % self.services_id
 		self.db = _mysql.connect(host=self.mysql_host, port=self.mysql_port, db=self.mysql_name, user=self.mysql_user, passwd=self.mysql_passwd)
 
 	def run(self):
@@ -78,9 +79,12 @@ class Services:
 			self.send("SERVER %s %s 0 %s :%s" % (self.services_name, self.server_password, self.services_id, self.services_description))
 			self.send(":%s BURST" % self.services_id)
 			self.send(":%s ENDBURST" % self.services_id)
+			import commands
+			thread.start_new_thread(self.sendcache, (self.con,))
 			
 			while 1:
-				recv = self.con.recv(5120)
+				recv = str()
+				self.con.recv_into(recv)
 				if not recv:
 					self.reconnect()
 					return 0
@@ -94,10 +98,7 @@ class Services:
 							self.send(":%s UID %s %s Q %s %s TheQBot 0.0.0.0 %s +I :The Q Bot" % (self.services_id, self.bot, time.time(), self.services_name, self.services_name, time.time()))
 							self.send(":%s OPERTYPE Service" % self.bot)
 							self.meta(self.bot, "accountname", "Q")
-							self.send(":%s UID %s %s O %s %s TheOBot 0.0.0.0 %s +I :The O Bot" % (self.services_id, self.obot, time.time(), self.services_name, self.services_name, time.time()))
-							self.send(":%s OPERTYPE Service" % self.obot)
-							self.meta(self.obot, "accountname", "O")
-							self.omsg("$*", "Services are now back online. Have a nice day :)")
+							self.msg("$*", "Services are now back online. Have a nice day :)")
 							for channel in self.query("select name,modes,topic from channelinfo"):
 								self.join(str(channel[0]))
 								if self.chanflag("m", channel[0]):
@@ -107,9 +108,10 @@ class Services:
 									if self.chanflag("l", channel[0]): self.log("Q", "topic", channel[0], ":"+channel[2])
 						if data.split()[1] == "PRIVMSG":
 							if data.split()[2] == self.bot:
+								for cmd in dir(commands):
+									if not cmd.startswith("__") and not cmd.endswith("__") and cmd.lower() == data.split()[2].lower()
+										exec("commands.%s.%s(%s, %s)" % (cmd, cmd, data.split()[0][1:], ' '.join(data.split()[3:])[1:]))
 								self.message(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
-							if data.split()[2] == self.obot:
-								self.omessage(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
 							if data.split()[2].startswith("#") and self.chanflag("l", data.split()[2]):
 								self.log(data.split()[0][1:], "privmsg", data.split()[2], ' '.join(data.split()[3:]))
 						if data.split()[1] == "NOTICE":
@@ -215,16 +217,16 @@ class Services:
 								limit = int(trust[0])
 								if data.split()[7].startswith("~"):
 									for nick in nicks:
-										self.send(":{0} KILL {1} :G-lined".format(self.obot, nick))
-									self.send(":{0} GLINE *@{1} 1800 :You ignored the trust rules. Run an identd before you connect again.".format(self.obot, data.split()[8]))
+										self.send(":{0} KILL {1} :G-lined".format(self.bot, nick))
+									self.send(":{0} GLINE *@{1} 1800 :You ignored the trust rules. Run an identd before you connect again.".format(self.bot, data.split()[8]))
 							if conns > limit and data.split()[8] != "0.0.0.0":
 								for nick in nicks:
-									self.send(":{0} KILL {1} :G-lined".format(self.obot, nick))
-								self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.obot, data.split()[8], limit))
+									self.send(":{0} KILL {1} :G-lined".format(self.bot, nick))
+								self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.bot, data.split()[8], limit))
 							elif conns == limit and data.split()[8] != "0.0.0.0":
 								for nick in nicks:
-									self.omsg(nick, "Your IP is scratching the connection limit. If you need more connections please request a trust and give us a reason on #help.")
-								
+									self.msg(nick, "Your IP is scratching the connection limit. If you need more connections please request a trust and give us a reason on #help.")
+
 		except Exception:
 			et, ev, tb = sys.exc_info()
 			e = "{0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb))
@@ -237,6 +239,17 @@ class Services:
 		except: pass
 		self.run()
 
+	def sendcache(self, sock):
+		while 1:
+			file = open("commands/cache.txt", "r")
+			for line in file.readlines():
+				line = line.rstrip()
+				sock.send(":"+self.bot+" "+line+"\n")
+			file.close()
+			file = open("commands/cache.txt", "w")
+			file.write("")
+			file.close()
+			
 	def metadata(self, uid, string, content):
 		if string == "accountname":
 			self.query("delete from temp_nick where nick = '%s' or user = '%s'" % (uid, content))
@@ -245,238 +258,6 @@ class Services:
 			self.vhost(uid)
 			self.flag(uid)
 			self.memo(content)
-
-	def omessage(self, source, text):
-		try:
-			cmd = text.lower().split()[0]
-			arg = text.split()[1:]
-			args = ' '.join(text.split()[1:])
-			if self.isoper(source):
-				if cmd == "help":
-					self.ohelp(source, "VHOST", "{LIST|ACTIVATE|REJECT} USER")
-					self.ohelp(source, "GLOBAL", "MESSAGE")
-					self.ohelp(source, "FEEDBACK", "[USER]")
-					self.ohelp(source, "KILL", "NICK")
-					self.ohelp(source, "TRUST", "IP [LIMIT]")
-					self.ohelp(source, "DELLOGS")
-					self.ohelp(source, "RELOAD")
-					self.ohelp(source, "UPDATE")
-					self.ohelp(source, "RESTART", "[REASON]")
-					self.ohelp(source, "QUIT", "[REASON]")
-					self.ohelp(source, "VERSION")
-				elif cmd == "dellogs":
-					shell("rm -rf logs/*")
-					self.omsg(source, "Done.")
-				elif cmd == "reload":
-					config.read("pyserv.conf")
-					self.mysql_host = config.get("MYSQL", "host")
-					self.mysql_port = config.getint("MYSQL", "port")
-					self.mysql_name = config.get("MYSQL", "name")
-					self.mysql_user = config.get("MYSQL", "user")
-					self.mysql_passwd = config.get("MYSQL", "passwd")
-					self.server_name = config.get("SERVER", "name")
-					self.server_address = config.get("SERVER", "address")
-					self.server_port = config.get("SERVER", "port")
-					self.server_id = config.get("SERVER", "id")
-					self.server_password = config.get("SERVER", "password")
-					self.services_name = config.get("SERVICES", "name")
-					self.services_id = config.get("SERVICES", "id")
-					self.services_description = config.get("SERVICES", "description")
-					self.debug = config.get("OTHER", "debug")
-					self.email = config.get("OTHER", "email")
-					self.regmail = config.get("OTHER", "regmail")
-					self.omsg(source, "Done.")
-				elif cmd == "update":
-					_web = urllib2.urlopen("https://raw.github.com/Pythonz/PyServ/master/version")
-					_version = _web.read()
-					_web.close()
-					if __version__ != _version:
-						self.omsg(source, "{0} -> {1}".format(__version__, _version))
-						shell("git add pyserv.conf")
-						shell("git commit -m 'Save'")
-						shell("git pull")
-						__updates = 0
-						_sql = list()
-						for doc in os.listdir("sql/updates"):
-							_sql.append(doc)
-							__updates += 1
-						if __updates > _updates:
-							_files = __updates - _updates
-							while _files != 0:
-								self.omsg(source, " - insert '{0}'".format(_sql[-_files]))
-								file = open("sql/updates/{0}".format(_sql[-_files]))
-								for line in file.readlines():
-									self.query(line)
-								file.close()
-								_files -= 1
-							self.omsg(source, "Done.")
-						msg = "We are restarting for an update, please be patient. We are back as soon as possible."
-						self.send(":%s QUIT :%s" % (self.bot, msg))
-						self.send(":%s QUIT :%s" % (self.obot, msg))
-						self.con.close()
-						if os.access("pyserv.pid", os.F_OK): shell("sh pyserv restart")
-						else: sys.exit(0)
-					else: self.omsg(source, "No update available.")
-				elif cmd == "trust":
-					if len(arg) == 0:
-						for trust in self.query("select * from trust"):
-							self.omsg(source, "IP: {0}          Limit: {1}".format(trust[0], trust[1]))
-					elif len(arg) == 1:
-						entry = False
-						for trust in self.query("select * from trust where address = '{0}'".format(arg[0])):
-							entry = True
-							self.query("delete from trust where address = '{0}'".format(trust[0]))
-						if entry:
-							self.omsg(source, "Trust for {0} has been deleted.".format(arg[0]))
-							conns = 0
-							nicks = list()
-							for online in self.query("select nick from online where address = '{0}'".format(arg[0])):
-								nicks.append(online[0])
-								conns += 1
-							for nick in nicks:
-								self.msg(self.uid(nick), "Your trust has been set to '3'.")
-							if conns > 3 and arg[0] != "0.0.0.0":
-								for nick in nicks:
-									self.send(":{0} KILL {1} :G-lined".format(self.obot, nick))
-								self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.obot, arg[0], limit))
-							elif conns == 3 and arg[0] != "0.0.0.0":
-								for nick in nicks:
-									self.omsg(nick, "Your IP is scratching the connection limit. If you need more connections please request a trust and give us a reason on #help.")
-						else:
-							self.omsg(source, "Trust for {0} does not exist.".format(arg[0]))
-					elif len(arg) == 2:
-						entry = False
-						for trust in self.query("select * from trust where address = '{0}'".format(arg[0])):
-							entry = True
-						if entry:
-							limit = filter(lambda x: x.isdigit(), arg[1])
-							if limit != "":
-								self.query("update trust set `limit` = '{0}' where address = '{1}'".format(limit, arg[0]))
-								self.omsg(source, "Trust for {0} has been set to {1}.".format(arg[0], limit))
-								conns = 0
-								nicks = list()
-								for online in self.query("select nick from online where address = '{0}'".format(arg[0])):
-									nicks.append(online[0])
-									conns += 1
-								for nick in nicks:
-									self.send(":{0} KILL {1} :G-lined".format(self.obot, nick))
-								if conns > int(limit) and arg[0] != "0.0.0.0":
-									for nick in nicks:
-										self.send(":{0} KILL {1} :G-lined".format(self.obot, nick))
-									self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.obot, arg[0], limit))
-								elif conns == int(limit) and arg[0] != "0.0.0.0":
-									for nick in nicks:
-										self.omsg(nick, "Your IP is scratching the connection limit. If you need more connections please request a trust and give us a reason on #help.")
-							else:
-								self.omsg(source, "Invalid limit")
-						else:
-							limit = filter(lambda x: x.isdigit(), arg[1])
-							if limit != "":
-								self.query("insert into  trust values ('{1}','{0}')".format(limit, arg[0]))
-								self.omsg(source, "Trust for {0} has been set to {1}.".format(arg[0], limit))
-								conns = 0
-								nicks = list()
-								for online in self.query("select nick from online where address = '{0}'".format(arg[0])):
-									nicks.append(online[0])
-									conns += 1
-								for nick in nicks:
-									self.msg(self.uid(nick), "Your trust has been set to '{0}'.".format(limit))
-								if conns > int(limit) and arg[0] != "0.0.0.0":
-									for nick in nicks:
-										self.send(":{0} KILL {1} :G-lined".format(self.obot, nick))
-									self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.obot, arg[0], limit))
-								elif conns == int(limit) and arg[0] != "0.0.0.0":
-									for nick in nicks:
-										self.omsg(nick, "Your IP is scratching the connection limit. If you need more connections please request a trust and give us a reason on #help.")
-							else:
-								self.omsg(source, "Invalid limit")
-					else: self.omsg(source, "TRUST [<address> [<limit>]]")
-				elif cmd == "vhost":
-					if len(arg) == 1:
-						if arg[0].lower() == "list":
-							for data in self.query("select user,vhost from vhosts where active = '0'"):
-								self.omsg(source, "User: %s\t|\tRequested vHost: %s" % (str(data[0]), str(data[1])))
-						else: self.omsg(source, "Syntax: VHOST <list>/<activate>/<reject> [<user>] [reason]")
-					elif len(arg) == 2:
-						if arg[0].lower() == "activate":
-							for data in self.query("select user,vhost from vhosts where active = '0' and user = '%s'" % arg[1]):
-								self.query("update vhosts set active = '1' where user = '%s'" % str(data[0]))
-								uid = self.sid(data[0])
-								self.query("insert into memo values ('%s', 'Q', 'Your vHost\2 %s\2 has been activated.')" % (data[0], data[1]))
-								if uid != 0:
-									self.vhost(uid)
-									self.memo(data[0])
-						else: self.omsg(source, "Syntax: VHOST <list>/<activate>/<reject> [<user>] [reason]")
-					elif len(arg) > 2:
-						if arg[0].lower() == "reject":
-							for data in self.query("select * from vhosts where active = '0' and user = '%s'" % arg[1]):
-								self.query("delete from vhosts where user = '%s'" % str(data[0]))
-								self.omsg(source, "vHost for user\2 %s\2 has been rejected" % str(data[0]))
-								self.query("insert into memo values ('%s', 'Q', 'Your vHost\2 %s\2 has been rejected. Reason: %s')" % (data[0], data[1], _mysql.escape_string(' '.join(arg[2:]))))
-								self.memo(data[0])
-						else: self.omsg(source, "Syntax: VHOST <list>/<activate>/<reject> [<user>] [reason]")
-					else: self.omsg(source, "Syntax: VHOST <list>/<activate>/<reject> [<user>] [reason]")
-				elif cmd == "global":
-					self.omsg("$*", "[%s] " % self.nick(source) + args)
-				elif cmd == "feedback":
-					if len(args) == 0:
-						self.omsg(source, "Following users sent a feedback:")
-						for data in self.query("select user from feedback"):
-							self.omsg(source, str(data[0]))
-						self.omsg(source, "To read a feedback: FEEDBACK <user>")
-					else:
-						entry = False
-						for data in self.query("select user,text from feedback"):
-							if arg[0].lower() == str(data[0]).lower():
-								entry = True
-								self.omsg(source, "\2[FEEDBACK]\2")
-								self.omsg(source, "\2FROM\2: %s" % str(data[0]))
-								self.omsg(source, "\2MESSAGE\2: " + str(data[1]))
-								self.query("delete from feedback where user = '%s'" % str(data[0]))
-						if not entry:
-							self.omsg(source, "There is no feedback from\2 %s\2" % arg[0])
-				elif cmd == "kill":
-					if len(arg) == 1:
-						self.kill(arg[0], "You're violation network rules")
-					elif len(arg) > 1:
-						self.kill(arg[0], ' '.join(arg[1:]))
-					else:
-						self.omsg(source, "Syntax: KILL <nick>")
-				elif cmd == "restart":
-					if len(arg) == 0:
-						msg = "services restart"
-						self.send(":%s QUIT :%s" % (self.bot, msg))
-						self.send(":%s QUIT :%s" % (self.obot, msg))
-					else:
-						self.send(":%s QUIT :%s" % (self.bot, args))
-						self.send(":%s QUIT :%s" % (self.obot, args))
-					self.con.close()
-					if os.access("pyserv.pid", os.F_OK): shell("sh pyserv restart")
-					else: sys.exit(0)
-				elif cmd == "quit":
-					if os.access("pyserv.pid", os.F_OK):
-						if len(arg) == 0:
-							msg = "services shutdown"
-							self.send(":%s QUIT :%s" % (self.bot, msg))
-							self.send(":%s QUIT :%s" % (self.obot, msg))
-						else:
-							self.send(":%s QUIT :%s" % (self.bot, args))
-							self.send(":%s QUIT :%s" % (self.obot, args))
-						self.con.close()
-						shell("sh pyserv stop")
-					else: self.omsg(source, "You are running in debug mode, only restart is possible!")
-				elif cmd == "version": self.version(self.obot, source)
-				else:
-					self.omsg(source, "Unknown command {0}. Use HELP for more information".format(cmd.upper()))
-			else:
-				self.omsg(source, "I'm the Operators Service. Only IRC Operators can use me.")
-		except Exception:
-			self.omsg(source, "An error has occured. The Development-Team has been notified about this problem.")
-			et, ev, tb = sys.exc_info()
-			e = "{0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb))
-			if self.email != "":
-				self.mail("bugs@skyice.tk", "From: {0} <{1}>\nTo: PyServ Development <bugs@skyice.tk>\nSubject: Bug on {0}\n{2}".format(self.services_description, self.email, str(e)))
-			debug("<<OMSG-ERROR>> "+str(e))
 
 	def message(self, source, text):
 		try:
@@ -831,7 +612,7 @@ class Services:
 						for data in self.query("select host from online where uid = '%s'" % source):
 							self.send(":%s CHGHOST %s %s" % (self.bot, source, data[0]))
 						for data in self.query("select uid from opers"):
-							self.omsg(data[0], "vHost request received from\2 %s\2" % self.auth(source))
+							self.msg(data[0], "vHost request received from\2 %s\2" % self.auth(source))
 				elif len(arg) == 1:
 					self.query("delete from vhosts where user = '%s'" % self.auth(source))
 					self.msg(source, "Done.")
@@ -1029,7 +810,7 @@ class Services:
 						self.query("insert into feedback values('"+self.auth(source)+"','"+_mysql.escape_string(' '.join(arg[1:]))+"')")
 						self.msg(source, "Feedback added to queue.")
 						for op in self.query("select uid from opers"):
-							self.omsg(str(op[0]), "New feedback from\2 %s\2" % self.auth(source))
+							self.msg(str(op[0]), "New feedback from\2 %s\2" % self.auth(source))
 					else:
 						self.msg(source, "You already sent a feedback. Please wait until an operator read it.")
 				else:
@@ -1074,8 +855,224 @@ class Services:
 				else:
 					self.msg(source, "Syntax: WHOIS <nick>/<#account>")
 			elif arg[0].lower() == "version": self.version(self.bot, source)
+			elif self.isoper(source):
+				cmd = text.lower().split()[0]
+				arg = text.split()[1:]
+				args = ' '.join(text.split()[1:])
+				if cmd == "help":
+					self.msg(source, "For Operators:")
+					self.help(source, "VHOST", "{LIST|ACTIVATE|REJECT} USER")
+					self.help(source, "GLOBAL", "MESSAGE")
+					self.help(source, "FEEDBACK", "[USER]")
+					self.help(source, "KILL", "NICK")
+					self.help(source, "TRUST", "IP [LIMIT]")
+					self.help(source, "DELLOGS")
+					self.help(source, "RELOAD")
+					self.help(source, "UPDATE")
+					self.help(source, "RESTART", "[REASON]")
+					self.help(source, "QUIT", "[REASON]")
+					self.help(source, "VERSION")
+				elif cmd == "dellogs":
+					shell("rm -rf logs/*")
+					self.msg(source, "Done.")
+				elif cmd == "reload":
+					config.read("pyserv.conf")
+					self.mysql_host = config.get("MYSQL", "host")
+					self.mysql_port = config.getint("MYSQL", "port")
+					self.mysql_name = config.get("MYSQL", "name")
+					self.mysql_user = config.get("MYSQL", "user")
+					self.mysql_passwd = config.get("MYSQL", "passwd")
+					self.server_name = config.get("SERVER", "name")
+					self.server_address = config.get("SERVER", "address")
+					self.server_port = config.get("SERVER", "port")
+					self.server_id = config.get("SERVER", "id")
+					self.server_password = config.get("SERVER", "password")
+					self.services_name = config.get("SERVICES", "name")
+					self.services_id = config.get("SERVICES", "id")
+					self.services_description = config.get("SERVICES", "description")
+					self.debug = config.get("OTHER", "debug")
+					self.email = config.get("OTHER", "email")
+					self.regmail = config.get("OTHER", "regmail")
+					self.msg(source, "Done.")
+				elif cmd == "update":
+					_web = urllib2.urlopen("https://raw.github.com/Pythonz/PyServ/master/version")
+					_version = _web.read()
+					_web.close()
+					if __version__ != _version:
+						self.msg(source, "{0} -> {1}".format(__version__, _version))
+						shell("git add pyserv.conf")
+						shell("git commit -m 'Save'")
+						shell("git pull")
+						__updates = 0
+						_sql = list()
+						for doc in os.listdir("sql/updates"):
+							_sql.append(doc)
+							__updates += 1
+						if __updates > _updates:
+							_files = __updates - _updates
+							while _files != 0:
+								self.msg(source, " - insert '{0}'".format(_sql[-_files]))
+								file = open("sql/updates/{0}".format(_sql[-_files]))
+								for line in file.readlines():
+									self.query(line)
+								file.close()
+								_files -= 1
+							self.msg(source, "Done.")
+						msg = "We are restarting for an update, please be patient. We are back as soon as possible."
+						self.send(":%s QUIT :%s" % (self.bot, msg))
+						self.con.close()
+						if os.access("pyserv.pid", os.F_OK): shell("sh pyserv restart")
+						else: sys.exit(0)
+					else: self.msg(source, "No update available.")
+				elif cmd == "trust":
+					if len(arg) == 0:
+						for trust in self.query("select * from trust"):
+							self.msg(source, "IP: {0}          Limit: {1}".format(trust[0], trust[1]))
+					elif len(arg) == 1:
+						entry = False
+						for trust in self.query("select * from trust where address = '{0}'".format(arg[0])):
+							entry = True
+							self.query("delete from trust where address = '{0}'".format(trust[0]))
+						if entry:
+							self.msg(source, "Trust for {0} has been deleted.".format(arg[0]))
+							conns = 0
+							nicks = list()
+							for online in self.query("select nick from online where address = '{0}'".format(arg[0])):
+								nicks.append(online[0])
+								conns += 1
+							for nick in nicks:
+								self.msg(self.uid(nick), "Your trust has been set to '3'.")
+							if conns > 3 and arg[0] != "0.0.0.0":
+								for nick in nicks:
+									self.send(":{0} KILL {1} :G-lined".format(self.bot, nick))
+								self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.bot, arg[0], limit))
+							elif conns == 3 and arg[0] != "0.0.0.0":
+								for nick in nicks:
+									self.msg(nick, "Your IP is scratching the connection limit. If you need more connections please request a trust and give us a reason on #help.")
+						else:
+							self.msg(source, "Trust for {0} does not exist.".format(arg[0]))
+					elif len(arg) == 2:
+						entry = False
+						for trust in self.query("select * from trust where address = '{0}'".format(arg[0])):
+							entry = True
+						if entry:
+							limit = filter(lambda x: x.isdigit(), arg[1])
+							if limit != "":
+								self.query("update trust set `limit` = '{0}' where address = '{1}'".format(limit, arg[0]))
+								self.msg(source, "Trust for {0} has been set to {1}.".format(arg[0], limit))
+								conns = 0
+								nicks = list()
+								for online in self.query("select nick from online where address = '{0}'".format(arg[0])):
+									nicks.append(online[0])
+									conns += 1
+								for nick in nicks:
+									self.send(":{0} KILL {1} :G-lined".format(self.bot, nick))
+								if conns > int(limit) and arg[0] != "0.0.0.0":
+									for nick in nicks:
+										self.send(":{0} KILL {1} :G-lined".format(self.bot, nick))
+									self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.bot, arg[0], limit))
+								elif conns == int(limit) and arg[0] != "0.0.0.0":
+									for nick in nicks:
+										self.msg(nick, "Your IP is scratching the connection limit. If you need more connections please request a trust and give us a reason on #help.")
+							else:
+								self.msg(source, "Invalid limit")
+						else:
+							limit = filter(lambda x: x.isdigit(), arg[1])
+							if limit != "":
+								self.query("insert into  trust values ('{1}','{0}')".format(limit, arg[0]))
+								self.msg(source, "Trust for {0} has been set to {1}.".format(arg[0], limit))
+								conns = 0
+								nicks = list()
+								for online in self.query("select nick from online where address = '{0}'".format(arg[0])):
+									nicks.append(online[0])
+									conns += 1
+								for nick in nicks:
+									self.msg(self.uid(nick), "Your trust has been set to '{0}'.".format(limit))
+								if conns > int(limit) and arg[0] != "0.0.0.0":
+									for nick in nicks:
+										self.send(":{0} KILL {1} :G-lined".format(self.bot, nick))
+									self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.bot, arg[0], limit))
+								elif conns == int(limit) and arg[0] != "0.0.0.0":
+									for nick in nicks:
+										self.msg(nick, "Your IP is scratching the connection limit. If you need more connections please request a trust and give us a reason on #help.")
+							else:
+								self.msg(source, "Invalid limit")
+					else: self.msg(source, "TRUST [<address> [<limit>]]")
+				elif cmd == "vhost":
+					if len(arg) == 1:
+						if arg[0].lower() == "list":
+							for data in self.query("select user,vhost from vhosts where active = '0'"):
+								self.msg(source, "User: %s\t|\tRequested vHost: %s" % (str(data[0]), str(data[1])))
+						else: self.msg(source, "Syntax: VHOST <list>/<activate>/<reject> [<user>] [reason]")
+					elif len(arg) == 2:
+						if arg[0].lower() == "activate":
+							for data in self.query("select user,vhost from vhosts where active = '0' and user = '%s'" % arg[1]):
+								self.query("update vhosts set active = '1' where user = '%s'" % str(data[0]))
+								uid = self.sid(data[0])
+								self.query("insert into memo values ('%s', 'Q', 'Your vHost\2 %s\2 has been activated.')" % (data[0], data[1]))
+								if uid != 0:
+									self.vhost(uid)
+									self.memo(data[0])
+						else: self.msg(source, "Syntax: VHOST <list>/<activate>/<reject> [<user>] [reason]")
+					elif len(arg) > 2:
+						if arg[0].lower() == "reject":
+							for data in self.query("select * from vhosts where active = '0' and user = '%s'" % arg[1]):
+								self.query("delete from vhosts where user = '%s'" % str(data[0]))
+								self.msg(source, "vHost for user\2 %s\2 has been rejected" % str(data[0]))
+								self.query("insert into memo values ('%s', 'Q', 'Your vHost\2 %s\2 has been rejected. Reason: %s')" % (data[0], data[1], _mysql.escape_string(' '.join(arg[2:]))))
+								self.memo(data[0])
+						else: self.msg(source, "Syntax: VHOST <list>/<activate>/<reject> [<user>] [reason]")
+					else: self.msg(source, "Syntax: VHOST <list>/<activate>/<reject> [<user>] [reason]")
+				elif cmd == "global":
+					self.msg("$*", "[%s] " % self.nick(source) + args)
+				elif cmd == "feedback":
+					if len(args) == 0:
+						self.msg(source, "Following users sent a feedback:")
+						for data in self.query("select user from feedback"):
+							self.msg(source, str(data[0]))
+						self.msg(source, "To read a feedback: FEEDBACK <user>")
+					else:
+						entry = False
+						for data in self.query("select user,text from feedback"):
+							if arg[0].lower() == str(data[0]).lower():
+								entry = True
+								self.msg(source, "\2[FEEDBACK]\2")
+								self.msg(source, "\2FROM\2: %s" % str(data[0]))
+								self.msg(source, "\2MESSAGE\2: " + str(data[1]))
+								self.query("delete from feedback where user = '%s'" % str(data[0]))
+						if not entry:
+							self.msg(source, "There is no feedback from\2 %s\2" % arg[0])
+				elif cmd == "kill":
+					if len(arg) == 1:
+						self.kill(arg[0], "You're violation network rules")
+					elif len(arg) > 1:
+						self.kill(arg[0], ' '.join(arg[1:]))
+					else:
+						self.msg(source, "Syntax: KILL <nick>")
+				elif cmd == "restart":
+					if len(arg) == 0:
+						msg = "services restart"
+						self.send(":%s QUIT :%s" % (self.bot, msg))
+					else:
+						self.send(":%s QUIT :%s" % (self.bot, args))
+					self.con.close()
+					if os.access("pyserv.pid", os.F_OK): shell("sh pyserv restart")
+					else: sys.exit(0)
+				elif cmd == "quit":
+					if os.access("pyserv.pid", os.F_OK):
+						if len(arg) == 0:
+							msg = "services shutdown"
+							self.send(":%s QUIT :%s" % (self.bot, msg))
+						else:
+							self.send(":%s QUIT :%s" % (self.bot, args))
+						self.con.close()
+						shell("sh pyserv stop")
+					else: self.msg(source, "You are running in debug mode, only restart is possible!")
+				elif cmd == "version": self.version(source)
+				else:
+					self.msg(source, "Unknown command {0}. Use HELP for more information".format(cmd.upper()))
 			else:
-				self.msg(source, "Unknown command {0}. Please try HELP for more information.".format(arg[0].upper()))
+				self.msg(source, "Unknown command {0}. Please try HELP for more information.".format(text.split()[0].upper()))
 		except Exception:
 			self.msg(source, "An error has occured. The Development-Team has been notified about this problem.")
 			et, ev, tb = sys.exc_info()
@@ -1087,8 +1084,6 @@ class Services:
 	def uid (self, nick):
 		if nick == "Q":
 			return self.bot
-		if nick == "O":
-			return self.obot
 		for data in self.query("select uid from online where nick = '{0}'".format(nick)):
 			return str(data[0])
 		return nick
@@ -1096,8 +1091,6 @@ class Services:
 	def nick (self, source):
 		if source == self.bot:
 			return "Q"
-		if source == self.obot:
-			return "O"
 		for data in self.query("select nick from online where uid = '%s'" % source):
 			return str(data[0])
 		return source
@@ -1112,25 +1105,16 @@ class Services:
 		self.msg(target, command.upper()+" "*int(20-len(command))+description)
 
 	def ohelp(self, target, command, description=""):
-		self.omsg(target, command.upper()+" "*int(20-len(command))+description)
+		self.msg(target, command.upper()+" "*int(20-len(command))+description)
 
 	def msg(self, target, text):
 		self.send(":%s NOTICE %s :%s" % (self.bot, target, text))
-
-	def omsg(self, target, text):
-		self.send(":%s NOTICE %s :%s" % (self.obot, target, text))
 
 	def mode(self, target, mode):
 		self.send(":%s SVSMODE %s %s" % (self.bot, target, mode))
 		if target.startswith("#"):
 			if self.chanflag("l", target):
 				self.log("Q", "mode", target, mode)
-
-	def omode(self, target, mode):
-		self.send(":%s SVSMODE %s %s" % (self.obot, target, mode))
-		if target.startswith("#"):
-			if self.chanflag("l", target):
-				self.log("O", "mode", target, mode)
 
 	def smode(self, target, mode):
 		self.send(":%s SVSMODE %s %s" % (self.services_id, target, mode))
@@ -1170,24 +1154,20 @@ class Services:
 		self.smode(channel, "+r")
 		self.smode(channel, "+q %s" % self.bot)
 
-	def ojoin(self, channel):
-		self.send(":%s JOIN %s" % (self.obot, channel))
-		self.smode(channel, "+q %s" % self.obot)
-
 	def kill(self, target, reason):
 		if target.lower() != "o" and target.lower() != "q":
-			self.send(":%s KILL %s :Killed (%s (%s))" % (self.obot, target, self.services_name, reason))
+			self.send(":%s KILL %s :Killed (%s (%s))" % (self.bot, target, self.services_name, reason))
 
 	def vhost(self, target):
 		for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(target)):
 			self.send(":%s CHGHOST %s %s" % (self.bot, target, str(data[0])))
 			self.msg(target, "Your vhost\2 %s\2 has been activated" % str(data[0]))
 
-	def version(self, source, target):
-		self.send(":%s NOTICE %s :PyServ v%s" % (source, target, __version__))
-		self.send(":%s NOTICE %s :Uptime: %s" % (source, target, self.convert_timestamp(time.time() - _started)))
-		self.send(":%s NOTICE %s :Running on: %s %s %s" % (source, target, os.uname()[0], os.uname()[2], os.uname()[-1]))
-		self.send(":%s NOTICE %s :Developed by Pythonz (https://github.com/Pythonz). Suggestions to pythonz@skyice.tk." % (source, target))
+	def version(self, source):
+		self.msg(source, "PyServ v%s" % __version__)
+		self.msg(source, "Uptime: %s" % (self.convert_timestamp(time.time() - _started)))
+		self.msg(source, "Running on: %s %s %s" % (os.uname()[0], os.uname()[2], os.uname()[-1]))
+		self.msg(source, "Developed by Pythonz (https://github.com/Pythonz). Suggestions to pythonz@skyice.tk.")
 
 	def flag(self, target):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
@@ -1292,6 +1272,37 @@ class Services:
 		if hours > 0: return "%s hours %s minutes %s seconds" % (hours, minutes, seconds)
 		if minutes > 0: return "%s minutes %s seconds" % (minutes, seconds)
 		return "%s seconds" % seconds
+
+class Command:
+	description = "unknown"
+	usage = "unknown"
+	help = "unknown"
+	oper = 0
+	def __init__(self):
+		import ConfigParser
+		import _mysql
+		self.config = ConfigParser.RawConfigParser()
+		self.config.read("pyserv.conf")
+
+	def onCommand(self, uid, arguments):
+		pass
+
+	def query(self, string):
+		Smysql = _mysql.connect(host=self.config.get("MYSQL","host"), port=self.config.getint("MYSQL","port"), db=self.config.get("MYSQL","name"), user=self.config.get("MYSQL","user"), passwd=self.config.get("MYSQL","passwd"))
+		Smysql.query(str(string))
+		result = Smysql.store_result()
+		try:
+			return result.fetch_row(maxrows=0)
+		except:
+			pass
+		finally:
+			Smysql.close()
+
+	def send(self, text):
+		file = open("commands/cache.txt", "a")
+		file.write("{0}\n".format(str(text)))
+		file.close()
+		
 
 if __name__ == "__main__":
 	try:
