@@ -108,7 +108,7 @@ class Services:
 							if data.split()[2] == self.bot:
 								iscmd = False
 								for cmd in dir(commands):
-									if not cmd.startswith("__") and not cmd.endswith("__") and cmd.lower() == data.split()[3][1:].lower():
+									if not cmd.startswith("__") and not cmd.endswith("__") and os.access("commands/"+cmd+".py", os.F_OK) and cmd.lower() == data.split()[3][1:].lower():
 										iscmd = True
 										exec("oper = commands.%s.%s().oper" % (cmd, cmd))
 										if oper == 0:
@@ -314,8 +314,8 @@ class Services:
 					self.help(source, "WHOIS", "Shows information about a user")
 				self.help(source, "VERSION", "Shows version of services")
 				for command in dir(commands):
-					if not command.startswith("__") and not command.endswith("__") and not command.lower() == "commands":
-						exec("cmd_auth = bool(commands.%s.%s().auth)" % (command, command))
+					if not command.startswith("__") and not command.endswith("__") and not command == "commands" and os.access("commands/"+command+".py", os.F_OK):
+						exec("cmd_auth = commands.%s.%s().auth" % (command, command))
 						exec("cmd_help = commands.%s.%s().help" % (command, command))
 						if not cmd_auth:
 							self.help(source, command, cmd_help)

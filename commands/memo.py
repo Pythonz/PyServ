@@ -6,7 +6,7 @@ class memo(pyserv.Command):
 	def onCommand(self, source, args):
 		arg = args.split()
 		if len(arg) > 2:
-			if arg[1].startswith("#"):
+			if arg[0].startswith("#"):
 				user = arg[0][1:]
 				sender = self.auth(source)
 				message = _mysql.escape_string(' '.join(arg[1:]))
