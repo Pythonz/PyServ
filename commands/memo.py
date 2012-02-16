@@ -3,8 +3,8 @@ import pyserv
 class memo(pyserv.Command):
 	help = "Send another user a memo"
 	nauth = 1
-	import _mysql
 	def onCommand(self, source, args):
+		import _mysql
 		arg = args.split()
 		if len(arg) > 1:
 			if arg[0].startswith("#"):
