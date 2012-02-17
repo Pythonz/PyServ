@@ -1,0 +1,1 @@
+UPDATE `channelinfo` SET `welcome` = '';

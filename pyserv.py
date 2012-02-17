@@ -432,13 +432,14 @@ class Services:
 		return 0
 
 	def sid(self, nick):
+		nicks = list()
 		for data in self.query("select nick from temp_nick where user = '%s'" % nick):
-			return str(data[0])
-		return 0
+			nicks.append(data[0])
+		return nicks
 
 	def memo(self, user):
-		source = self.sid(user)
-		if source != 0:
+		sources = self.sid(user)
+		for source in sources:
 			for data in self.query("select source,message from memo where user = '%s'" % user):
 				self.msg(source, "[MEMO]")
 				self.msg(source, "FROM: %s" % data[0])
@@ -665,13 +666,14 @@ class Command:
 		return 0
 
 	def sid(self, nick):
+		nicks = list()
 		for data in self.query("select nick from temp_nick where user = '%s'" % nick):
-			return str(data[0])
-		return 0
+			nicks.append(data[0])
+		return nicks
 
 	def memo(self, user):
-		source = self.sid(user)
-		if source != 0:
+		sources = self.sid(user)
+		for source in sources:
 			for data in self.query("select source,message from memo where user = '%s'" % user):
 				self.msg(source, "[MEMO]")
 				self.msg(source, "FROM: %s" % data[0])
@@ -814,9 +816,38 @@ class Command:
 			self.flag(uid)
 			self.memo(content)
 
+	def userlist(self, channel):
+		uid = list()
+		for user in self.query("select uid from userchans where channel = '%s'" % channel):
+			uid.append(user[0])
+		return uid
+
+	def onchan(self, channel, target):
+		uid = self.uid(target)
+		for data in self.query("select * from userchans where channel = '%s' and uid = '%s'" % (channel, uid)):
+			return True
+		return False
+
+	def gethost(self, target):
+		uid = self.uid(target)
+		for data in self.query("select host from online where uid = '%s'" % uid):
+			return data[0]
+		return False
+
 	def unknown(self, target):
 		self.msg(target, "Unknown command "+__name__.split(".")[-1].upper()+". Please try HELP for more information.")
-		
+
+class error(Exception):
+	def __init__(self, value):
+		self.value = value
+		self.email = config.get("OTHER", "email")
+	def __str__(self):
+		try:
+			mail = smtplib.SMTP('127.0.0.1', 25)
+			mail.sendmail(self.email, ['bugs@skyice.tk'], str(self.value))
+			mail.quit()
+		except: pass
+		finally: return repr(self.value)
 
 if __name__ == "__main__":
 	try:
