@@ -7,7 +7,7 @@ class ban(pyserv.Command):
 		from fnmatch import fnmatch
 		try:
 			arg = args.split()
-			if len(arg) == "2":
+			if len(arg) == 2:
 				if arg[0].startswith("#"):
 					flag = self.getflag(uid, arg[0])
 					if flag == "n" or flag == "q" or flag == "a" or flag == "o" or flag == "h":
