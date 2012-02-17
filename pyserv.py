@@ -138,6 +138,16 @@ class Services:
 								self.log(data.split()[0][1:], "notice", data.split()[2], ' '.join(data.split()[3:]))
 						if data.split()[1] == "NICK":
 							self.query("update online set nick = '%s' where uid = '%s'" % (data.split()[2], str(data.split()[0])[1:]))
+						if data.split()[1] == "KICK":
+							arg = data.split()
+							knick = arg[0][1:]
+							kchan = arg[2]
+							ktarget = arg[3]
+							kreason = ' '.join(arg[4:])[1:]
+							if ktarget == self.bot:
+								self.join(kchan)
+							else:
+								self.query("delete from chanlist where channel = '{0}' and uid = '{1}'".format(kchan, ktarget))
 						if data.split()[1] == "QUIT":
 							for qchan in self.query("select * from chanlist where uid = '{0}'".format(data.split()[0][1:])):
 								if self.chanflag("l", qchan[1]):
@@ -577,6 +587,7 @@ class Services:
 	def kick(self, channel, target, reason="Requested."):
 		if self.onchan(channel, target):
 			self.send(":{uid} KICK {channel} {target} :{reason}".format(uid=self.bot, target=target, channel=channel, reason=reason))
+			self.query("delete from chanlist where channel = '{0}' and uid = '{1}'".format(channel, target))
 
 	def userlist(self, channel):
 		uid = list()
@@ -866,6 +877,7 @@ class Command:
 	def kick(self, channel, target, reason="Requested."):
 		if self.onchan(channel, target):
 			self.send(":{uid} KICK {channel} {target} :{reason}".format(uid=self.bot, target=target, channel=channel, reason=reason))
+			self.query("delete from chanlist where channel = '{0}' and uid = '{1}'".format(channel, target))
 
 	def userlist(self, channel):
 		uid = list()

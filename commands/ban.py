@@ -8,7 +8,7 @@ class ban(pyserv.Command):
 		try:
 			arg = args.split()
 			if len(arg) == 2:
-				if arg[0].startswith("#"):
+				if self.chanexist(arg[0]):
 					flag = self.getflag(uid, arg[0])
 					if flag == "n" or flag == "q" or flag == "a" or flag == "o" or flag == "h":
 						if fnmatch(arg[1], "*!*@*"):
