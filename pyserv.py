@@ -172,6 +172,25 @@ class Services:
 								if data.split()[2].startswith("#"):
 									for channel in self.query("select name,modes from channelinfo where name = '{0}'".format(data.split()[2])):
 										self.mode(channel[0], channel[1])
+							if data.split()[4].split("+")[1].split("-")[0].find("b") != -1:
+								self.checkbans(data.split()[2], data.split()[5:])
+								for ban in data.split()[5:]:
+									if fnmatch.fnmatch(ban, "*!*@*"):
+										entry = False
+										for sql in self.query("select ban from banlist where ban = '%s' and channel = '%s'" % (ban, data.split()[2])):
+											entry = True
+										if not entry:
+											self.query("insert into banlist values ('%s','%s')" % (data.split()[2], ban))
+											self.msg(data.split()[0][1:], "Done.")
+							if data.split()[4].split("-")[1].split("+")[0].find("b") != -1:
+								for ban in data.split()[5:]:
+									if fnmatch.fnmatch(ban, "*!*@*"):
+										entry = False:
+										for sql in self.query("select ban from banlist where channel = '%s' and ban = '%s'" % (data.split()[2], ban)):
+											entry = True
+										if entry:
+											self.query("delete from banlist where channel = '%s' and ban = '%s'" % (data.split()[2], ban))
+											self.msg(data.split()[0][1:], "Done.")
 							if len(data.split()) > 5:
 								if self.chanflag("p", data.split()[2]):
 									for user in data.split()[5:]:
