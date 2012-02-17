@@ -183,7 +183,7 @@ class Services:
 								fjoin_nick = fjoin_nick.split(",")[1]
 							for pnick in data.split()[5:][1:]:
 								if pnick.find(",") != -1:
-									pnick.split(",")[1]
+									pnick = pnick.split(",")[1]
 								self.query("insert into chanlist value ('{0}','{1}')".format(pnick, fjoin_chan))
 							self.enforcebans(fjoin_chan)
 							if self.chanflag("l", fjoin_chan):
