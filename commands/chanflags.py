@@ -26,7 +26,9 @@ class chanflags(pyserv.Command):
 				mode.append("w")
 				desc.append("Welcome message on join")
 				mode.append("l")
-				desc.append("used for channel logs")
+				desc.append("Used for channel logs")
+				mode.append("e")
+				desc.append("Enforce bans")
 				listed = 0
 				while listed != len(mode):
 					self.msg(source, "{0}: {1}".format(mode[listed], desc[listed]))
