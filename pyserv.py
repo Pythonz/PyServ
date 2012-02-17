@@ -13,6 +13,7 @@ import urllib2
 import traceback
 import thread
 import commands
+import fnmatch
 
 try:
 	if not os.access("logs", os.F_OK):
@@ -816,6 +817,10 @@ class Command:
 			self.flag(uid)
 			self.memo(content)
 
+	def kick(self, channel, target, reason="Requested."):
+		if self.onchan(channel, target):
+			self.send(":{uid} KICK {target} {channel} :{reason}".format(self.bot, target, channel, reason))
+
 	def userlist(self, channel):
 		uid = list()
 		for user in self.query("select uid from chanlist where channel = '%s'" % channel):
@@ -832,7 +837,35 @@ class Command:
 		uid = self.uid(target)
 		for data in self.query("select host from online where uid = '%s'" % uid):
 			return data[0]
-		return False
+		return 0
+
+	def hostmask(self, target):
+		uid = self.uid(target)
+		for data in self.query("select nick,host from online where uid = '%s'" % uid):
+			return data[0]+"!"+data[1]
+		return 0
+
+	def enforceban(self, channel, target):
+		for user in self.userlist(channel):
+			if fnmatch.fnmatch(self.hostmask(user), target):
+				self.mode(channel, "+b "+target)
+				self.kick(channel, user, "Banned.")
+
+	def enforcebans(self, channel):
+		for data in self.query("select ban from banlist where channel = '%'" % channel):
+			for user in self.userlist(channel):
+				if fnmatch.fnmatch(self.hostmask(user), data[0]):
+					self.mode(channel, "+b "+data[0])
+					self.kick(channel, user, "Banned.")
+
+	def checkbans(self, channel, args):
+		if self.chanflag("e", channel):
+			bans = args.split()
+			for ban in bans:
+				if fnmatch.fnmatch(ban, "*!*@*"):
+					for user in self.userlist(channel):
+						if fnmatch.fnmatch(self.hostmask(user), ban):
+							self.kick(channel, user, "Banned.")
 
 	def unknown(self, target):
 		self.msg(target, "Unknown command "+__name__.split(".")[-1].upper()+". Please try HELP for more information.")
