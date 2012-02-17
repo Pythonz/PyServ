@@ -900,11 +900,8 @@ class Command:
 
 	def enforcebans(self, channel):
 		for data in self.query("select ban from banlist where channel = '%s'" % channel):
-			self.msg("Pascal", "Passed: query")
 			for user in self.userlist(channel):
-				self.msg("Pascal", "Passed: userlist")
 				if fnmatch.fnmatch(self.hostmask(user), data[0]):
-					self.msg("Pascal", "Passed: fnmatch")
 					self.mode(channel, "+b "+data[0])
 					self.kick(channel, user, "Banned.")
 
