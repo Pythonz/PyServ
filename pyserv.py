@@ -173,35 +173,36 @@ class Services:
 									for channel in self.query("select name,modes from channelinfo where name = '{0}'".format(data.split()[2])):
 										self.mode(channel[0], channel[1])
 							if len(data.split()) > 5:
-								splitted = data.split()[4]
-								if splitted.find("+") != -1:
-									splitted = splitted.split("+")[1]
-									if splitted.find("-") != -1:
-										splitted = splitted.split("-")[0]
-									if splitted.find("b") != -1:
-										self.checkbans(data.split()[2], ' '.join(data.split()[5:]))
-										for ban in data.split()[5:]:
-											if fnmatch.fnmatch(ban, "*!*@*"):
-												entry = False
-												for sql in self.query("select ban from banlist where ban = '%s' and channel = '%s'" % (ban, data.split()[2])):
-													entry = True
-												if not entry:
-													self.query("insert into banlist values ('%s','%s')" % (data.split()[2], ban))
-													self.msg(data.split()[0][1:], "Done.")
-								splitted = data.split()[4]
-								if splitted.find("-") != -1:
-									splitted = splitted.split("-")[1]
+								if self.chanexist(data.split()[2]):
+									splitted = data.split()[4]
 									if splitted.find("+") != -1:
-										splitted = splitted.split("+")[0]
-									if splitted.find("b") != -1:
-										for ban in data.split()[5:]:
-											if fnmatch.fnmatch(ban, "*!*@*"):
-												entry = False
-												for sql in self.query("select ban from banlist where channel = '%s' and ban = '%s'" % (data.split()[2], ban)):
-													entry = True
-												if entry:
-													self.query("delete from banlist where channel = '%s' and ban = '%s'" % (data.split()[2], ban))
-													self.msg(data.split()[0][1:], "Done.")
+										splitted = splitted.split("+")[1]
+										if splitted.find("-") != -1:
+											splitted = splitted.split("-")[0]
+										if splitted.find("b") != -1:
+											self.checkbans(data.split()[2], ' '.join(data.split()[5:]))
+											for ban in data.split()[5:]:
+												if fnmatch.fnmatch(ban, "*!*@*"):
+													entry = False
+													for sql in self.query("select ban from banlist where ban = '%s' and channel = '%s'" % (ban, data.split()[2])):
+														entry = True
+													if not entry:
+														self.query("insert into banlist values ('%s','%s')" % (data.split()[2], ban))
+														self.msg(data.split()[0][1:], "Done.")
+									splitted = data.split()[4]
+									if splitted.find("-") != -1:
+										splitted = splitted.split("-")[1]
+										if splitted.find("+") != -1:
+											splitted = splitted.split("+")[0]
+										if splitted.find("b") != -1:
+											for ban in data.split()[5:]:
+												if fnmatch.fnmatch(ban, "*!*@*"):
+													entry = False
+													for sql in self.query("select ban from banlist where channel = '%s' and ban = '%s'" % (data.split()[2], ban)):
+														entry = True
+													if entry:
+														self.query("delete from banlist where channel = '%s' and ban = '%s'" % (data.split()[2], ban))
+														self.msg(data.split()[0][1:], "Done.")
 								if self.chanflag("p", data.split()[2]):
 									for user in data.split()[5:]:
 										for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (data.split()[2], self.auth(user))):
@@ -220,7 +221,7 @@ class Services:
 								if pnick.find(",") != -1:
 									pnick = pnick.split(",")[1]
 								self.query("insert into chanlist value ('{0}','{1}')".format(pnick, fjoin_chan))
-							self.enforcebans(fjoin_chan)
+							if self.chanexist(fjoin_chan): self.enforcebans(fjoin_chan)
 							if self.chanflag("l", fjoin_chan):
 								self.showlog(fjoin_nick, fjoin_chan)
 								self.log(fjoin_nick, "join", fjoin_chan)
