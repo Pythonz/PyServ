@@ -902,11 +902,7 @@ class Command:
 			self.push(source, "!@ PRIVMSG "+channel+" :*** Log start")
 			for line in file.readlines():
 				if line.split()[1] != "PART" and line.split()[1] != "JOIN" and line.split()[1] != "QUIT":
-					self.p
-	def getvhost(self, target):
-		for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % target):
-			return data[0]
-		return "None"ush(source, line.rstrip())
+					self.push(source, line.rstrip())
 				else:
 					self.push(source, "*!@ PRIVMSG "+channel+" :"+line.rstrip())
 			self.push(source, "!@ PRIVMSG "+channel+" :*** Log end")
