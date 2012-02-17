@@ -701,6 +701,11 @@ class Services:
 			return data[0]+"@"+data[1]
 		return 0
 
+	def getvhost(self, target):
+		for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % target):
+			return data[0]
+		return "None"
+
 class Command:
 	import sys
 	import os
@@ -897,7 +902,11 @@ class Command:
 			self.push(source, "!@ PRIVMSG "+channel+" :*** Log start")
 			for line in file.readlines():
 				if line.split()[1] != "PART" and line.split()[1] != "JOIN" and line.split()[1] != "QUIT":
-					self.push(source, line.rstrip())
+					self.p
+	def getvhost(self, target):
+		for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % target):
+			return data[0]
+		return "None"ush(source, line.rstrip())
 				else:
 					self.push(source, "*!@ PRIVMSG "+channel+" :"+line.rstrip())
 			self.push(source, "!@ PRIVMSG "+channel+" :*** Log end")
@@ -1024,6 +1033,11 @@ class Command:
 		for data in self.query("select username,host from online where uid = '%s'" % uid):
 			return data[0]+"@"+data[1]
 		return 0
+
+	def getvhost(self, target):
+		for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % target):
+			return data[0]
+		return "None"
 
 class error(Exception):
 	def __init__(self, value):
