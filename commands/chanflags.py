@@ -39,8 +39,8 @@ class chanflags(pyserv.Command):
 			if arg[0].startswith("#"):
 				if self.getflag(source, arg[0]) == "n" or self.getflag(source, arg[0]) == "a":
 					for channel in self.query("select name from channelinfo where name = '{0}'".format(arg[0])):
-						self.query("update channelinfo set flags = '{0}' where name = '{1}'".format(arg[0], channel[0]))
-						self.msg(source, "New flags for {0}: {1}".format(channel[0], arg[0]))
+						self.query("update channelinfo set flags = '{0}' where name = '{1}'".format(arg[1], channel[0]))
+						self.msg(source, "New flags for {0}: {1}".format(channel[0], arg[1]))
 				else:
 					self.msg(source, "No permission")
 			else:
