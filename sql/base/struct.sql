@@ -22,3 +22,5 @@ DROP TABLE IF EXISTS `memo`;
 CREATE TABLE IF NOT EXISTS `memo` (user text, source text, message text);
 DROP TABLE IF EXISTS `banlist`;
 CREATE TABLE IF NOT EXISTS `banlist` (channel text, ban text);
+DROP TABLE IF EXISTS `suspended`;
+CREATE TABLE IF NOT EXISTS `suspended` (channel text, reason text);

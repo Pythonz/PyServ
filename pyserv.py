@@ -663,6 +663,22 @@ class Services:
 						if fnmatch.fnmatch(self.hostmask(user), ban):
 							self.kick(channel, user, "Banned.")
 
+	def getip(self, target):
+		uid = self.uid(target)
+		for data in self.query("select address from online where uid = '%s'" % uid):
+			return data[0]
+		return 0
+
+	def gline(self, target, reason=""):
+		uid = self.uid(target)
+		self.send(":"+self.bot+" KILL "+uid+" :G-lined")
+		self.send(":"+self.bot+" GLINE *@"+self.getip(uid)+" 1800 :"+reason)
+
+	def suspended(self, channel):
+		for data in self.query("select reason from suspended where channel = '%s'" % channel):
+			return data[0]
+		return False
+
 class Command:
 	import sys
 	import os
@@ -953,6 +969,22 @@ class Command:
 							self.kick(channel, user, "Banned.")
 	def unknown(self, target):
 		self.msg(target, "Unknown command "+__name__.split(".")[-1].upper()+". Please try HELP for more information.")
+
+	def getip(self, target):
+		uid = self.uid(target)
+		for data in self.query("select address from online where uid = '%s'" % uid):
+			return data[0]
+		return 0
+
+	def gline(self, target, reason=""):
+		uid = self.uid(target)
+		self.send(":"+self.bot+" KILL "+uid+" :G-lined")
+		self.send(":"+self.bot+" GLINE *@"+self.getip(uid)+" 1800 :"+reason)
+
+	def suspended(self, channel):
+		for data in self.query("select reason from suspended where channel = '%s'" % channel):
+			return data[0]
+		return False
 
 class error(Exception):
 	def __init__(self, value):
