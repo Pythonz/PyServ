@@ -15,9 +15,8 @@ class ovhost(pyserv.Command):
 			if arg[0].lower() == "activate":
 				for data in self.query("select user,vhost from vhosts where active = '0' and user = '%s'" % arg[1]):
 					self.query("update vhosts set active = '1' where user = '%s'" % str(data[0]))
-					uid = self.sid(data[0])
 					self.query("insert into memo values ('%s', 'Q', 'Your vHost\2 %s\2 has been activated.')" % (data[0], data[1]))
-					if uid != 0:
+					for uid in self.sid(data[0]):
 						self.vhost(uid)
 						self.memo(data[0])
 			else: self.msg(source, "Syntax: OVHOST <list>/<activate>/<reject> [<user>] [reason]")
