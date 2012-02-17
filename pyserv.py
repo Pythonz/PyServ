@@ -18,13 +18,9 @@ import fnmatch
 try:
 	if not os.access("logs", os.F_OK):
 		os.mkdir("logs")
-	i = 1
 	f = open("version", "r")
 	__version__ = f.read()
 	f.close()
-	_updates = 0
-	for doc in os.listdir("sql/updates"):
-		_updates += 1
 	_started = time.time()
 	config = ConfigParser.RawConfigParser()
 	config.read("pyserv.conf")
@@ -232,7 +228,7 @@ class Services:
 								self.send(":{uid} IDLE {source} 0 0".format(uid=data.split()[2], source=data.split()[0][1:]))
 						if data.split()[1] == "UID":
 							self.query("delete from temp_nick where nick = '%s'" % data.split()[2])
-							self.query("insert into online values ('%s','%s','%s','%s')" % (data.split()[2], data.split()[4], data.split()[8], data.split()[6]))
+							self.query("insert into online values ('%s','%s','%s','%s','%s')" % (data.split()[2], data.split()[4], data.split()[8], data.split()[6], data.split()[7]))
 							conns = 0
 							nicks = list()
 							for connection in self.query("select nick from online where address = '%s'" % data.split()[8]):
@@ -335,25 +331,24 @@ class Services:
 				_version = _web.read()
 				_web.close()
 				if __version__ != _version:
+					_updates = len(os.listdir("sql/updates"))
 					self.msg(source, "{0} -> {1}".format(__version__, _version))
 					shell("git add pyserv.conf")
 					shell("git commit -m 'Save'")
 					shell("git pull")
-					__updates = 0
-					_sql = list()
-					for doc in os.listdir("sql/updates"):
-						_sql.append(doc)
-						__updates += 1
+					_files = os.listdir("sql/updates")
+					__updates = len(_files)
 					if __updates > _updates:
-						_files = __updates - _updates
-						while _files != 0:
-							self.msg(source, " - insert '{0}'".format(_sql[-_files]))
-							file = open("sql/updates/{0}".format(_sql[-_files]))
-							for line in file.readlines():
-								self.query(line)
-							file.close()
-							_files -= 1
-						self.msg(source, "Done.")
+						while _updates != __updates:
+							_updates += 1
+							for sql in _files:
+								if sql.startswith(_updates+"_"):
+									self.msg(source, " - Insert '{0}'".format(sql))
+									file = open("sql/updates/"+sql, "r")
+									for line in file.readlines():
+										self.query(line)
+									file.close()
+					self.msg(source, "Done.")
 					msg = "We are restarting for an update, please be patient. We are back as soon as possible."
 					self.send(":%s QUIT :%s" % (self.bot, msg))
 					self.con.close()
@@ -580,7 +575,8 @@ class Services:
 		return "%s seconds" % seconds
 
 	def kick(self, channel, target, reason="Requested."):
-		self.send(":{uid} KICK {target} {channel} :{reason}".format(uid=self.bot, target=target, channel=channel, reason=reason))
+		if self.onchan(channel, target):
+			self.send(":{uid} KICK {target} {channel} :{reason}".format(uid=self.bot, target=target, channel=channel, reason=reason))
 
 	def userlist(self, channel):
 		uid = list()
@@ -602,8 +598,8 @@ class Services:
 
 	def hostmask(self, target):
 		uid = self.uid(target)
-		for data in self.query("select nick,host from online where uid = '%s'" % uid):
-			return data[0]+"!"+data[1]
+		for data in self.query("select nick,username,host from online where uid = '%s'" % uid):
+			return data[0]+"!"+data[1]+"@"+data[2]
 		return 0
 
 	def enforceban(self, channel, target):
@@ -868,7 +864,8 @@ class Command:
 			self.memo(content)
 
 	def kick(self, channel, target, reason="Requested."):
-		self.send(":{uid} KICK {target} {channel} :{reason}".format(uid=self.bot, target=target, channel=channel, reason=reason))
+		if self.onchan(channel, target):
+			self.send(":{uid} KICK {target} {channel} :{reason}".format(uid=self.bot, target=target, channel=channel, reason=reason))
 
 	def userlist(self, channel):
 		uid = list()
@@ -890,8 +887,8 @@ class Command:
 
 	def hostmask(self, target):
 		uid = self.uid(target)
-		for data in self.query("select nick,host from online where uid = '%s'" % uid):
-			return data[0]+"!"+data[1]
+		for data in self.query("select nick,username,host from online where uid = '%s'" % uid):
+			return data[0]+"!"+data[1]+"@"+data[2]
 		return 0
 
 	def enforceban(self, channel, target):
