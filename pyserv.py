@@ -649,7 +649,7 @@ class Services:
 		for data in self.query("select nick,username,host from online where uid = '%s'" % uid):
 			nick = data[0]
 			username = data[1]
-			mask.append(data[0]+"!"+data[1]+"@"+data[2])
+			masks.append(data[0]+"!"+data[1]+"@"+data[2])
 		if self.auth(uid) != 0:
 			for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(uid)):
 				masks.append(nick+"!"+username+"@"+data[0])
@@ -965,9 +965,17 @@ class Command:
 
 	def hostmask(self, target):
 		uid = self.uid(target)
+		masks = list()
+		nick = None
+		username = None
 		for data in self.query("select nick,username,host from online where uid = '%s'" % uid):
-			return data[0]+"!"+data[1]+"@"+data[2]
-		return 0
+			nick = data[0]
+			username = data[1]
+			masks.append(data[0]+"!"+data[1]+"@"+data[2])
+		if self.auth(uid) != 0:
+			for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(uid)):
+				masks.append(nick+"!"+username+"@"+data[0])
+		return masks
 
 	def enforceban(self, channel, target):
 		for user in self.userlist(channel):
