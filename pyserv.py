@@ -643,30 +643,41 @@ class Services:
 
 	def hostmask(self, target):
 		uid = self.uid(target)
+		masks = list()
+		nick = None
+		username = None
 		for data in self.query("select nick,username,host from online where uid = '%s'" % uid):
-			return data[0]+"!"+data[1]+"@"+data[2]
-		return 0
+			nick = data[0]
+			username = data[1]
+			mask.append(data[0]+"!"+data[1]+"@"+data[2])
+		if self.auth(uid) != 0:
+			for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(uid)):
+				masks.append(nick+"!"+username+"@"+data[0])
+		return masks
 
 	def enforceban(self, channel, target):
 		for user in self.userlist(channel):
-			if fnmatch.fnmatch(self.hostmask(user), target):
-				self.mode(channel, "+b "+target)
-				self.kick(channel, user, "Banned.")
+			for hostmask in self.hostmask(user)
+				if fnmatch.fnmatch(hostmask, target):
+					self.mode(channel, "+b "+target)
+					self.kick(channel, user, "Banned.")
 
 	def enforcebans(self, channel):
 		for data in self.query("select ban from banlist where channel = '%s'" % channel):
 			for user in self.userlist(channel):
-				if fnmatch.fnmatch(self.hostmask(user), data[0]):
-					self.mode(channel, "+b "+data[0])
-					self.kick(channel, user, "Banned.")
+				for hostmask in self.hostmask(user):
+					if fnmatch.fnmatch(hostmask, data[0]):
+						self.mode(channel, "+b "+data[0])
+						self.kick(channel, user, "Banned.")
 
 	def checkbans(self, channel, bans):
 		if self.chanflag("e", channel):
 			for ban in bans.split():
 				if fnmatch.fnmatch(ban, "*!*@*"):
 					for user in self.userlist(channel):
-						if fnmatch.fnmatch(self.hostmask(user), ban):
-							self.kick(channel, user, "Banned.")
+						for hostmask in self.hostmask(user):
+							if fnmatch.fnmatch(hostmask, ban):
+								self.kick(channel, user, "Banned.")
 
 	def getip(self, target):
 		uid = self.uid(target)
@@ -960,24 +971,27 @@ class Command:
 
 	def enforceban(self, channel, target):
 		for user in self.userlist(channel):
-			if fnmatch.fnmatch(self.hostmask(user), target):
-				self.mode(channel, "+b "+target)
-				self.kick(channel, user, "Banned.")
+			for hostmask in self.hostmask(user):
+				if fnmatch.fnmatch(hostmask, target):
+					self.mode(channel, "+b "+target)
+					self.kick(channel, user, "Banned.")
 
 	def enforcebans(self, channel):
 		for data in self.query("select ban from banlist where channel = '%s'" % channel):
 			for user in self.userlist(channel):
-				if fnmatch.fnmatch(self.hostmask(user), data[0]):
-					self.mode(channel, "+b "+data[0])
-					self.kick(channel, user, "Banned.")
+				for hostmask in self.hostmask(user):
+					if fnmatch.fnmatch(hostmask, data[0]):
+						self.mode(channel, "+b "+data[0])
+						self.kick(channel, user, "Banned.")
 
 	def checkbans(self, channel, bans):
 		if self.chanflag("e", channel):
 			for ban in bans.split():
 				if fnmatch.fnmatch(ban, "*!*@*"):
 					for user in self.userlist(channel):
-						if fnmatch.fnmatch(self.hostmask(user), ban):
-							self.kick(channel, user, "Banned.")
+						for hostmask in self.hostmask(user):
+							if fnmatch.fnmatch(hostmask, ban):
+								self.kick(channel, user, "Banned.")
 	def unknown(self, target):
 		self.msg(target, "Unknown command "+__name__.split(".")[-1].upper()+". Please try HELP for more information.")
 
