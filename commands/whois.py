@@ -17,6 +17,7 @@ class whois(pyserv.Command):
 							online.append(data[0])
 					self.msg(source, "Online Nicks  : {0}".format(' '.join(online)))
 					self.msg(source, "Email address : {0}".format(user[1]))
+					self.msg(source, "vHost         : {0}".format(self.getvhost(user[0])))
 					self.msg(source, "Known on following channels:")
 					self.msg(source, "Channel              Flag")
 					for channel in self.query("select channel,flag from channels where user = '{0}'".format(user[0])):
