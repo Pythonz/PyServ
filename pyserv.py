@@ -179,7 +179,7 @@ class Services:
 									if splitted.find("-") != -1:
 										splitted = splitted.split("-")[0]
 									if splitted.find("b") != -1:
-										self.checkbans(data.split()[2], data.split()[5:])
+										self.checkbans(data.split()[2], ' '.join(data.split()[5:]))
 										for ban in data.split()[5:]:
 											if fnmatch.fnmatch(ban, "*!*@*"):
 												entry = False
