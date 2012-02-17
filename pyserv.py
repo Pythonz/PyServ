@@ -221,7 +221,7 @@ class Services:
 								if pnick.find(",") != -1:
 									pnick = pnick.split(",")[1]
 								self.query("insert into chanlist value ('{0}','{1}')".format(pnick, fjoin_chan))
-								if self.suspended(fjoin_chan):
+								if self.suspended(fjoin_chan) and not self.isoper(pnick):
 									self.gline(pnick, "Suspended "+fjoin_chan+": "+self.suspended(fjoin_chan))
 							if self.chanexist(fjoin_chan): self.enforcebans(fjoin_chan)
 							if self.chanflag("l", fjoin_chan):
