@@ -382,7 +382,7 @@ class Services:
 						while _updates != __updates:
 							_updates += 1
 							for sql in _files:
-								if sql.startswith(_updates+"_"):
+								if sql.startswith(str(_updates)+"_"):
 									self.msg(source, " - Insert '{0}'".format(sql))
 									file = open("sql/updates/"+sql, "r")
 									for line in file.readlines():
