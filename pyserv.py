@@ -657,7 +657,7 @@ class Services:
 
 	def enforceban(self, channel, target):
 		for user in self.userlist(channel):
-			for hostmask in self.hostmask(user)
+			for hostmask in self.hostmask(user):
 				if fnmatch.fnmatch(hostmask, target):
 					self.mode(channel, "+b "+target)
 					self.kick(channel, user, "Banned.")
