@@ -8,7 +8,7 @@ class request(pyserv.Command):
 		if len(arg) == 1:
 			if arg[0].startswith("#"):
 				exists = False
-				for data in self.query("select channel from channels where channel = '%s'" % arg[1]):
+				for data in self.query("select channel from channels where channel = '%s'" % arg[0]):
 						exists = True
 				if not exists:
 					self.query("insert into channelinfo values ('%s', '', '', '', '')" % arg[0])
