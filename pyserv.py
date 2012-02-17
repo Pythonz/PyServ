@@ -612,7 +612,7 @@ class Services:
 				self.kick(channel, user, "Banned.")
 
 	def enforcebans(self, channel):
-		for data in self.query("select ban from banlist where channel = '%'" % channel):
+		for data in self.query("select ban from banlist where channel = '%s'" % channel):
 			for user in self.userlist(channel):
 				if fnmatch.fnmatch(self.hostmask(user), data[0]):
 					self.mode(channel, "+b "+data[0])
@@ -903,7 +903,7 @@ class Command:
 				self.kick(channel, user, "Banned.")
 
 	def enforcebans(self, channel):
-		for data in self.query("select ban from banlist where channel = '%'" % channel):
+		for data in self.query("select ban from banlist where channel = '%s'" % channel):
 			for user in self.userlist(channel):
 				if fnmatch.fnmatch(self.hostmask(user), data[0]):
 					self.mode(channel, "+b "+data[0])
