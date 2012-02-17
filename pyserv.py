@@ -185,7 +185,7 @@ class Services:
 							if data.split()[4].split("-")[1].split("+")[0].find("b") != -1:
 								for ban in data.split()[5:]:
 									if fnmatch.fnmatch(ban, "*!*@*"):
-										entry = False:
+										entry = False
 										for sql in self.query("select ban from banlist where channel = '%s' and ban = '%s'" % (data.split()[2], ban)):
 											entry = True
 										if entry:
