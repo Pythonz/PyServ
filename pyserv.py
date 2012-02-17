@@ -818,13 +818,13 @@ class Command:
 
 	def userlist(self, channel):
 		uid = list()
-		for user in self.query("select uid from userchans where channel = '%s'" % channel):
+		for user in self.query("select uid from chanlist where channel = '%s'" % channel):
 			uid.append(user[0])
 		return uid
 
 	def onchan(self, channel, target):
 		uid = self.uid(target)
-		for data in self.query("select * from userchans where channel = '%s' and uid = '%s'" % (channel, uid)):
+		for data in self.query("select * from chanlist where channel = '%s' and uid = '%s'" % (channel, uid)):
 			return True
 		return False
 
