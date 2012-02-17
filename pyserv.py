@@ -181,7 +181,7 @@ class Services:
 							fjoin_nick = data.split()[5][1:]
 							if fjoin_nick.find(",") != -1:
 								fjoin_nick = fjoin_nick.split(",")[1]
-							for pnick in data.split()[5:][1:]:
+							for pnick in data.split()[5:]:
 								if pnick.find(",") != -1:
 									pnick = pnick.split(",")[1]
 								self.query("insert into chanlist value ('{0}','{1}')".format(pnick, fjoin_chan))
