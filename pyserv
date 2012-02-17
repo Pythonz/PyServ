@@ -68,6 +68,7 @@ case $1 in
 				sh pyserv stop
 				running="true"
 			fi
+			git rm commands/*.pyc
 			git add pyserv.conf
 			git commit -m 'Save'
 			git pull
