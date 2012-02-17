@@ -182,25 +182,26 @@ class Services:
 										if not entry:
 											self.query("insert into banlist values ('%s','%s')" % (data.split()[2], ban))
 											self.msg(data.split()[0][1:], "Done.")
-							if data.split()[4].split("-")[1].split("+")[0].find("b") != -1:
-								for ban in data.split()[5:]:
-									if fnmatch.fnmatch(ban, "*!*@*"):
-										entry = False
-										for sql in self.query("select ban from banlist where channel = '%s' and ban = '%s'" % (data.split()[2], ban)):
-											entry = True
-										if entry:
-											self.query("delete from banlist where channel = '%s' and ban = '%s'" % (data.split()[2], ban))
-											self.msg(data.split()[0][1:], "Done.")
 							if len(data.split()) > 5:
-								if self.chanflag("p", data.split()[2]):
-									for user in data.split()[5:]:
-										for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (data.split()[2], self.auth(user))):
-											if str(flag[0]) == "n":
-												self.mode(data.split()[2], "+q %s" % user)
-											elif str(flag[0]) == "Y":
-												pass
-											else:
-												self.mode(data.split()[2], "+%s %s" % (str(flag[0]), user))
+								if data.split()[4].split("-")[1].split("+")[0].find("b") != -1:
+									for ban in data.split()[5:]:
+										if fnmatch.fnmatch(ban, "*!*@*"):
+											entry = False
+											for sql in self.query("select ban from banlist where channel = '%s' and ban = '%s'" % (data.split()[2], ban)):
+												entry = True
+											if entry:
+												self.query("delete from banlist where channel = '%s' and ban = '%s'" % (data.split()[2], ban))
+												self.msg(data.split()[0][1:], "Done.")
+								if len(data.split()) > 5:
+									if self.chanflag("p", data.split()[2]):
+										for user in data.split()[5:]:
+											for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (data.split()[2], self.auth(user))):
+												if str(flag[0]) == "n":
+													self.mode(data.split()[2], "+q %s" % user)
+												elif str(flag[0]) == "Y":
+													pass
+												else:
+													self.mode(data.split()[2], "+%s %s" % (str(flag[0]), user))
 						if data.split()[1] == "FJOIN":
 							fjoin_chan = data.split()[2]
 							fjoin_nick = data.split()[5][1:]
