@@ -579,7 +579,7 @@ class Services:
 
 	def kick(self, channel, target, reason="Requested."):
 		if self.onchan(channel, target):
-			self.send(":{uid} KICK {target} {channel} :{reason}".format(self.bot, target, channel, reason))
+			self.send(":{uid} KICK {target} {channel} :{reason}".format(uid=self.bot, target=target, channel=channel, reason=reason))
 
 	def userlist(self, channel):
 		uid = list()
@@ -870,7 +870,7 @@ class Command:
 
 	def kick(self, channel, target, reason="Requested."):
 		if self.onchan(channel, target):
-			self.send(":{uid} KICK {target} {channel} :{reason}".format(self.bot, target, channel, reason))
+			self.send(":{uid} KICK {target} {channel} :{reason}".format(uid=self.bot, target=target, channel=channel, reason=reason))
 
 	def userlist(self, channel):
 		uid = list()
