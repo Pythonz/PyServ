@@ -476,13 +476,12 @@ class Services:
 		return nicks
 
 	def memo(self, user):
-		sources = self.sid(user)
-		for source in sources:
-			for data in self.query("select source,message from memo where user = '%s'" % user):
+		for data in self.query("select source,message from memo where user = '%s'" % user):
+			for source in self.sid(user):
 				self.msg(source, "\2[MEMO]\2")
 				self.msg(source, "\2FROM:\2 %s" % data[0])
 				self.msg(source, "\2MESSAGE:\2 %s" % data[1])
-				self.query("delete from memo where user = '%s' and source = '%s' and message = '%s'" % (user, data[0], _mysql.escape_string(data[1])))
+			self.query("delete from memo where user = '%s' and source = '%s' and message = '%s'" % (user, data[0], _mysql.escape_string(data[1])))
 
 	def chanexist(self, channel):
 		for data in self.query("select name from channelinfo where name = '%s'" % channel):
@@ -758,13 +757,12 @@ class Command:
 		return nicks
 
 	def memo(self, user):
-		sources = self.sid(user)
-		for source in sources:
-			for data in self.query("select source,message from memo where user = '%s'" % user):
+		for data in self.query("select source,message from memo where user = '%s'" % user):
+			for source in self.sid(user):
 				self.msg(source, "\2[MEMO]\2")
 				self.msg(source, "\2FROM:\2 %s" % data[0])
 				self.msg(source, "\2MESSAGE:\2 %s" % data[1])
-				self.query("delete from memo where user = '%s' and source = '%s' and message = '%s'" % (user, data[0], _mysql.escape_string(data[1])))
+			self.query("delete from memo where user = '%s' and source = '%s' and message = '%s'" % (user, data[0], _mysql.escape_string(data[1])))
 
 	def chanexist(self, channel):
 		for data in self.query("select name from channelinfo where name = '%s'" % channel):
