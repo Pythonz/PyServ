@@ -655,7 +655,7 @@ class Services:
 					self.mode(channel, "+b "+data[0])
 					self.kick(channel, user, "Banned.")
 
-	def checkbans(self, channel, arg):
+	def checkbans(self, channel, bans):
 		if self.chanflag("e", channel):
 			for ban in bans.split():
 				if fnmatch.fnmatch(ban, "*!*@*"):
