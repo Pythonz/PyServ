@@ -20,12 +20,16 @@ class suspend(pyserv.Command):
 					self.query("insert into suspended values ('%s', '%s')" % (arg[0], _mysql.escape_string(' '.join(arg[1:]))))
 					for user in self.userlist(arg[0]):
 						if not self.isoper(user):
-							self.gline(user, "Suspended "+arg[1]+": "+' '.join(arg[1]))
+							self.gline(user, "Suspended "+arg[1]+": "+' '.join(arg[1:]))
+						else:
+							self.msg(user, "Channel "+arg[1]+" is suspended: "+' '.join(arg[1:]))
 				else:
 					self.query("update suspended set reason = '%s' where channel = '%s'" % (_mysql.escape_string(' '.join(arg[1:])), arg[0]))
 					for user in self.userlist(arg[0]):
 						if not self.isoper(user):
-							self.gline(user, "Suspended "+arg[1]+": "+' '.join(arg[1]))
+							self.gline(user, "Suspended "+arg[1]+": "+' '.join(arg[1:]))
+						else:
+							self.msg(user, "Channel "+arg[1]+" is suspended: "+' '.join(arg[1:]))
 				self.msg(uid, "Suspended.")
 			else: self.msg(uid, "Invalid channel: "+arg[0])
 		else:
