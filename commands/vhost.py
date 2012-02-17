@@ -14,8 +14,8 @@ class vhost(pyserv.Command):
 				self.msg(source, "Domain ending is too short.")
 			else:
 				self.query("delete from vhosts where user = '%s'" % self.auth(source))
-				self.query("insert into vhosts values ('%s','%s','0')" % (self.auth(source), text.split()[1]))
-				self.msg(source, "Your new vhost\2 %s\2 has been requested" % text.split()[1])
+				self.query("insert into vhosts values ('%s','%s','0')" % (self.auth(source), arg[0]))
+				self.msg(source, "Your new vhost\2 %s\2 has been requested" % arg[0])
 				for data in self.query("select host from online where uid = '%s'" % source):
 					self.send(":%s CHGHOST %s %s" % (self.bot, source, data[0]))
 				for data in self.query("select uid from opers"):
