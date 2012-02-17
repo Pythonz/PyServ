@@ -181,12 +181,14 @@ class Services:
 							fjoin_nick = data.split()[5][1:]
 							if fjoin_nick.find(",") != -1:
 								fjoin_nick = fjoin_nick.split(",")[1]
-							self.query("insert into chanlist value ('{0}','{1}')".format(fjoin_nick, fjoin_chan))
+							for pnick in data.split()[5:][1:]:
+								if pnick.find(",") != -1:
+									pnick.split(",")[1]
+								self.query("insert into chanlist value ('{0}','{1}')".format(pnick, fjoin_chan))
 							self.enforcebans(fjoin_chan)
 							if self.chanflag("l", fjoin_chan):
-								if data.split()[5].startswith(","):
-									self.showlog(fjoin_nick, fjoin_chan)
-									self.log(fjoin_nick, "join", fjoin_chan)
+								self.showlog(fjoin_nick, fjoin_chan)
+								self.log(fjoin_nick, "join", fjoin_chan)
 							fjoin_user = self.auth(fjoin_nick)
 							hasflag = False
 							for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (fjoin_chan, fjoin_user)):
