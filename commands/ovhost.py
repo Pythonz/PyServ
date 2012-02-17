@@ -19,6 +19,7 @@ class ovhost(pyserv.Command):
 					for uid in self.sid(data[0]):
 						self.vhost(uid)
 						self.memo(data[0])
+					self.msg(source, "Done.")
 			else: self.msg(source, "Syntax: OVHOST <list>/<activate>/<reject> [<user>] [reason]")
 		elif len(arg) > 2:
 			if arg[0].lower() == "reject":
