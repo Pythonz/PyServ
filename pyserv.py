@@ -479,9 +479,9 @@ class Services:
 		sources = self.sid(user)
 		for source in sources:
 			for data in self.query("select source,message from memo where user = '%s'" % user):
-				self.msg(source, "[MEMO]")
-				self.msg(source, "FROM: %s" % data[0])
-				self.msg(source, "MESSAGE: %s" % data[1])
+				self.msg(source, "\2[MEMO]\2")
+				self.msg(source, "\2FROM:\2 %s" % data[0])
+				self.msg(source, "\2MESSAGE:\2 %s" % data[1])
 				self.query("delete from memo where user = '%s' and source = '%s' and message = '%s'" % (user, data[0], _mysql.escape_string(data[1])))
 
 	def chanexist(self, channel):
@@ -761,9 +761,9 @@ class Command:
 		sources = self.sid(user)
 		for source in sources:
 			for data in self.query("select source,message from memo where user = '%s'" % user):
-				self.msg(source, "[MEMO]")
-				self.msg(source, "FROM: %s" % data[0])
-				self.msg(source, "MESSAGE: %s" % data[1])
+				self.msg(source, "\2[MEMO]\2")
+				self.msg(source, "\2FROM:\2 %s" % data[0])
+				self.msg(source, "\2MESSAGE:\2 %s" % data[1])
 				self.query("delete from memo where user = '%s' and source = '%s' and message = '%s'" % (user, data[0], _mysql.escape_string(data[1])))
 
 	def chanexist(self, channel):
