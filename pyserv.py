@@ -684,6 +684,12 @@ class Services:
 			return data[0]
 		return False
 
+	def userhost(self, target):
+		uid = self.uid(target)
+		for data in self.query("select username,host from online where uid = '%s'" % uid):
+			return data[0]+"@"+data[1]
+		return 0
+
 class Command:
 	import sys
 	import os
@@ -990,6 +996,12 @@ class Command:
 		for data in self.query("select reason from suspended where channel = '%s'" % channel):
 			return data[0]
 		return False
+
+	def userhost(self, target):
+		uid = self.uid(target)
+		for data in self.query("select username,host from online where uid = '%s'" % uid):
+			return data[0]+"@"+data[1]
+		return 0
 
 class error(Exception):
 	def __init__(self, value):
