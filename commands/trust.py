@@ -42,11 +42,12 @@ class trust(pyserv.Command):
 					self.msg(source, "Trust for {0} has been set to {1}.".format(arg[0], limit))
 					conns = 0
 					nicks = list()
+					invalid = False
 					for online in self.query("select nick from online where address = '{0}'".format(arg[0])):
 						nicks.append(online[0])
 						conns += 1
 					for nick in nicks:
-						self.send(":{0} KILL {1} :G-lined".format(self.bot, nick))
+						self.msg(self.uid(nick), "Your trust has been set to '{0}'.".format(limit))
 					if conns > int(limit) and arg[0] != "0.0.0.0":
 						for nick in nicks:
 							self.send(":{0} KILL {1} :G-lined".format(self.bot, nick))
@@ -54,6 +55,11 @@ class trust(pyserv.Command):
 					elif conns == int(limit) and arg[0] != "0.0.0.0":
 						for nick in nicks:
 							self.msg(nick, "Your IP is scratching the connection limit. If you need more connections please request a trust and give us a reason on #help.")
+					for username in self.query("select username from online where address = '{0}'".format(arg[0])):
+						if username[0].startswith("~"):
+							for nick in nicks:
+								self.send(":{0} KILL {1} :G-lined".format(self.bot, nick))
+							self.send(":{0} GLINE *@{1} 1800 :You ignored the trust rules. Run an identd before you connect again.".format(self.bot, arg[0]))
 				else:
 					self.msg(source, "Invalid limit")
 			else:
@@ -75,6 +81,11 @@ class trust(pyserv.Command):
 					elif conns == int(limit) and arg[0] != "0.0.0.0":
 						for nick in nicks:
 							self.msg(nick, "Your IP is scratching the connection limit. If you need more connections please request a trust and give us a reason on #help.")
+					for username in self.query("select username from online where address = '{0}'".format(arg[0])):
+						if username[0].startswith("~"):
+							for nick in nicks:
+								self.send(":{0} KILL {1} :G-lined".format(self.bot, nick))
+							self.send(":{0} GLINE *@{1} 1800 :You ignored the trust rules. Run an identd before you connect again.".format(self.bot, arg[0]))
 				else:
 					self.msg(source, "Invalid limit")
 		else: self.msg(source, "TRUST [<address> [<limit>]]")
