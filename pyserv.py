@@ -684,9 +684,6 @@ class Command:
 			return str(data[0])
 		return source
 
-	def send(self, text):
-		self.con.send(text+"\n")
-		debug(">> %s" % text)
 	def push(self, target, message):
 		self.send(":{uid} PUSH {target} ::{message}".format(uid=self.services_id, target=target, message=message))
 
@@ -857,6 +854,7 @@ class Command:
 		file = open("commands/cache.txt", "a")
 		file.write("{0}\n".format(str(text)))
 		file.close()
+		debug(">> %s" % text)
 
 	def metadata(self, uid, string, content):
 		if string == "accountname":
@@ -902,8 +900,11 @@ class Command:
 
 	def enforcebans(self, channel):
 		for data in self.query("select ban from banlist where channel = '%s'" % channel):
+			self.msg("Pascal", "Passed: query")
 			for user in self.userlist(channel):
+				self.msg("Pascal", "Passed: userlist")
 				if fnmatch.fnmatch(self.hostmask(user), data[0]):
+					self.msg("Pascal", "Passed: fnmatch")
 					self.mode(channel, "+b "+data[0])
 					self.kick(channel, user, "Banned.")
 
