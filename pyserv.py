@@ -182,6 +182,7 @@ class Services:
 							if fjoin_nick.find(",") != -1:
 								fjoin_nick = fjoin_nick.split(",")[1]
 							self.query("insert into chanlist value ('{0}','{1}')".format(fjoin_nick, fjoin_chan))
+							self.enforcebans(fjoin_chan)
 							if self.chanflag("l", fjoin_chan):
 								if data.split()[5].startswith(","):
 									self.showlog(fjoin_nick, fjoin_chan)
@@ -576,6 +577,55 @@ class Services:
 		if minutes > 0: return "%s minutes %s seconds" % (minutes, seconds)
 		return "%s seconds" % seconds
 
+	def kick(self, channel, target, reason="Requested."):
+		if self.onchan(channel, target):
+			self.send(":{uid} KICK {target} {channel} :{reason}".format(self.bot, target, channel, reason))
+
+	def userlist(self, channel):
+		uid = list()
+		for user in self.query("select uid from chanlist where channel = '%s'" % channel):
+			uid.append(user[0])
+		return uid
+
+	def onchan(self, channel, target):
+		uid = self.uid(target)
+		for data in self.query("select * from chanlist where channel = '%s' and uid = '%s'" % (channel, uid)):
+			return True
+		return False
+
+	def gethost(self, target):
+		uid = self.uid(target)
+		for data in self.query("select host from online where uid = '%s'" % uid):
+			return data[0]
+		return 0
+
+	def hostmask(self, target):
+		uid = self.uid(target)
+		for data in self.query("select nick,host from online where uid = '%s'" % uid):
+			return data[0]+"!"+data[1]
+		return 0
+
+	def enforceban(self, channel, target):
+		for user in self.userlist(channel):
+			if fnmatch.fnmatch(self.hostmask(user), target):
+				self.mode(channel, "+b "+target)
+				self.kick(channel, user, "Banned.")
+
+	def enforcebans(self, channel):
+		for data in self.query("select ban from banlist where channel = '%'" % channel):
+			for user in self.userlist(channel):
+				if fnmatch.fnmatch(self.hostmask(user), data[0]):
+					self.mode(channel, "+b "+data[0])
+					self.kick(channel, user, "Banned.")
+
+	def checkbans(self, channel, arg):
+		if self.chanflag("e", channel):
+			for ban in bans.split():
+				if fnmatch.fnmatch(ban, "*!*@*"):
+					for user in self.userlist(channel):
+						if fnmatch.fnmatch(self.hostmask(user), ban):
+							self.kick(channel, user, "Banned.")
+
 class Command:
 	import sys
 	import os
@@ -585,6 +635,7 @@ class Command:
 	import smtplib
 	import _mysql
 	import traceback
+	import fnmatch
 	help = "unknown"
 	oper = 0
 	nauth = 0
@@ -858,15 +909,13 @@ class Command:
 					self.mode(channel, "+b "+data[0])
 					self.kick(channel, user, "Banned.")
 
-	def checkbans(self, channel, args):
+	def checkbans(self, channel, arg):
 		if self.chanflag("e", channel):
-			bans = args.split()
-			for ban in bans:
+			for ban in bans.split():
 				if fnmatch.fnmatch(ban, "*!*@*"):
 					for user in self.userlist(channel):
 						if fnmatch.fnmatch(self.hostmask(user), ban):
 							self.kick(channel, user, "Banned.")
-
 	def unknown(self, target):
 		self.msg(target, "Unknown command "+__name__.split(".")[-1].upper()+". Please try HELP for more information.")
 
