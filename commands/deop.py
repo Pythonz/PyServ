@@ -21,7 +21,7 @@ class deop(pyserv.Command):
 					if self.chanflag("p", arg[0]):
 						for user in arg[1:]:
 							uflag = self.getflag(self.uid(user), arg[0])
-							if flag == "o":
+							if uflag == "o":
 								self.mode(arg[0], "+o "+user)
 					self.msg(source, "Done.")
 				else: self.msg(source, "Denied.")

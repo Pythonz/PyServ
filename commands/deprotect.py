@@ -21,7 +21,7 @@ class deprotect(pyserv.Command):
 					if self.chanflag("p", arg[0]):
 						for user in arg[1:]:
 							uflag = self.getflag(self.uid(user), arg[0])
-							if flag == "a":
+							if uflag == "a":
 								self.mode(arg[0], "+a "+user)
 					self.msg(source, "Done.")
 				else: self.msg(source, "Denied.")
