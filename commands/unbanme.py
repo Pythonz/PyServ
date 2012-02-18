@@ -13,6 +13,7 @@ class unbanme(pyserv.Command):
 					for ban in self.query("select ban from banlist where channel = '%s'" % arg[0]):
 						if fnmatch(self.hostmask(uid), ban[0]):
 							self.mode(arg[0], "-b "+ban[0])
+							self.query("delete from banlist where channel = '%s' and ban = '%s'" % (arg[0], ban[0]))
 					self.msg(uid, "Done.")
 				else: self.msg(uid, "Denied.")
 			else: self.msg(uid, "Invalid channel: "+arg[0])
