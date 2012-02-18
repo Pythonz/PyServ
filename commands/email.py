@@ -7,7 +7,7 @@ class email(pyserv.Command):
 		arg = args.split()
 		if len(arg) == 1:
 			if arg[0].find("@") != -1:
-				if len(arg.split("@")[0]) != 0:
+				if len(arg[0].split("@")[0]) != 0:
 					if arg[0].split("@")[1].find(".") != -1:
 						if arg[0].split("@")[1][-1] != "." and arg[0].split("@")[1][-2] != "." and arg[0].split("@")[1][0] != ".":
 							entry = False
