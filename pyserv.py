@@ -191,7 +191,7 @@ class Services:
 													if not entry:
 														self.query("insert into banlist values ('%s','%s')" % (data.split()[2], ban))
 														self.msg(data.split()[0][1:], "Done.")
-									else: self.mode(data.split()[2], "-{0} {1}".format("b"*len(data.split[5:]), ' '.join(data.split()[5:])))
+									else: self.mode(data.split()[2], "-{0} {1}".format("b"*len(data.split()[5:]), ' '.join(data.split()[5:])))
 									splitted = data.split()[4]
 									if splitted.find("-") != -1:
 										splitted = splitted.split("-")[1]
@@ -208,7 +208,7 @@ class Services:
 														if entry:
 															self.query("delete from banlist where channel = '%s' and ban = '%s'" % (data.split()[2], ban))
 															self.msg(data.split()[0][1:], "Done.")
-										else: self.mode(data.split()[2], "+{0} {1}".format("b"*len(data.split[5:]), ' '.join(data.split()[5:])))
+										else: self.mode(data.split()[2], "+{0} {1}".format("b"*len(data.split()[5:]), ' '.join(data.split()[5:])))
 								if self.chanflag("b", data.split()[2]):
 									mchan = data.split()[2]
 									splitted = data.split()[4]
