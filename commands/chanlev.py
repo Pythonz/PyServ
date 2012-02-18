@@ -56,7 +56,7 @@ class chanlev(pyserv.Command):
 						for data in self.query("select name from users where name = '%s'" % username):
 							if str(self.auth(source)).lower() != username.lower():
 								self.query("delete from channels where channel = '%s' and user = '%s'" % (channel, username))
-								self.query("insert into channels values ('%s','%s','%s')" % (channel, username, arg[2]))
+								self.query("insert into channels values ('%s','%s','%s')" % (channel, username, arg[2][0]))
 								if self.sid(username) != 0:
 									for data in self.query("select nick from temp_nick where user = '%s'" % username):
 										self.flag(data[0])
@@ -70,7 +70,7 @@ class chanlev(pyserv.Command):
 							for data in self.query("select name from users where name = '%s'" % username):
 								if str(self.auth(source)).lower() != username.lower():
 									self.query("delete from channels where channel = '%s' and user = '%s'" % (channel, username))
-									self.query("insert into channels values ('%s','%s','%s')" % (channel, username, arg[2]))
+									self.query("insert into channels values ('%s','%s','%s')" % (channel, username, arg[2][0]))
 									if self.sid(username) != 0:
 										for data in self.query("select nick from temp_nick where user = '%s'" % username):
 											self.flag(data[0])
