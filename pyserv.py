@@ -139,9 +139,9 @@ class Services:
 								if self.chanflag("s", pchan):
 									messages = [11, 10]
 									seconds = [6, 4]
-									for data in self.query("select spamscan from channelinfo where name = '%s'" % pchan):
-										messages = [int(str(data[0]).split(":")[0]) + 1, int(str(data[0]).split(":")[0])]
-										seconds = [int(str(data[0]).split(":")[1]) + 1, int(str(data[0]).split(":")[1]) - 1]
+									for dump in self.query("select spamscan from channelinfo where name = '%s'" % pchan):
+										messages = [int(dump[0].split(":")[0]) + 1, int(dump[0].split(":")[0])]
+										seconds = [int(dump[0].split(":")[1]) + 1, int(dump[0].split(":")[1]) - 1]
 									if spamscan.has_key((pchan, puid)):
 										num = spamscan[pchan,puid][0] + 1
 										spamscan[pchan,puid] = [num, spamscan[pchan,puid][1]]
