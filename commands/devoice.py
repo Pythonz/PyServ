@@ -13,7 +13,7 @@ class devoice(pyserv.Command):
 					self.msg(source, "Done.")
 				else: self.msg(source, "Denied.")
 			else: self.msg(source, "Invalid channel")
-		elif len(arg) > 2:
+		elif len(arg) > 1:
 			if arg[0].startswith("#"):
 				flag = self.getflag(source, arg[0])
 				if flag == "n" or flag == "q" or flag == "a" or flag == "o" or flag == "h":
