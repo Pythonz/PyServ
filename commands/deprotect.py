@@ -18,6 +18,11 @@ class deprotect(pyserv.Command):
 				flag = self.getflag(source, arg[0])
 				if flag == "n" or flag == "q":
 					self.mode(arg[0], "-{0} {1}".format("a"*len(arg[1:]), ' '.join(arg[1:])))
+					if self.chanflag("p", arg[0]):
+						for user in arg[1:]:
+							uflag = self.getflag(self.uid(user), arg[0])
+							if flag == "a":
+								self.mode(arg[0], "+a "+user)
 					self.msg(source, "Done.")
 				else: self.msg(source, "Denied.")
 			else: self.msg(source, "Invalid channel")
