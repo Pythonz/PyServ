@@ -223,9 +223,9 @@ class Services:
 								self.query("insert into chanlist value ('{0}','{1}')".format(pnick, fjoin_chan))
 								if self.suspended(fjoin_chan):
 									if not self.isoper(pnick):
-										self.gline(pnick, "Suspended "+fjoin_chan+": "+self.suspended(fjoin_chan))
+										self.kick(fjoin_chan, pnick, "Suspended: "+self.suspended(fjoin_chan))
 									else:
-										self.msg(pnick, "Channel "+fjoin_chan+" is suspended: "+self.suspended(fjoin_chan))
+										self.msg(fjoin_chan, "This channel is suspended: "+self.suspended(fjoin_chan))
 							if self.chanexist(fjoin_chan): self.enforcebans(fjoin_chan)
 							if self.chanflag("l", fjoin_chan):
 								self.showlog(fjoin_nick, fjoin_chan)
