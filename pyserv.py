@@ -136,7 +136,7 @@ class Services:
 							if self.chanexist(data.split()[2]):
 								puid = data.split()[0][1:]
 								pchan = data.split()[2]
-								if self.chanflag("s"):
+								if self.chanflag("s", pchan):
 									if spamscan.has_key((pchan, puid)):
 										num = spamscan[pchan,puid][0] + 1
 										spamscan[pchan,puid] = [num, spamscan[pchan,puid][1]]
