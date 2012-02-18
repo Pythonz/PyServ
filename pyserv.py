@@ -509,7 +509,7 @@ class Services:
 			self.msg(target, "Your vhost\2 %s\2 has been activated" % str(data[0]))
 
 	def version(self, source):
-		self.msg(source, "PyServ v%s" % __version__)
+		self.msg(source, "PyServ %s" % __version__)
 		self.msg(source, "Uptime: %s" % (self.convert_timestamp(time.time() - _started)))
 		self.msg(source, "Running on: %s %s %s" % (os.uname()[0], os.uname()[2], os.uname()[-1]))
 		self.msg(source, "Developed by Pythonz (https://github.com/Pythonz). Suggestions to pythonz@skyice.tk.")
@@ -828,7 +828,7 @@ class Command:
 			self.msg(target, "Your vhost\2 %s\2 has been activated" % str(data[0]))
 
 	def version(self, source):
-		self.msg(source, "PyServ v%s" % __version__)
+		self.msg(source, "PyServ %s" % __version__)
 		self.msg(source, "Uptime: %s" % (self.convert_timestamp(time.time() - _started)))
 		self.msg(source, "Running on: %s %s %s" % (os.uname()[0], os.uname()[2], os.uname()[-1]))
 		self.msg(source, "Developed by Pythonz (https://github.com/Pythonz). Suggestions to pythonz@skyice.tk.")
