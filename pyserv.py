@@ -141,10 +141,10 @@ class Services:
 										num = spamscan[pchan,puid][0] + 1
 										spamscan[pchan,puid] = [num, spamscan[pchan,puid][1]]
 										timer = int(time.time()) - spamscan[pchan,puid][1]
-										if spamscan[pchan,puid][0] > 3 and timer <= 5:
+										if spamscan[pchan,puid][0] == 4 and timer < 6:
 											self.kill(puid)
 											del spamscan[pchan,puid]
-										elif spamscan[pchan,puid][0] <= 3 and timer => 5:
+										elif spamscan[pchan,puid][0] == 3 and timer > 4:
 											del spamscan[pchan,puid]
 									else:
 										spamscan[pchan,puid] = [1, int(time.time())]
