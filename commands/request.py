@@ -11,7 +11,7 @@ class request(pyserv.Command):
 				for data in self.query("select channel from channels where channel = '%s'" % arg[0]):
 						exists = True
 				if not exists:
-					self.query("insert into channelinfo values ('%s', '', '', '', '')" % arg[0])
+					self.query("insert into channelinfo values ('%s', '', '', '', '', '10:5')" % arg[0])
 					self.query("insert into channels values ('%s','%s','n')" % (arg[0], self.auth(source)))
 					self.join(arg[0])
 					self.smode(arg[0], "+q {0}".format(source))

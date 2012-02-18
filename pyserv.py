@@ -137,15 +137,20 @@ class Services:
 								puid = data.split()[0][1:]
 								pchan = data.split()[2]
 								if self.chanflag("s", pchan):
+									messages = [11, 10]
+									seconds = [6, 4]
+									for data in self.query("select spamscan from channelinfo where name = '%s'" % pchan):
+										messages = [int(data[0].split(":")[0]) + 1, int(data[0].split(":")[0])]
+										seconds = [int(data[0].split(":")[1]) + 1, int(data[0].split(":")[1]) - 1]
 									if spamscan.has_key((pchan, puid)):
 										num = spamscan[pchan,puid][0] + 1
 										spamscan[pchan,puid] = [num, spamscan[pchan,puid][1]]
 										timer = int(time.time()) - spamscan[pchan,puid][1]
-										if spamscan[pchan,puid][0] == 4 and timer < 6:
+										if spamscan[pchan,puid][0] == messages[0] and timer < seconds[0]:
 											if self.isoper(puid): self.msg(puid, "WARNING: You are flooding {0}. Please stop that, but I won't kill you because you're an IRC Operator.")
 											self.kill(puid)
 											del spamscan[pchan,puid]
-										elif spamscan[pchan,puid][0] == 3 and timer > 4:
+										elif spamscan[pchan,puid][0] == messages[1] and timer > seconds[1]:
 											del spamscan[pchan,puid]
 									else:
 										spamscan[pchan,puid] = [1, int(time.time())]
