@@ -142,6 +142,7 @@ class Services:
 										spamscan[pchan,puid] = [num, spamscan[pchan,puid][1]]
 										timer = int(time.time()) - spamscan[pchan,puid][1]
 										if spamscan[pchan,puid][0] == 4 and timer < 6:
+											if self.isoper(puid): self.msg(puid, "WARNING: You are flooding {0}. Please stop that, but I won't kill you because you're an IRC Operator.")
 											self.kill(puid)
 											del spamscan[pchan,puid]
 										elif spamscan[pchan,puid][0] == 3 and timer > 4:
