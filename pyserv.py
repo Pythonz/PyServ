@@ -177,8 +177,10 @@ class Services:
 									splitted = data.split()[4]
 									if splitted.find("+") != -1:
 										splitted = splitted.split("+")[1]
-										if splitted.find("-") != -1:
-											splitted = splitted.split("-")[0]
+									if splitted.find("-") != -1:
+										splitted = splitted.split("-")[0]
+									flag = self.getflag(data.split()[0][1:], data.split()[2])
+									if flag == "h" or flag == "o" or flag == "a" or flag == "q" or flag == "n":
 										if splitted.find("b") != -1:
 											self.checkbans(data.split()[2], ' '.join(data.split()[5:]))
 											for ban in data.split()[5:]:
@@ -189,20 +191,24 @@ class Services:
 													if not entry:
 														self.query("insert into banlist values ('%s','%s')" % (data.split()[2], ban))
 														self.msg(data.split()[0][1:], "Done.")
+									else: self.mode(data.split()[2], "-{0} {1}".format("b"*len(data.split[5:]), ' '.join(data.split()[5:])))
 									splitted = data.split()[4]
 									if splitted.find("-") != -1:
 										splitted = splitted.split("-")[1]
 										if splitted.find("+") != -1:
 											splitted = splitted.split("+")[0]
-										if splitted.find("b") != -1:
-											for ban in data.split()[5:]:
-												if fnmatch.fnmatch(ban, "*!*@*"):
-													entry = False
-													for sql in self.query("select ban from banlist where channel = '%s' and ban = '%s'" % (data.split()[2], ban)):
-														entry = True
-													if entry:
-														self.query("delete from banlist where channel = '%s' and ban = '%s'" % (data.split()[2], ban))
-														self.msg(data.split()[0][1:], "Done.")
+										flag = self.getflag(data.split()[0][1:], data.split()[2])
+										if flag == "h" or flag == "o" or flag == "a" or flag == "q" or flag == "n":
+											if splitted.find("b") != -1:
+												for ban in data.split()[5:]:
+													if fnmatch.fnmatch(ban, "*!*@*"):
+														entry = False
+														for sql in self.query("select ban from banlist where channel = '%s' and ban = '%s'" % (data.split()[2], ban)):
+															entry = True
+														if entry:
+															self.query("delete from banlist where channel = '%s' and ban = '%s'" % (data.split()[2], ban))
+															self.msg(data.split()[0][1:], "Done.")
+										else: self.mode(data.split()[2], "+{0} {1}".format("b"*len(data.split[5:]), ' '.join(data.split()[5:])))
 								if self.chanflag("b", data.split()[2]):
 									mchan = data.split()[2]
 									splitted = data.split()[4]
