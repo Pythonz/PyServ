@@ -203,6 +203,40 @@ class Services:
 													if entry:
 														self.query("delete from banlist where channel = '%s' and ban = '%s'" % (data.split()[2], ban))
 														self.msg(data.split()[0][1:], "Done.")
+								if self.chanflag("b", data.split()[2]):
+									mchan = data.split()[2]
+									splitted = data.split()[4]
+									musers = data.split()[5:]
+									if splitted.find("+") != -1:
+										splitted = splitted.split("+")[1]
+										if splitted.find("-") != -1:
+											splitted = splitted.split("-")[0]
+										if splitted.find("v") != -1:
+											for user in musers:
+												flag = self.getflag(self.uid(user), mchan)
+												if flag != "v" or flag != "h" or flag != "o" or flag != "a" or flag != "q" or flag != "n":
+													self.mode(mchan, "-v "+user)
+										if splitted.find("h") != -1:
+											for user in musers:
+												flag = self.getflag(self.uid(user), mchan)
+												if flag != "h" or flag != "o" or flag != "a" or flag != "q" or flag != "n":
+													self.mode(mchan, "-h "+user)
+										if splitted.find("o") != -1:
+											for user in musers:
+												flag = self.getflag(self.uid(user), mchan)
+												if flag != "o" or flag != "a" or flag != "q" or flag != "n":
+													self.mode(mchan, "-o "+user)
+										if splitted.find("a") != -1:
+											for user in musers:
+												flag = self.getflag(self.uid(user), mchan)
+												if flag != "a" or flag != "q" or flag != "n":
+													self.mode(mchan, "-a "+user)
+										if splitted.find("q") != -1:
+											for user in musers:
+												flag = self.getflag(self.uid(user), mchan)
+												if flag != "q" or flag != "n":
+													self.mode(mchan, "-q "+user)
+													
 								if self.chanflag("p", data.split()[2]):
 									for user in data.split()[5:]:
 										for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (data.split()[2], self.auth(user))):

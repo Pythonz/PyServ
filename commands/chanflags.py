@@ -29,6 +29,8 @@ class chanflags(pyserv.Command):
 				desc.append("Used for channel logs")
 				mode.append("e")
 				desc.append("Enforce bans")
+				mode.append("b")
+				desc.append("Bitchmode")
 				listed = 0
 				while listed != len(mode):
 					self.msg(source, "{0}: {1}".format(mode[listed], desc[listed]))
