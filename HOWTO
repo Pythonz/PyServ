@@ -1,21 +1,16 @@
 Installing PyServ:
   1. login into root
-  2. run "setup.py"
+  2. run "python setup.py"
   3. login into a normal user
   4. open "pyserv.conf" and change values
   5. create mysql database
   6. insert sql/base/struct.sql into the database
-  7. run "pyserv.py" as normal user or "start" in a screen
+  7. run "sh pyserv start" to start pyserv in background or "sh pyserv debug" to run it in foreground
 
-Updating PyServ:
-  1. insert the sqls in sql/updates into the mysql database
-  2. delete this sqls to be shure that you didnt insert the sqls at next update
-  3. run "pyserv.py" as normal user or "start" in a screen
+Updating PyServ (method 1):
+  1. run "sh pyserv update"
+  2. insert the sqls in sql/updates into the mysql database
+  3. run "sh pyserv start" to start pyserv in background or "sh pyserv debug" to run it in foreground
 
-Converting your Database from SQLite3 to MySQL:
-
-  1. move your data.db into the tools directory
-  2. run "sqlite3 data.db .dump | python convert.py > data.sql"
-  3. create a database in mysql
-  4. insert the data.sql into your mysql database
-  5. if there is an error, remove the first line from data.sql an try again
+Updating PyServ (method 2):
+  1. Run Qs update command ("/msg Q update") on IRC
