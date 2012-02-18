@@ -7,7 +7,9 @@ class kill(pyserv.Command):
 		arg = args.split()
 		if len(arg) == 1:
 			self.kill(arg[0])
+			self.msg(source, "Done.")
 		elif len(arg) > 1:
 			self.kill(arg[0], ' '.join(arg[1:]))
+			self.msg(source, "Done.")
 		else:
-			self.msg(source, "Syntax: KILL <nick>")
+			self.msg(source, "Syntax: KILL <nick> [<reason>]")
