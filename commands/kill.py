@@ -6,7 +6,7 @@ class kill(pyserv.Command):
 	def onCommand(self, source, args):
 		arg = args.split()
 		if len(arg) == 1:
-			self.kill(arg[0], "You're violation network rules")
+			self.kill(arg[0])
 		elif len(arg) > 1:
 			self.kill(arg[0], ' '.join(arg[1:]))
 		else:

@@ -77,7 +77,7 @@ class Services:
 			self.send(":%s BURST" % self.services_id)
 			self.send(":%s ENDBURST" % self.services_id)
 			thread.start_new_thread(self.sendcache, (self.con,))
-			
+			spamscan = {}
 			while 1:
 				recv = self.con.recv(25600)
 				if not recv:
@@ -133,6 +133,21 @@ class Services:
 									self.message(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
 							if data.split()[2].startswith("#") and self.chanflag("l", data.split()[2]):
 								self.log(data.split()[0][1:], "privmsg", data.split()[2], ' '.join(data.split()[3:]))
+							if self.chanexist(data.split()[2]):
+								puid = data.split()[0][1:]
+								pchan = data.split()[2]
+								if self.chanflag("s"):
+									if spamscan.has_key((pchan, puid)):
+										num = spamscan[pchan,puid][0] + 1
+										spamscan[pchan,puid] = [num, spamscan[pchan,puid][1]]
+										timer = int(time.time()) - spamscan[pchan,puid][1]
+										if spamscan[pchan,puid][0] > 3 and timer <= 5:
+											self.kill(puid)
+											del spamscan[pchan,puid]
+										elif spamscan[pchan,puid][0] <= 3 and timer => 5:
+											del spamscan[pchan,puid]
+									else:
+										spamscan[pchan,puid] = [1, int(time.time())]
 						if data.split()[1] == "NOTICE":
 							if data.split()[2].startswith("#") and self.chanflag("l", data.split()[2]):
 								self.log(data.split()[0][1:], "notice", data.split()[2], ' '.join(data.split()[3:]))
@@ -539,8 +554,8 @@ class Services:
 		self.smode(channel, "+r")
 		self.smode(channel, "+q %s" % self.bot)
 
-	def kill(self, target, reason):
-		if target.lower() != "o" and target.lower() != "q":
+	def kill(self, target, reason="You're violating network rules"):
+		if target.lower() != "q" and not self.isoper(self.uid(target)):
 			self.send(":%s KILL %s :Killed (%s (%s))" % (self.bot, target, self.services_name, reason))
 
 	def vhost(self, target):
@@ -727,7 +742,8 @@ class Services:
 
 	def gline(self, target, reason=""):
 		uid = self.uid(target)
-		self.send(":"+self.bot+" KILL "+uid+" :G-lined")
+		for data in self.query("select uid from online where address = '%s'" % self.getip(uid)):
+			self.send(":"+self.bot+" KILL "+data+" :G-lined")
 		self.send(":"+self.bot+" GLINE *@"+self.getip(uid)+" 1800 :"+reason)
 
 	def suspended(self, channel):
@@ -858,8 +874,8 @@ class Command:
 		self.smode(channel, "+r")
 		self.smode(channel, "+q %s" % self.bot)
 
-	def kill(self, target, reason):
-		if target.lower() != "o" and target.lower() != "q":
+	def kill(self, target, reason="You're violating network rules"):
+		if target.lower() != "q" and not self.isoper(self.uid(target)):
 			self.send(":%s KILL %s :Killed (%s (%s))" % (self.bot, target, self.services_name, reason))
 
 	def vhost(self, target):
@@ -1056,7 +1072,8 @@ class Command:
 
 	def gline(self, target, reason=""):
 		uid = self.uid(target)
-		self.send(":"+self.bot+" KILL "+uid+" :G-lined")
+		for data in self.query("select uid from online where address = '%s'" % self.getip(uid)):
+			self.send(":"+self.bot+" KILL "+data+" :G-lined")
 		self.send(":"+self.bot+" GLINE *@"+self.getip(uid)+" 1800 :"+reason)
 
 	def suspended(self, channel):

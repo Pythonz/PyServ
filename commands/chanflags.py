@@ -4,6 +4,26 @@ class chanflags(pyserv.Command):
 	help = "Sets flags for your channel"
 	nauth = 1
 	def onCommand(self, source, args):
+		mode = list()
+		desc = list()
+		mode.append("p")
+		desc.append("Channel rights Protection")
+		mode.append("v")
+		desc.append("Autovoice in channel")
+		mode.append("t")
+		desc.append("Topic save")
+		mode.append("m")
+		desc.append("Modes enforcement")
+		mode.append("w")
+		desc.append("Welcome message on join")
+		mode.append("l")
+		desc.append("Used for channel logs")
+		mode.append("e")
+		desc.append("Enforce bans")
+		mode.append("b")
+		desc.append("Bitchmode")
+		mode.append("s")
+		desc.append("Spamscan, prevents channel flooding. Only 3 messages in 5 seconds.")
 		arg = args.split()
 		if len(arg) == 1:
 			if arg[0].startswith("#"):
@@ -13,24 +33,6 @@ class chanflags(pyserv.Command):
 				else:
 					self.msg(source, "No permission")
 			elif arg[0] == "?":
-				mode = list()
-				desc = list()
-				mode.append("p")
-				desc.append("Channel rights Protection")
-				mode.append("v")
-				desc.append("Autovoice in channel")
-				mode.append("t")
-				desc.append("Topic save")
-				mode.append("m")
-				desc.append("Modes enforcement")
-				mode.append("w")
-				desc.append("Welcome message on join")
-				mode.append("l")
-				desc.append("Used for channel logs")
-				mode.append("e")
-				desc.append("Enforce bans")
-				mode.append("b")
-				desc.append("Bitchmode")
 				listed = 0
 				while listed != len(mode):
 					self.msg(source, "{0}: {1}".format(mode[listed], desc[listed]))
@@ -41,8 +43,9 @@ class chanflags(pyserv.Command):
 			if arg[0].startswith("#"):
 				if self.getflag(source, arg[0]) == "n" or self.getflag(source, arg[0]) == "a":
 					for channel in self.query("select name from channelinfo where name = '{0}'".format(arg[0])):
-						self.query("update channelinfo set flags = '{0}' where name = '{1}'".format(arg[1], channel[0]))
-						self.msg(source, "New flags for {0}: {1}".format(channel[0], arg[1]))
+						flags = ''.join([char for char in arg[1] if char in ''.join(mode)])
+						self.query("update channelinfo set flags = '{0}' where name = '{1}'".format(flags, channel[0]))
+						self.msg(source, "New flags for {0}: {1}".format(channel[0], flags))
 				else:
 					self.msg(source, "No permission")
 			else:
