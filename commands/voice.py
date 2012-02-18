@@ -21,7 +21,7 @@ class voice(pyserv.Command):
 					if self.chanflag("b", arg[0]) and not self.chanflag("v", arg[0]):
 						for user in arg[1:]:
 							uflag = self.getflag(self.uid(user), arg[0])
-							if uflag != "v" and uflag != "h" uflag != "o" and uflag != "a" and uflag != "q" and uflag != "n":
+							if uflag != "v" and uflag != "h" and uflag != "o" and uflag != "a" and uflag != "q" and uflag != "n":
 								self.mode(arg[0], "-v "+user)
 					self.msg(source, "Done.")
 				else: self.msg(source, "Denied.")
