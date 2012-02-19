@@ -243,27 +243,27 @@ class Services:
 										if splitted.find("v") != -1:
 											for user in musers:
 												flag = self.getflag(self.uid(user), mchan)
-												if flag != "v" and flag != "h" and flag != "o" and flag != "a" and flag != "q" and flag != "n":
+												if flag != "v" and flag != "h" and flag != "o" and flag != "a" and flag != "q" and flag != "n" and user.lower() != "q":
 													self.mode(mchan, "-v "+user)
 										if splitted.find("h") != -1:
 											for user in musers:
 												flag = self.getflag(self.uid(user), mchan)
-												if flag != "h" and flag != "o" and flag != "a" and flag != "q" and flag != "n":
+												if flag != "h" and flag != "o" and flag != "a" and flag != "q" and flag != "n" and user.lower() != "q":
 													self.mode(mchan, "-h "+user)
 										if splitted.find("o") != -1:
 											for user in musers:
 												flag = self.getflag(self.uid(user), mchan)
-												if flag != "o" and flag != "a" and flag != "q" and flag != "n":
+												if flag != "o" and flag != "a" and flag != "q" and flag != "n" and user.lower() != "q":
 													self.mode(mchan, "-o "+user)
 										if splitted.find("a") != -1:
 											for user in musers:
 												flag = self.getflag(self.uid(user), mchan)
-												if flag != "a" and flag != "q" and flag != "n":
+												if flag != "a" and flag != "q" and flag != "n" and user.lower() != "q":
 													self.mode(mchan, "-a "+user)
 										if splitted.find("q") != -1:
 											for user in musers:
 												flag = self.getflag(self.uid(user), mchan)
-												if flag != "q" and flag != "n":
+												if flag != "q" and flag != "n" and user.lower() != "q":
 													self.mode(mchan, "-q "+user)
 													
 								if self.chanflag("p", data.split()[2]):
