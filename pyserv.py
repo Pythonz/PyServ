@@ -43,6 +43,13 @@ def perror(text):
 		file.close()
 	except: pass
 
+def status():
+	sock = socket.socket()
+	sock.bind(("0.0.0.0", 5556))
+	sock.listen(1024)
+	while 1: pass
+	sock.close()
+
 class Services:
 	def __init__(self):
 		self.mysql_host = config.get("MYSQL", "host")
@@ -62,6 +69,7 @@ class Services:
 		self.email = config.get("OTHER", "email")
 		self.ipv6 = config.getboolean("OTHER", "ipv6")
 		self.ssl = config.getboolean("OTHER", "ssl")
+		self.status = config.getboolean("OTHER", "status")
 		self.regmail = config.get("OTHER", "regmail")
 		self.bot = "%sAAAAAA" % self.services_id
 		self.db = _mysql.connect(host=self.mysql_host, port=self.mysql_port, db=self.mysql_name, user=self.mysql_user, passwd=self.mysql_passwd)
