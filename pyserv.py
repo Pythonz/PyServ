@@ -561,8 +561,8 @@ class Services:
 
 	def join(self, channel):
 		self.send(":%s JOIN %s" % (self.bot, channel))
-		self.smode(channel, "+r")
-		self.smode(channel, "+q %s" % self.bot)
+		self.mode(channel, "+r")
+		self.mode(channel, "+q %s" % self.bot)
 
 	def kill(self, target, reason="You're violating network rules"):
 		if target.lower() != "q" and not self.isoper(self.uid(target)):
@@ -881,8 +881,8 @@ class Command:
 
 	def join(self, channel):
 		self.send(":%s JOIN %s" % (self.bot, channel))
-		self.smode(channel, "+r")
-		self.smode(channel, "+q %s" % self.bot)
+		self.mode(channel, "+r")
+		self.mode(channel, "+q %s" % self.bot)
 
 	def kill(self, target, reason="You're violating network rules"):
 		if target.lower() != "q" and not self.isoper(self.uid(target)):
