@@ -81,6 +81,8 @@ class Services:
 			self.query("delete from online")
 			self.query("delete from chanlist")
 			shell("rm -rf logs/*")
+			if self.status:
+				thread.start_new_thread(status,())
 			if self.ipv6:
 				if self.ssl:
 					self.con = ssl.wrap_socket(socket.socket(socket.AF_INET6, socket.SOCK_STREAM))
