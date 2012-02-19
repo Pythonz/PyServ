@@ -14,6 +14,7 @@ import traceback
 import thread
 import commands
 import fnmatch
+import ssl
 
 try:
 	if not os.access("logs", os.F_OK):
@@ -60,6 +61,8 @@ class Services:
 		self.services_description = config.get("SERVICES", "description")
 		self.debug = config.get("OTHER", "debug")
 		self.email = config.get("OTHER", "email")
+		self.ipv6 = config.getboolean("OTHER", "ipv6")
+		self.ssl = config.getboolean("OTHER", "ssl")
 		self.regmail = config.get("OTHER", "regmail")
 		self.bot = "%sAAAAAA" % self.services_id
 		self.db = _mysql.connect(host=self.mysql_host, port=self.mysql_port, db=self.mysql_name, user=self.mysql_user, passwd=self.mysql_passwd)
@@ -71,7 +74,16 @@ class Services:
 			self.query("delete from online")
 			self.query("delete from chanlist")
 			shell("rm -rf logs/*")
-			self.con = socket.socket()
+			if self.ipv6:
+				if self.ssl:
+					self.con = ssl.wrap_socket(socket.socket(socket.AF_INET6, socket.SOCK_STREAM))
+				else:
+					self.con = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+			else:
+				if self.ssl:
+					self.con = ssl.wrap_socket(socket.socket(socket.AF_INET, socket.SOCK_STREAM))
+				else:
+					self.con = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			self.con.connect((self.server_address, int(self.server_port)))
 			self.send("SERVER %s %s 0 %s :%s" % (self.services_name, self.server_password, self.services_id, self.services_description))
 			self.send(":%s BURST" % self.services_id)
