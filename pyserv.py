@@ -22,7 +22,6 @@ try:
 	f = open("version", "r")
 	__version__ = f.read()
 	f.close()
-	_started = time.time()
 	config = ConfigParser.RawConfigParser()
 	config.read("pyserv.conf")
 except Exception:
@@ -585,12 +584,6 @@ class Services:
 			self.send(":%s CHGHOST %s %s" % (self.bot, target, str(data[0])))
 			self.msg(target, "Your vhost\2 %s\2 has been activated" % str(data[0]))
 
-	def version(self, source):
-		self.msg(source, "PyServ %s" % __version__)
-		self.msg(source, "Uptime: %s" % (self.convert_timestamp(time.time() - _started)))
-		self.msg(source, "Running on: %s %s %s" % (os.uname()[0], os.uname()[2], os.uname()[-1]))
-		self.msg(source, "Developed by Pythonz (https://github.com/Pythonz). Suggestions to pythonz@skyice.tk.")
-
 	def flag(self, target):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
 			for flag in self.query("select flag,channel from channels where user = '%s'" % str(data[0])):
@@ -813,6 +806,8 @@ class Command:
 		self.services_description = config.get("SERVICES", "description")
 		self.debug = config.get("OTHER", "debug")
 		self.email = config.get("OTHER", "email")
+		self.ipv6 = config.getboolean("OTHER", "ipv6")
+		self.ssl = config.getboolean("OTHER", "ssl")
 		self.regmail = config.get("OTHER", "regmail")
 		self.bot = "%sAAAAAA" % self.services_id
 
@@ -904,12 +899,6 @@ class Command:
 		for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(target)):
 			self.send(":%s CHGHOST %s %s" % (self.bot, target, str(data[0])))
 			self.msg(target, "Your vhost\2 %s\2 has been activated" % str(data[0]))
-
-	def version(self, source):
-		self.msg(source, "PyServ %s" % __version__)
-		self.msg(source, "Uptime: %s" % (self.convert_timestamp(time.time() - _started)))
-		self.msg(source, "Running on: %s %s %s" % (os.uname()[0], os.uname()[2], os.uname()[-1]))
-		self.msg(source, "Developed by Pythonz (https://github.com/Pythonz). Suggestions to pythonz@skyice.tk.")
 
 	def flag(self, target):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
