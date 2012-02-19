@@ -78,6 +78,7 @@ class Services:
 			self.send(":%s ENDBURST" % self.services_id)
 			thread.start_new_thread(self.sendcache, (self.con,))
 			spamscan = {}
+			_connected = False
 			while 1:
 				recv = self.con.recv(25600)
 				if not recv:
@@ -89,8 +90,9 @@ class Services:
 						if data.split()[1] == "PING":
 							self.send(":%s PONG %s %s" % (self.services_id, self.services_id, data.split()[2]))
 							self.send(":%s PING %s %s" % (self.services_id, self.services_id, data.split()[2]))
-						if data.split()[1] == "ENDBURST":
+						if data.split()[1] == "ENDBURST" and not _connected:
 							self.send(":%s UID %s %s Q %s %s TheQBot 0.0.0.0 %s +I :The Q Bot" % (self.services_id, self.bot, time.time(), self.services_name, self.services_name, time.time()))
+							_connected = True
 							self.send(":%s OPERTYPE Service" % self.bot)
 							self.meta(self.bot, "accountname", "Q")
 							self.msg("$*", "Services are now back online. Have a nice day :)")
