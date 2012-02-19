@@ -13,9 +13,10 @@ class auth(pyserv.Command):
 				if self.hash(arg[1]) == str(data[1]):
 					exists = True
 					for user in self.query("select nick from temp_nick where user = '%s'" % str(data[0])):
-						self.msg(str(user[0]), "Someone else has authed with your account")
+						self.msg(str(user[0]), "Warning: %s (%s) authed with your password." % (self.nick(source), self.userhost(source)))
 					self.query("insert into temp_nick values ('%s','%s')" % (source, str(data[0])))
 					self.msg(source, "You are now logged in as %s" % str(data[0]))
+					self.msg(source, "Remember: NO-ONE from %s will ever ask for your password.  NEVER send your password to ANYONE except Q." % self.services_description)
 					self.meta(source, "accountname", str(data[0]))
 					self.vhost(source)
 					self.flag(source)
