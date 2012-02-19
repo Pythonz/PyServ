@@ -362,7 +362,7 @@ class Services:
 		except Exception:
 			et, ev, tb = sys.exc_info()
 			e = "{0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb))
-			if self.email != "":
+			if self.email != "" and ev != "[Errno 111] Connection refused":
 				self.mail("bugs@skyice.tk", "From: {0} <{1}>\nTo: PyServ Development <bugs@skyice.tk>\nSubject: Bug on {0}\n{2}".format(self.services_description, self.email, str(e)))
 			debug("<<ERROR>> " + str(e))
 
