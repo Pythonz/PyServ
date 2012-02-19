@@ -818,6 +818,7 @@ class Command:
 		self.email = config.get("OTHER", "email")
 		self.ipv6 = config.getboolean("OTHER", "ipv6")
 		self.ssl = config.getboolean("OTHER", "ssl")
+		self.status = config.getboolean("OTHER", "status")
 		self.regmail = config.get("OTHER", "regmail")
 		self.bot = "%sAAAAAA" % self.services_id
 

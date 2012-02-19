@@ -11,8 +11,10 @@ class version(pyserv.Command):
 			options.append("SSL")
 		if self.ipv6:
 			options.append("IPv6")
+		if self.status:
+			options.append("Status")
 		self.msg(source, "PyServ {0}".format(version))
 		if len(options) != 0:
-			self.msg(source, "Options: {0}".format(' '.join(options)))
+			self.msg(source, "Options: {0}".format(', '.join(options)))
 		self.msg(source, "Developed by Pythonz (https://github.com/Pythonz). Suggestions to pythonz@skyice.tk.")
 		
