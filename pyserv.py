@@ -336,6 +336,8 @@ class Services:
 								self.send(":{uid} IDLE {source} 0 0".format(uid=data.split()[2], source=data.split()[0][1:]))
 						if data.split()[1] == "UID":
 							self.query("delete from temp_nick where nick = '%s'" % data.split()[2])
+							self.query("delete from online where uid = '%s'" % data.split()[2])
+							self.query("delete from online where nick = '%s'" % data.split()[4])
 							self.query("insert into online values ('%s','%s','%s','%s','%s')" % (data.split()[2], data.split()[4], data.split()[8], data.split()[5], data.split()[7]))
 							conns = 0
 							nicks = list()
