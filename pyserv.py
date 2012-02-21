@@ -112,7 +112,7 @@ class Services:
 							self.send(":%s PONG %s %s" % (self.services_id, self.services_id, data.split()[2]))
 							self.send(":%s PING %s %s" % (self.services_id, self.services_id, data.split()[2]))
 						if data.split()[1] == "ENDBURST" and not _connected:
-							self.send(":%s UID %s %s Q %s %s TheQBot 0.0.0.0 %s +I :The Q Bot" % (self.services_id, self.bot, time.time(), self.services_name, self.services_name, time.time()))
+							self.send(":%s UID %s %s Q %s %s TheQBot 0.0.0.0 %s +IS :The Q Bot" % (self.services_id, self.bot, time.time(), self.services_name, self.services_name, time.time()))
 							_connected = True
 							self.send(":%s OPERTYPE Service" % self.bot)
 							self.meta(self.bot, "accountname", "Q")
