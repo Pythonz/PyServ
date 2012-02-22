@@ -628,14 +628,9 @@ class Services:
 						self.send(":%s SVSJOIN %s %s" % (self.bot, target, channel))
 
 	def getflag(self, target, channel):
-		user = self.auth(target)
-		if user == 0:
-			if self.ison(target):
-				user = target
-			else:
-				return 0
-		for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (channel, user)):
-			return flag[0]
+		for data in self.query("select user from temp_nick where nick = '%s'" % target):
+			for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (channel, data[0])):
+				return flag[0]
 		return 0
 
 	def chanflag(self, flag, channel):
@@ -986,14 +981,9 @@ class Command:
 						self.send(":%s SVSJOIN %s %s" % (self.bot, target, channel))
 
 	def getflag(self, target, channel):
-		user = self.auth(target)
-		if user == 0:
-			if self.ison(target):
-				user = target
-			else:
-				return 0
-		for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (channel, user)):
-			return flag[0]
+		for data in self.query("select user from temp_nick where nick = '%s'" % target):
+			for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (channel, data[0])):
+				return flag[0]
 		return 0
 
 	def chanflag(self, flag, channel):
