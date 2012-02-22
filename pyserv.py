@@ -532,9 +532,10 @@ class Services:
 
 	def userflags(self, target):
 		user = self.auth(target)
+		if user == 0:
+			user = target
 		for data in self.query("select flags from users where name = '%s'" % user):
 			return data[0]
-		return None
 
 	def userflag(self, target, flag):
 		user = self.auth(target)
@@ -884,9 +885,10 @@ class Command:
 
 	def userflags(self, target):
 		user = self.auth(target)
+		if user == 0:
+			user = target
 		for data in self.query("select flags from users where name = '%s'" % user):
 			return data[0]
-		return None
 
 	def userflag(self, target, flag):
 		user = self.auth(target)
