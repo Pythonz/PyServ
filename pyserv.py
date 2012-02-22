@@ -624,7 +624,7 @@ class Services:
 					channel = data[0]
 					flag = data[1]
 					if flag == "n" or flag == "q" or flag == "a" or flag == "o" or flag == "h" or flag == "v":
-						self.send(":%s SVSJOIN %s %s" % (self.bot, target, flag[1]))
+						self.send(":%s SVSJOIN %s %s" % (self.bot, target, channel))
 
 	def getflag(self, target, channel):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
@@ -976,7 +976,7 @@ class Command:
 					channel = data[0]
 					flag = data[1]
 					if flag == "n" or flag == "q" or flag == "a" or flag == "o" or flag == "h" or flag == "v":
-						self.send(":%s SVSJOIN %s %s" % (self.bot, target, flag[1]))
+						self.send(":%s SVSJOIN %s %s" % (self.bot, target, channel))
 
 	def getflag(self, target, channel):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
