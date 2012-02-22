@@ -24,4 +24,4 @@ class userflags(pyserv.Command):
 				self.query("update users set flags = '%s' where name = '%s'" % (flags, self.auth(uid)))
 				self.msg(uid, "Done.")
 		else:
-			self.msg(source, "Syntax: USERFLAGS [<flags>]")
+			self.msg(uid, "Syntax: USERFLAGS [<flags>]")
