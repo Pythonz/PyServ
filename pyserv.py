@@ -532,9 +532,9 @@ class Services:
 
 	def userflags(self, target):
 		user = self.auth(target)
-		if self.ison(user):
-			for data in self.query("select flags from users where name = '%s'" % user):
-				return data[0]
+		for data in self.query("select flags from users where name = '%s'" % user):
+			return data[0]
+		return None
 
 	def userflag(self, target, flag):
 		user = self.auth(target)
@@ -884,9 +884,9 @@ class Command:
 
 	def userflags(self, target):
 		user = self.auth(target)
-		if self.ison(user):
-			for data in self.query("select flags from users where name = '%s'" % user):
-				return data[0]
+		for data in self.query("select flags from users where name = '%s'" % user):
+			return data[0]
+		return None
 
 	def userflag(self, target, flag):
 		user = self.auth(target)
