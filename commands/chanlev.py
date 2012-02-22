@@ -69,7 +69,7 @@ class chanlev(pyserv.Command):
 											self.mode(arg[0], "-o "+data)
 										if uflag != "a":
 											self.mode(arg[0], "-a "+data)
-										if uflag != "q":
+										if uflag != "q" and uflag != "n":
 											self.mode(arg[0], "-q "+data)
 								else:
 									for user in self.sid(username):
@@ -102,7 +102,7 @@ class chanlev(pyserv.Command):
 												self.mode(arg[0], "-o "+data)
 											if uflag != "a":
 												self.mode(arg[0], "-a "+data)
-											if uflag != "q":
+											if uflag != "q" and uflag != "n":
 												self.mode(arg[0], "-q "+data)
 									else:
 										for user in self.sid(username):
