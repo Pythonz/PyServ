@@ -17,11 +17,11 @@ class userflags(pyserv.Command):
 			if arg[0] == "?":
 				i = 0
 				while i != len(mode):
-					self.msg(source, mode[i]+" = "+desc[i])
+					self.msg(uid, mode[i]+" = "+desc[i])
 					i += 1
 			else:
-				flags = ''.join([char for char in arg[1] if char in ''.join(mode)])
-				self.query("update users set flags = '%s' where name = '%s'" % (flags, self.auth(user)))
-				self.msg(source, "Done.")
+				flags = ''.join([char for char in arg[0] if char in ''.join(mode)])
+				self.query("update users set flags = '%s' where name = '%s'" % (flags, self.auth(uid)))
+				self.msg(uid, "Done.")
 		else:
 			self.msg(source, "Syntax: USERFLAGS [<flags>]")
