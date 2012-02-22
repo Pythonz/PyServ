@@ -619,7 +619,7 @@ class Services:
 	def autojoin(self, target):
 		user = self.auth(target)
 		if self.ison(user):
-			if self.userflag("a", target):
+			if self.userflag(target, "a"):
 				for data in self.query("select channel,flag from channels where user = '%s'" % user):
 					channel = data[0]
 					flag = data[1]
@@ -971,7 +971,7 @@ class Command:
 	def autojoin(self, target):
 		user = self.auth(target)
 		if self.ison(user):
-			if self.userflag("a", target):
+			if self.userflag(target, "a"):
 				for data in self.query("select channel,flag from channels where user = '%s'" % user):
 					channel = data[0]
 					flag = data[1]
