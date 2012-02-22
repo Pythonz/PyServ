@@ -16,6 +16,7 @@ class whois(pyserv.Command):
 						for data in self.query("select nick from online where uid = '{0}'".format(uid[0])):
 							online.append(data[0])
 					self.msg(source, "Online Nicks  : {0}".format(' '.join(online)))
+					self.msg(source, "User flags    : {0}".format(self.userflags(user[0])))
 					self.msg(source, "Email address : {0}".format(user[1]))
 					self.msg(source, "vHost         : {0}".format(self.getvhost(user[0])))
 					self.msg(source, "Known on following channels:")
@@ -34,6 +35,7 @@ class whois(pyserv.Command):
 								for online_data in self.query("select nick from online where uid = '{0}'".format(uid[0])):
 									online.append(online_data[0])
 							self.msg(source, "Online Nicks  : {0}".format(' '.join(online)))
+							self.msg(source, "User flags    : {0}".format(self.userflags(user[0])))
 							self.msg(source, "Email address : {0}".format(account[0]))
 							self.msg(source, "vHost         : {0}".format(self.getvhost(user[0])))
 							self.msg(source, "Known on following channels:")

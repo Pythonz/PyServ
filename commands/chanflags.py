@@ -23,7 +23,7 @@ class chanflags(pyserv.Command):
 		mode.append("b")
 		desc.append("Bitchmode")
 		mode.append("s")
-		desc.append("Spamscan, prevents channel flooding. Only 3 messages in 5 seconds.")
+		desc.append("Spamscan, prevents channel flooding")
 		arg = args.split()
 		if len(arg) == 1:
 			if arg[0].startswith("#"):
@@ -35,7 +35,7 @@ class chanflags(pyserv.Command):
 			elif arg[0] == "?":
 				listed = 0
 				while listed != len(mode):
-					self.msg(source, "{0}: {1}".format(mode[listed], desc[listed]))
+					self.msg(source, "{0} = {1}".format(mode[listed], desc[listed]))
 					listed += 1
 			else:
 				self.msg(source, "Invalid channel '{0}'".format(arg[0]))

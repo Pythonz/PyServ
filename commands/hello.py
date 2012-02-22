@@ -13,7 +13,7 @@ class hello(pyserv.Command):
 					exists = True
 			if not exists:
 				if arg[0].find("@") != -1 and arg[0].find(".") != -1 and arg[0].lower() == arg[1].lower():
-					self.query("insert into users values ('%s','%s','%s')" % (self.nick(source), self.hash(hash(arg[0])), arg[0]))
+					self.query("insert into users values ('%s','%s','%s','n')" % (self.nick(source), self.hash(hash(arg[0])), arg[0]))
 					self.msg(source, "The account %s has been created successfully. You can login now with /msg Q auth account password" % self.nick(source))
 					if self.regmail == "1":
 						self.msg(source, "An email had been send to you with your password!")

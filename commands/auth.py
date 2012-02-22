@@ -20,6 +20,7 @@ class auth(pyserv.Command):
 					self.meta(source, "accountname", str(data[0]))
 					self.vhost(source)
 					self.flag(source)
+					self.autojoin(source)
 					self.memo(str(data[0]))
 			if not exists:
 				self.msg(source, "Wrong username or invalid password.")

@@ -525,8 +525,33 @@ class Services:
 	def help(self, target, command, description=""):
 		self.msg(target, command.upper()+" "*int(20-len(command))+description)
 
+	def ison(self, user):
+		for data in self.query("select * from temp_nick where user = '%s'" % user):
+			return True
+		return False
+
+	def userflags(self, target):
+		user = self.auth(target)
+		if self.ison(user):
+			for data in self.query("select flags from users where name = '%s'" % user):
+				return data[0]
+
+	def userflag(self, target, flag):
+		user = self.auth(target)
+		if self.ison(user):
+			for data in self.query("select flags from users where name = '%s'" % user):
+				if str(data[0]).find(flag) != -1:
+					return True
+		else:
+			if flag == "n":
+				return True
+		return False
+
 	def msg(self, target, text):
-		self.send(":%s NOTICE %s :%s" % (self.bot, target, text))
+		if self.userflag(target, "n"):
+			self.send(":%s NOTICE %s :%s" % (self.bot, target, text))
+		else:
+			self.send(":%s PRIVMSG %s :%s" % (self.bot, target, text))
 
 	def mode(self, target, mode):
 		self.send(":%s SVSMODE %s %s" % (self.bot, target, mode))
@@ -590,6 +615,16 @@ class Services:
 					pass
 				else:
 					self.mode(str(flag[1]), "+%s %s" % (str(flag[0]), target))
+
+	def autojoin(self, target):
+		user = self.auth(target):
+		if self.ison(user):
+			if self.userflag("a", target):
+				for data in self.query("select channel,flag from channels where user = '%s'" % user):
+					channel = data[0]
+					flag = data[1]
+					if flag == "n" or flag == "q" or flag == "a" or flag == "o" or flag == "h" or flag == "v":
+						self.send(":%s SVSJOIN %s %s" % (self.bot, target, flag[1]))
 
 	def getflag(self, target, channel):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
@@ -842,8 +877,33 @@ class Command:
 	def help(self, target, command, description=""):
 		self.msg(target, command.upper()+" "*int(20-len(command))+description)
 
+	def ison(self, user):
+		for data in self.query("select * from temp_nick where user = '%s'" % user):
+			return True
+		return False
+
+	def userflags(self, target):
+		user = self.auth(target)
+		if self.ison(user):
+			for data in self.query("select flags from users where name = '%s'" % user):
+				return data[0]
+
+	def userflag(self, target, flag):
+		user = self.auth(target)
+		if self.ison(user):
+			for data in self.query("select flags from users where name = '%s'" % user):
+				if str(data[0]).find(flag) != -1:
+					return True
+		else:
+			if flag == "n":
+				return True
+		return False
+
 	def msg(self, target, text):
-		self.send(":%s NOTICE %s :%s" % (self.bot, target, text))
+		if self.userflag(target, "n"):
+			self.send(":%s NOTICE %s :%s" % (self.bot, target, text))
+		else:
+			self.send(":%s PRIVMSG %s :%s" % (self.bot, target, text))
 
 	def mode(self, target, mode):
 		self.send(":%s SVSMODE %s %s" % (self.bot, target, mode))
@@ -907,6 +967,16 @@ class Command:
 					pass
 				else:
 					self.mode(str(flag[1]), "+%s %s" % (str(flag[0]), target))
+
+	def autojoin(self, target):
+		user = self.auth(target):
+		if self.ison(user):
+			if self.userflag("a", target):
+				for data in self.query("select channel,flag from channels where user = '%s'" % user):
+					channel = data[0]
+					flag = data[1]
+					if flag == "n" or flag == "q" or flag == "a" or flag == "o" or flag == "h" or flag == "v":
+						self.send(":%s SVSJOIN %s %s" % (self.bot, target, flag[1]))
 
 	def getflag(self, target, channel):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
