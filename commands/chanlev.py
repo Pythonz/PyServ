@@ -73,13 +73,13 @@ class chanlev(pyserv.Command):
 											self.mode(arg[0], "-q "+data)
 								else:
 									flag = self.getflag(username, arg[0])
+									self.query("delete from channels where channel = '%s' and user = '%s'" % (arg[0], username))
 									if not self.chanflag("v", arg[0]) and flag == "v":
 										for user in self.sid(username):
 											self.mode(arg[0], "-v "+user)
 									else:
 										for user in self.sid(username):
-											self.mode(arg[0], "-"+flag+" "+user)
-									self.query("delete from channels where channel = '%s' and user = '%s'" % (arg[0], username))
+											self.mode(arg[0], "-{0} {1}".format(flag, user))
 								self.msg(source, "Done.")
 							else: self.msg(source, "You cannot change your own flags!")
 							entry = True
@@ -107,13 +107,13 @@ class chanlev(pyserv.Command):
 												self.mode(arg[0], "-q "+data)
 									else:
 										flag = self.getflag(username, arg[0])
+										self.query("delete from channels where channel = '%s' and user = '%s'" % (arg[0], username))
 										if not self.chanflag("v", arg[0]) and flag == "v":
 											for user in self.sid(username):
 												self.mode(arg[0], "-v "+user)
 										else:
 											for user in self.sid(username):
-												self.mode(arg[0], "-"+flag+" "+user)
-										self.query("delete from channels where channel = '%s' and user = '%s'" % (arg[0], username))
+												self.mode(arg[0], "-{0} {1}".format(flag, user))
 									self.msg(source, "Done.")
 								else: self.msg(source, "You cannot change your own flags!")
 								entry = True
