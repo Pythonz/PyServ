@@ -58,20 +58,28 @@ class chanlev(pyserv.Command):
 								self.query("delete from channels where channel = '%s' and user = '%s'" % (channel, username))
 								if arg[2][0] != "-":
 									self.query("insert into channels values ('%s','%s','%s')" % (channel, username, arg[2][0]))
-									if self.sid(username) != 0:
-										for data in self.query("select nick from temp_nick where user = '%s'" % username):
-											self.flag(data[0])
-											uflag = self.getflag(data[0], arg[0])
-											if uflag != "v" and not self.chanflag("v", arg[0]):
-												self.mode(arg[0], "-v "+data[0])
-											if uflag != "h":
-												self.mode(arg[0], "-h "+data[0])
-											if uflag != "o":
-												self.mode(arg[0], "-o "+data[0])
-											if uflag != "a":
-												self.mode(arg[0], "-a "+data[0])
-											if uflag != "q":
-												self.mode(arg[0], "-q "+data[0])
+									for data in self.sid(username):
+										self.flag(data)
+										uflag = self.getflag(data, arg[0])
+										if uflag != "v" and not self.chanflag("v", arg[0]):
+											self.mode(arg[0], "-v "+data)
+										if uflag != "h":
+											self.mode(arg[0], "-h "+data)
+										if uflag != "o":
+											self.mode(arg[0], "-o "+data)
+										if uflag != "a":
+											self.mode(arg[0], "-a "+data)
+										if uflag != "q":
+											self.mode(arg[0], "-q "+data)
+								else:
+									flag = self.getflag(username, arg[0])
+									self.query("delete from channels where channel = '%s' and user = '%s'" % (arg[0], username))
+									if not self.chanflag("v", arg[0]) and flag == "v":
+										for user in self.sid(username):
+											self.mode(arg[0], "-v "+user)
+									else:
+										for user in self.sid(username):
+											self.mode(arg[0], "-"+flag+" "+user)
 								self.msg(source, "Done.")
 							else: self.msg(source, "You cannot change your own flags!")
 							entry = True
@@ -84,20 +92,28 @@ class chanlev(pyserv.Command):
 									self.query("delete from channels where channel = '%s' and user = '%s'" % (channel, username))
 									if arg[2][0] != "-":
 										self.query("insert into channels values ('%s','%s','%s')" % (channel, username, arg[2][0]))
-										if self.sid(username) != 0:
-											for data in self.query("select nick from temp_nick where user = '%s'" % username):
-												self.flag(data[0])
-												uflag = self.getflag(data[0], arg[0])
-												if uflag != "v" and not self.chanflag("v", arg[0]):
-													self.mode(arg[0], "-v "+data[0])
-												if uflag != "h":
-													self.mode(arg[0], "-h "+data[0])
-												if uflag != "o":
-													self.mode(arg[0], "-o "+data[0])
-												if uflag != "a":
-													self.mode(arg[0], "-a "+data[0])
-												if uflag != "q":
-													self.mode(arg[0], "-q "+data[0])
+										for data in self.sid(username):
+											self.flag(data)
+											uflag = self.getflag(data, arg[0])
+											if uflag != "v" and not self.chanflag("v", arg[0]):
+												self.mode(arg[0], "-v "+data)
+											if uflag != "h":
+												self.mode(arg[0], "-h "+data)
+											if uflag != "o":
+												self.mode(arg[0], "-o "+data)
+											if uflag != "a":
+												self.mode(arg[0], "-a "+data)
+											if uflag != "q":
+												self.mode(arg[0], "-q "+data)
+									else:
+										flag = self.getflag(username, arg[0])
+										self.query("delete from channels where channel = '%s' and user = '%s'" % (arg[0], username))
+										if not self.chanflag("v", arg[0]) and flag == "v":
+											for user in self.sid(username):
+												self.mode(arg[0], "-v "+user)
+										else:
+											for user in self.sid(username):
+												self.mode(arg[0], "-"+flag+" "+user)
 									self.msg(source, "Done.")
 								else: self.msg(source, "You cannot change your own flags!")
 								entry = True
