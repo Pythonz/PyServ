@@ -1,7 +1,7 @@
 import pyserv
 
 class auth(pyserv.Command):
-	help = "Login with your account"
+	help = "Login with your account at Q@"+self.services_name
 	def onCommand(self, source, args):
 		arg = args.split()
 		if self.auth(source) != 0:
@@ -16,7 +16,7 @@ class auth(pyserv.Command):
 						self.msg(str(user[0]), "Warning: %s (%s) authed with your password." % (self.nick(source), self.userhost(source)))
 					self.query("insert into temp_nick values ('%s','%s')" % (source, str(data[0])))
 					self.msg(source, "You are now logged in as %s" % str(data[0]))
-					self.msg(source, "Remember: NO-ONE from %s will ever ask for your password.  NEVER send your password to ANYONE except Q." % self.services_description)
+					self.msg(source, "Remember: NO-ONE from %s will ever ask for your password.  NEVER send your password to ANYONE except Q@%s." % (self.services_description, self.services_name))
 					self.meta(source, "accountname", str(data[0]))
 					self.vhost(source)
 					self.flag(source)

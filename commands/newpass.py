@@ -1,7 +1,7 @@
 import pyserv
 
 class newpass(pyserv.Command):
-	help = "Changes your password"
+	help = "Changes your password at Q@"+self.services_name
 	nauth = 1
 	def onCommand(self, source, args):
 		arg = args.split()

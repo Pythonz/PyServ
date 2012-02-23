@@ -421,6 +421,7 @@ class Services:
 				arg = text.split()[1:]
 				args = ' '.join(text.split()[1:])
 			if cmd == "help":
+				self.msg(source, "The following commands are available to you.")
 				self.help(source, "HELP", "Shows information about all commands that are available to you")
 				for command in dir(commands):
 					if not command.startswith("__") and not command.endswith("__") and not command == "commands" and os.access("commands/"+command+".py", os.F_OK):
@@ -438,6 +439,7 @@ class Services:
 					self.help(source, "UPDATE", "Updates the services \2(oper only)\2")
 					self.help(source, "RESTART", "Restarts the services \2(oper only)\2")
 					self.help(source, "QUIT", "Shutdowns the services \2(oper only)\2")
+				self.msg(source, "End of list.")
 			elif cmd == "reload" and self.isoper(source):
 				config.read("pyserv.conf")
 				self.debug = config.get("OTHER", "debug")
