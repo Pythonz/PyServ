@@ -23,6 +23,6 @@ class auth(pyserv.Command):
 					self.autojoin(source)
 					self.memo(str(data[0]))
 			if not exists:
-				self.msg(source, "Wrong username or invalid password.")
+				self.msg(source, "Username or password incorrect.")
 		else:
 			self.msg(source, "Syntax: AUTH <username> <password>")
