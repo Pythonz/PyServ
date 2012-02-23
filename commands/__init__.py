@@ -9,9 +9,3 @@ for cmd in os.listdir("commands"):
 				exec("import commands."+cmd)
 			else:
 				exec("reload(commands."+cmd+")")
-
-for module in dir(commands):
-	if sys.modules.has_key("commands."+module):
-		if not os.access("commands/"+module+".py", os.F_OK):
-			exec("del commands."+module)
-			exec("""del sys.modules["commands.%s"]""" % module)

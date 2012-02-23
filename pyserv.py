@@ -451,6 +451,10 @@ class Services:
 					
 					_updates = len(os.listdir("sql/updates"))
 					_hash = hashlib.sha512(file("pyserv.py", "r").read()).hexdigest()
+					_modules = list()
+					for module in dir(commands):
+						if os.access("commands/"+module+".py", os.F_OK):
+							_modules.append(module)
 					self.msg(source, "{0} -> {1}".format(file("version", "r").read(), _version))
 					shell("git add pyserv.conf")
 					shell("git commit -m 'Save'")
@@ -478,6 +482,10 @@ class Services:
 					else:
 						self.msg(source, "Reload ...")
 						reload(commands)
+						for module in _modules:
+							if not os.access("commands/"+module+".py", os.F_OK):
+								exec("del commands."+module)
+								exec("""del sys.modules["commands.%s"]""" % module)
 						self.msg(source, "Done.")
 				else: self.msg(source, "No update available.")
 			elif cmd == "restart" and self.isoper(source):
