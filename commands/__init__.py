@@ -12,5 +12,5 @@ for cmd in os.listdir("commands"):
 for module in dir(commands):
 	if sys.modules.has_key("commands."+module):
 		if not os.access("commands/"+module+".py", os.F_OK):
-			exec("del commands."+module):
+			exec("del commands."+module)
 			exec("""del sys.modules["commands.%s"]""" % module)
