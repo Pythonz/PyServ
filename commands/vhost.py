@@ -6,14 +6,14 @@ class vhost(pyserv.Command):
 	def onCommand(self, source, args):
 		arg = args.split()
 		if len(arg) == 1:
-			if len(arg[0]) < 5:
-				self.msg(source, "Your vhost is too short.")
-			elif arg[0].find(".") == -1:
+			if arg[0].find(".") == -1:
 				self.msg(source, "Invalid vhost. Where's the dot?")
 			elif arg[0][-2] == "." or arg[0][-1] == ".":
 				self.msg(source, "Domain ending is too short.")
 			elif arg[0].find("@") != -1 and len(arg[0].split("@")[0]) < 3 and len(arg[0].split("@")[1]) < 5:
 				self.msg(source, "vIdent or vHost too short.")
+			elif len(arg[0]) < 5:
+				self.msg(source, "Your vhost is too short.")
 			else:
 				self.query("delete from vhosts where user = '%s'" % self.auth(source))
 				self.query("insert into vhosts values ('%s','%s','0')" % (self.auth(source), arg[0]))
