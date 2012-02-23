@@ -1,4 +1,5 @@
 import os
+import sys
 
 for cmd in os.listdir("commands"):
 	if cmd.endswith(".py"):
