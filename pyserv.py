@@ -442,6 +442,7 @@ class Services:
 				self.debug = config.get("OTHER", "debug")
 				self.email = config.get("OTHER", "email")
 				self.regmail = config.get("OTHER", "regmail")
+				reload(commands)
 				self.msg(source, "Done.")
 			elif cmd == "update" and self.isoper(source):
 				_web = urllib2.urlopen("https://raw.github.com/Pythonz/PyServ/master/version")
@@ -619,7 +620,7 @@ class Services:
 
 	def vhost(self, target):
 		for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(target)):
-			vhost = data[0]
+			vhost = str(data[0])
 			if str(data[0]).find("@") == 1:
 				vident = vhost.split("@")[0]
 				vhost = vhost.split("@")[1]
@@ -977,7 +978,7 @@ class Command:
 
 	def vhost(self, target):
 		for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(target)):
-			vhost = data[0]
+			vhost = str(data[0])
 			if str(data[0]).find("@") == 1:
 				vident = vhost.split("@")[0]
 				vhost = vhost.split("@")[1]
