@@ -10,8 +10,10 @@ class vhost(pyserv.Command):
 				self.msg(source, "Invalid vhost. Where's the dot?")
 			elif arg[0][-2] == "." or arg[0][-1] == ".":
 				self.msg(source, "Domain ending is too short.")
-			elif arg[0].find("@") != -1 and len(arg[0].split("@")[0]) < 3 and len(arg[0].split("@")[1]) < 5:
-				self.msg(source, "vIdent or vHost too short.")
+			elif arg[0].find("@") != -1 and len(arg[0].split("@")[0]) < 3:
+				self.msg(source, "vIdent too short.")
+			elif arg[0].find("@") != -1 and len(arg[0].split("@")[1]) < 5:
+				self.msg(source, "vHost too short.")
 			elif len(arg[0]) < 5:
 				self.msg(source, "Your vhost is too short.")
 			else:
