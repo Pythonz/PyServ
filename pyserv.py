@@ -19,9 +19,6 @@ import ssl
 try:
 	if not os.access("logs", os.F_OK):
 		os.mkdir("logs")
-	f = open("version", "r")
-	__version__ = f.read()
-	f.close()
 	config = ConfigParser.RawConfigParser()
 	config.read("pyserv.conf")
 except Exception:
@@ -450,9 +447,11 @@ class Services:
 				_web = urllib2.urlopen("https://raw.github.com/Pythonz/PyServ/master/version")
 				_version = _web.read()
 				_web.close()
-				if __version__ != _version:
+				if file("version", "r").read() != _version:
+					
 					_updates = len(os.listdir("sql/updates"))
-					self.msg(source, "{0} -> {1}".format(__version__, _version))
+					_hash = hashlib.sha512(file("pyserv.py", "r").read()).hexdigest()
+					self.msg(source, "{0} -> {1}".format(file("version", "r").read(), _version))
 					shell("git add pyserv.conf")
 					shell("git commit -m 'Save'")
 					shell("git pull")
@@ -468,12 +467,18 @@ class Services:
 									for line in file.readlines():
 										self.query(line)
 									file.close()
-					self.msg(source, "Done.")
-					msg = "We are restarting for an update, please be patient. We are back as soon as possible."
-					self.send(":%s QUIT :%s" % (self.bot, msg))
-					self.con.close()
-					if os.access("pyserv.pid", os.F_OK): shell("sh pyserv restart")
-					else: sys.exit(0)
+					if _hash != hashlib.sha512(file("pyserv.py", "r").read()).hexdigest():
+						self.msg(source, "Done.")
+						self.msg(source, "Restart ...")
+						msg = "We are restarting for an update, please be patient. We are back as soon as possible."
+						self.send(":%s QUIT :%s" % (self.bot, msg))
+						self.con.close()
+						if os.access("pyserv.pid", os.F_OK): shell("sh pyserv restart")
+						else: sys.exit(0)
+					else:
+						self.msg(source, "Reload ...")
+						reload(commands)
+						self.msg(source, "Done.")
 				else: self.msg(source, "No update available.")
 			elif cmd == "restart" and self.isoper(source):
 				if len(arg) == 0:
