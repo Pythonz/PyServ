@@ -22,7 +22,10 @@ class vhost(pyserv.Command):
 				self.msg(source, "Your vhost is too short.")
 			else:
 				entry = False
-				for data in self.query("select user from vhosts where vhost = '%s' and user != '%s'" % (arg[0], self.auth(source))):
+				vhost = arg[0]
+				if vhost.find("@") != -1:
+					vhost = vhost.split("@")[0]
+				for data in self.query("select user from vhosts where vhost = '%s' and user != '%s'" % (vhost, self.auth(source))):
 					user = data[0]
 					entry = True
 				if not entry:

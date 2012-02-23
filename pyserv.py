@@ -802,6 +802,9 @@ class Services:
 						for hostmask in self.hostmask(user):
 							if fnmatch.fnmatch(hostmask, ban):
 								self.kick(channel, user, "Banned.")
+						for ip in self.getip(user):
+							if fnmatch.fnmatch("*!*@"+ip, ban):
+								self.kick(channel, user, "Banned.")
 
 	def getip(self, target):
 		uid = self.uid(target)
@@ -1167,6 +1170,9 @@ class Command:
 					for user in self.userlist(channel):
 						for hostmask in self.hostmask(user):
 							if fnmatch.fnmatch(hostmask, ban):
+								self.kick(channel, user, "Banned.")
+						for ip in self.getip(user):
+							if fnmatch.fnmatch("*!*@"+ip, ban):
 								self.kick(channel, user, "Banned.")
 	def unknown(self, target):
 		self.msg(target, "Unknown command "+__name__.split(".")[-1].upper()+". Please try HELP for more information.")
