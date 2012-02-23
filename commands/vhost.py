@@ -12,9 +12,13 @@ class vhost(pyserv.Command):
 				self.msg(source, "Domain ending is too short.")
 			elif arg[0].find("@") != -1 and len(arg[0].split("@")[0]) < 3:
 				self.msg(source, "vIdent too short.")
-			elif arg[0].find("@") != -1 and len(arg[0].split("@")[1]) < 5:
+			elif arg[0].find("@") != -1 and len(arg[0].split("@")[1]) < 6:
 				self.msg(source, "vHost too short.")
-			elif len(arg[0]) < 5:
+			elif arg[0].find("@") != -1 and arg[0].split("@")[0].find(".") != -1:
+				self.msg(source, "No dots allowed in vIdent.")
+			elif arg[0].find("@") != -1 and arg[0].split("@")[1].find(".") == -1:
+				self.msg(source, "Thats no vHost, the DOT is missing.")
+			elif len(arg[0]) < 6:
 				self.msg(source, "Your vhost is too short.")
 			else:
 				self.query("delete from vhosts where user = '%s'" % self.auth(source))
