@@ -621,7 +621,7 @@ class Services:
 	def vhost(self, target):
 		for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(target)):
 			vhost = str(data[0])
-			if str(data[0]).find("@") == 1:
+			if str(data[0]).find("@") != -1:
 				vident = vhost.split("@")[0]
 				vhost = vhost.split("@")[1]
 				self.send(":%s CHGIDENT %s %s" % (self.bot, target, vident))
@@ -979,7 +979,7 @@ class Command:
 	def vhost(self, target):
 		for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(target)):
 			vhost = str(data[0])
-			if str(data[0]).find("@") == 1:
+			if str(data[0]).find("@") != -1:
 				vident = vhost.split("@")[0]
 				vhost = vhost.split("@")[1]
 				self.send(":%s CHGIDENT %s %s" % (self.bot, target, vident))
