@@ -776,7 +776,10 @@ class Services:
 			masks.append(data[0]+"!"+data[1]+"@"+data[2])
 		if self.auth(uid) != 0:
 			for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(uid)):
-				masks.append(nick+"!"+username+"@"+data[0])
+				if str(data[0]).find("@") != -1:
+					masks.append(nick+"!"+data[0])
+				else:
+					masks.append(nick+"!"+username+"@"+data[0])
 		return masks
 
 	def enforceban(self, channel, target):
@@ -1145,7 +1148,10 @@ class Command:
 			masks.append(data[0]+"!"+data[1]+"@"+data[2])
 		if self.auth(uid) != 0:
 			for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(uid)):
-				masks.append(nick+"!"+username+"@"+data[0])
+				if str(data[0]).find("@") != -1:
+					masks.append(nick+"!"+data[0])
+				else:
+					masks.append(nick+"!"+username+"@"+data[0])
 		return masks
 
 	def enforceban(self, channel, target):
