@@ -447,15 +447,15 @@ class Services:
 				_web = urllib2.urlopen("https://raw.github.com/Pythonz/PyServ/master/version")
 				_version = _web.read()
 				_web.close()
-				if file("version", "r").read() != _version:
+				if open("version", "r").read() != _version:
 					
 					_updates = len(os.listdir("sql/updates"))
-					_hash = hashlib.sha512(file("pyserv.py", "r").read()).hexdigest()
+					_hash = hashlib.sha512(open("pyserv.py", "r").read()).hexdigest()
 					_modules = list()
 					for module in dir(commands):
 						if os.access("commands/"+module+".py", os.F_OK):
 							_modules.append(module)
-					self.msg(source, "{0} -> {1}".format(file("version", "r").read(), _version))
+					self.msg(source, "{0} -> {1}".format(open("version", "r").read(), _version))
 					shell("git add pyserv.conf")
 					shell("git commit -m 'Save'")
 					shell("git pull")
@@ -471,7 +471,7 @@ class Services:
 									for line in file.readlines():
 										self.query(line)
 									file.close()
-					if _hash != hashlib.sha512(file("pyserv.py", "r").read()).hexdigest():
+					if _hash != hashlib.sha512(open("pyserv.py", "r").read()).hexdigest():
 						self.msg(source, "Done.")
 						self.msg(source, "Restart ...")
 						msg = "We are restarting for an update, please be patient. We are back as soon as possible."
