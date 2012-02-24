@@ -587,7 +587,7 @@ class Services:
 
 	def auth(self, target):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
-			return str(data["user"])
+			return data["user"]
 		return 0
 
 	def sid(self, nick):
@@ -674,9 +674,11 @@ class Services:
 	def query(self, string):
 		self.db.query(str(string))
 		result = self.db.store_result()
-		try:
-			return tuple(result.fetch_row(maxrows=0, how=1))
-		except: pass
+		if result:
+			results = list()
+			for data in result.fetch_row(maxrows=0, how=1):
+				results.append(data)
+			return results
 
 	def mail(self, receiver, message):
 		try:
@@ -880,10 +882,12 @@ class Command:
 		Smysql = _mysql.connect(host=self.mysql_host, port=self.mysql_port, db=self.mysql_name, user=self.mysql_user, passwd=self.mysql_passwd)
 		Smysql.query(str(string))
 		result = Smysql.store_result()
-		Smysql.close()
-		try:
-			return tuple(result.fetch_row(maxrows=0, how=1))
-		except: pass
+		if result:
+			results = list()
+			for data in result.fetch_row(maxrows=0, how=1):
+				results.append(data)
+			Smysql.close()
+			return results
 
 	def uid (self, nick):
 		if nick == "Q":
@@ -951,7 +955,7 @@ class Command:
 
 	def auth(self, target):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
-			return str(data["user"])
+			return data["user"]
 		return 0
 
 	def sid(self, nick):
