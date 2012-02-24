@@ -674,9 +674,10 @@ class Services:
 	def query(self, string):
 		self.db.query(str(string))
 		result = self.db.store_result()
-		try:
+		if rt.num_rows() == 0:
+			return list()
+		else:
 			return result.fetch_row(maxrows=0, how=1)
-		except: pass
 
 	def mail(self, receiver, message):
 		try:
@@ -880,10 +881,11 @@ class Command:
 		Smysql = _mysql.connect(host=self.mysql_host, port=self.mysql_port, db=self.mysql_name, user=self.mysql_user, passwd=self.mysql_passwd)
 		Smysql.query(str(string))
 		result = Smysql.store_result()
-		try:
+		Smysql.close()
+		if result.num_rows() == 0:
+			return list()
+		else:
 			return result.fetch_row(maxrows=0, how=1)
-		except: pass
-		finally: Smysql.close()
 
 	def uid (self, nick):
 		if nick == "Q":
