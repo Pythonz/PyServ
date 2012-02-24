@@ -681,7 +681,7 @@ class Services:
 			if len(results) != 0:
 				return results
 			else:
-				return None
+				return tuple()
 		except: pass
 
 	def mail(self, receiver, message):
@@ -894,7 +894,7 @@ class Command:
 			if len(results) != 0:
 				return results
 			else:
-				return None
+				return tuple()
 		except: pass
 
 	def uid (self, nick):
