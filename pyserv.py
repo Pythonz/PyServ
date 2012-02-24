@@ -80,7 +80,7 @@ class Services:
 			self.query("delete from chanlist")
 			shell("rm -rf logs/*")
 			if self.status:
-				self.statussock = multiprocessing.Process(target="status")
+				self.statussock = multiprocessing.Process(target=status)
 				self.statussock.start()
 			if self.ipv6:
 				if self.ssl:
@@ -96,7 +96,7 @@ class Services:
 			self.send("SERVER %s %s 0 %s :%s" % (self.services_name, self.server_password, self.services_id, self.services_description))
 			self.send(":%s BURST" % self.services_id)
 			self.send(":%s ENDBURST" % self.services_id)
-			multiprocessing.Process(target="self.sendcache", args=(self.con,)).start()
+			multiprocessing.Process(target=self.sendcache, args=(self.con,)).start()
 			spamscan = {}
 			_connected = False
 			while 1:
