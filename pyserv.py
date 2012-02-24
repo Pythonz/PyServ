@@ -676,8 +676,9 @@ class Services:
 		result = self.db.store_result()
 		try:
 			results = list()
-			for res in result.fetch_row(maxrows=0, how=1):
-				results.append(res)
+			if result:
+				for res in result.fetch_row(maxrows=0, how=1):
+					results.append(res)
 			if len(results) != 0:
 				return results
 			else:
@@ -889,8 +890,9 @@ class Command:
 		Smysql.close()
 		try:
 			results = list()
-			for res in result.fetch_row(maxrows=0, how=1):
-				results.append(res)
+			if result:
+				for res in result.fetch_row(maxrows=0, how=1):
+					results.append(res)
 			if len(results) != 0:
 				return results
 			else:
