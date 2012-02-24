@@ -24,5 +24,5 @@ class unban(pyserv.Command):
 					else: self.msg(uid, "Denied.")
 				else: self.msg(uid, "Invalid channel: "+arg[0])
 			else: self.msg(uid, "Syntax: UNBAN <#channel> <hostmask>")
-		except pyserv.error,e: pass
+		except pyserv.error: pass
 		

@@ -17,4 +17,4 @@ class settopic(pyserv.Command):
 					else: self.msg(source, "No permission")
 				else: self.msg(source, "Invalid channel '{0}'".format(arg[0]))
 			else: self.msg(source, "Syntax: SETTOPIC <#channel> <topic>")
-		except pyserv.error,e: pass
+		except pyserv.error: pass

@@ -685,7 +685,7 @@ class Services:
 			mail = smtplib.SMTP('127.0.0.1', 25)
 			mail.sendmail(self.email, ['%s' % receiver], message)
 			mail.quit()
-		except Exception,e: debug("<<MAIL-ERROR>> "+str(e))
+		except Exception as e: debug("<<MAIL-ERROR>> "+str(e))
 
 	def log(self, source, msgtype, channel, text=""):
 		try:
@@ -1044,7 +1044,7 @@ class Command:
 			mail = smtplib.SMTP('127.0.0.1', 25)
 			mail.sendmail(self.email, ['%s' % receiver], message)
 			mail.quit()
-		except Exception,e: debug("<<MAIL-ERROR>> "+str(e))
+		except Exception as e: debug("<<MAIL-ERROR>> "+str(e))
 
 	def log(self, source, msgtype, channel, text=""):
 		try:
@@ -1231,5 +1231,5 @@ class error(Exception):
 if __name__ == "__main__":
 	try:
 		Services().run()
-	except Exception,e: print(e)
+	except Exception as e: print(e)
 	except KeyboardInterrupt: print("Aborting ... STRG +C")
