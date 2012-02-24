@@ -120,7 +120,7 @@ class Services:
 									self.mode(channel["name"], channel["modes"])
 								if self.chanflag("t", channel["name"]):
 									self.send(":{0} TOPIC {1} :{2}".format(self.bot, channel["name"], channel["topic"]))
-									if self.chanflag("l", channel[0]): self.log("Q", "topic", channel["name"], ":"+channel["topic"])
+									if self.chanflag("l", channel["name"]): self.log("Q", "topic", channel["name"], ":"+channel["topic"])
 						if data.split()[1] == "PRIVMSG":
 							if data.split()[2] == self.bot:
 								iscmd = False
