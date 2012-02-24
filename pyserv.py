@@ -677,7 +677,11 @@ class Services:
 		if not result:
 			return list()
 		else:
-			return result.fetch_row(maxrows=0, how=1)
+			results = list()
+			for res in result.fetch_row(maxrows=0, how=1):
+				results.append(res)
+			return results
+			#return result.fetch_row(maxrows=0, how=1)
 
 	def mail(self, receiver, message):
 		try:
@@ -885,7 +889,11 @@ class Command:
 		if not result:
 			return list()
 		else:
-			return result.fetch_row(maxrows=0, how=1)
+			results = list()
+			for res in result.fetch_row(maxrows=0, how=1):
+				results.append(res)
+			return results
+			#return result.fetch_row(maxrows=0, how=1)
 
 	def uid (self, nick):
 		if nick == "Q":
