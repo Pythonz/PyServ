@@ -10,7 +10,7 @@ class spamscan(pyserv.Command):
 				flag = self.getflag(uid, arg[0])
 				if flag == "n" or flag == "q" or flag == "a" or flag == "o" or flag == "h":
 					for data in self.query("select spamscan from channelinfo where name = '%s'" % arg[0]):
-						self.msg(uid, "Spamscan settings: "+data[0])
+						self.msg(uid, "Spamscan settings: "+data["spamscan"])
 				else: self.msg(uid, "Denied.")
 			else: self.msg(uid, "Invalid channel: "+arg[0])
 		elif len(arg) == 2:

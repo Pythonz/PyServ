@@ -10,7 +10,7 @@ class welcome(pyserv.Command):
 			if arg[0].startswith("#"):
 				entry = False
 				for data in self.query("select name,welcome from channelinfo where name = '{0}'".format(arg[0])):
-					self.msg(source, "[{0}] {1}".format(data[0], data[1]))
+					self.msg(source, "[{0}] {1}".format(data["name"], data["welcome"]))
 					entry = True
 				if not entry:
 					self.msg(source, "Channel {0} does not exist".format(arg[0]))

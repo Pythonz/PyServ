@@ -4,7 +4,6 @@ class memo(pyserv.Command):
 	help = "Send another user a memo"
 	nauth = 1
 	def onCommand(self, source, args):
-		import _mysql
 		arg = args.split()
 		if len(arg) > 1:
 			if arg[0].startswith("#"):
@@ -13,7 +12,7 @@ class memo(pyserv.Command):
 				message = _mysql.escape_string(' '.join(arg[1:]))
 				entry = False
 				for data in self.query("select name from users where name = '%s'" % user):
-					user = data[0]
+					user = data["name"]
 					entry = True
 				if entry:
 					self.query("insert into memo values ('%s', '%s', '%s')" % (user, sender, message))
@@ -26,7 +25,7 @@ class memo(pyserv.Command):
 				message = _mysql.escape_string(' '.join(arg[1:]))
 				entry = False
 				for data in self.query("select name from users where name = '%s'" % user):
-					user = data[0]
+					user = data["name"]
 					entry = True
 				if entry:
 					self.query("insert into memo values ('%s', '%s', '%s')" % (user, sender, message))

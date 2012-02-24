@@ -115,12 +115,12 @@ class Services:
 							self.meta(self.bot, "accountname", "Q")
 							self.msg("$*", "Services are now back online. Have a nice day :)")
 							for channel in self.query("select name,modes,topic from channelinfo"):
-								self.join(str(channel[0]))
-								if self.chanflag("m", channel[0]):
-									self.mode(channel[0], channel[1])
-								if self.chanflag("t", channel[0]):
-									self.send(":{0} TOPIC {1} :{2}".format(self.bot, channel[0], channel[2]))
-									if self.chanflag("l", channel[0]): self.log("Q", "topic", channel[0], ":"+channel[2])
+								self.join(str(channel["name"]))
+								if self.chanflag("m", channel["name"]):
+									self.mode(channel["name"], channel["modes"])
+								if self.chanflag("t", channel["name"]):
+									self.send(":{0} TOPIC {1} :{2}".format(self.bot, channel["name"], channel["topic"]))
+									if self.chanflag("l", channel[0]): self.log("Q", "topic", channel["name"], ":"+channel["topic"])
 						if data.split()[1] == "PRIVMSG":
 							if data.split()[2] == self.bot:
 								iscmd = False
@@ -160,8 +160,8 @@ class Services:
 									messages = 10
 									seconds = [6, 5]
 									for dump in self.query("select spamscan from channelinfo where name = '%s'" % pchan):
-										messages = int(dump[0].split(":")[0])
-										seconds = [int(dump[0].split(":")[1]) + 1, int(dump[0].split(":")[1])]
+										messages = int(dump["spamscan"].split(":")[0])
+										seconds = [int(dump["spamscan"].split(":")[1]) + 1, int(dump["spamscan"].split(":")[1])]
 									if spamscan.has_key((pchan, puid)):
 										num = spamscan[pchan,puid][0] + 1
 										spamscan[pchan,puid] = [num, spamscan[pchan,puid][1]]
@@ -191,11 +191,11 @@ class Services:
 								self.query("delete from chanlist where channel = '{0}' and uid = '{1}'".format(kchan, ktarget))
 						if data.split()[1] == "QUIT":
 							for qchan in self.query("select * from chanlist where uid = '{0}'".format(data.split()[0][1:])):
-								if self.chanflag("l", qchan[1]):
+								if self.chanflag("l", qchan["channel"]):
 									if len(data.split()) == 2:
-										self.log(qchan[0], "quit", qchan[1])
+										self.log(qchan["uid"], "quit", qchan["channel"])
 									else:
-										self.log(qchan[0], "quit", qchan[1], ' '.join(data.split()[2:])[1:])
+										self.log(qchan["uid"], "quit", qchan["channel"], ' '.join(data.split()[2:])[1:])
 							self.query("delete from chanlist where uid = '{0}'".format(data.split()[0][1:]))
 							self.query("delete from temp_nick where nick = '%s'" % str(data.split()[0])[1:])
 							self.query("delete from online where uid = '%s'" % str(data.split()[0])[1:])
@@ -204,15 +204,15 @@ class Services:
 								if self.chanflag("l", data.split()[2]): self.log(data.split()[0][1:], "topic", data.split()[2], ' '.join(data.split()[3:]))
 								if self.chanflag("t", data.split()[2]):
 									for channel in self.query("select topic from channelinfo where name = '{0}'".format(data.split()[2])):
-										self.send(":{0} TOPIC {1} :{2}".format(self.bot, data.split()[2], channel[0]))
-										if self.chanflag("l", data.split()[2]): self.log("Q", "topic", data.split()[2], ":"+channel[0])
+										self.send(":{0} TOPIC {1} :{2}".format(self.bot, data.split()[2], channel["topic"]))
+										if self.chanflag("l", data.split()[2]): self.log("Q", "topic", data.split()[2], ":"+channel["topic"])
 						if data.split()[1] == "FMODE":
 							if self.chanflag("l", data.split()[2]) and len(data.split()) > 4:
 								self.log(data.split()[0][1:], "mode", data.split()[2], ' '.join(data.split()[4:]))
 							if self.chanflag("m", data.split()[2]) and len(data.split()) == 5:
 								if data.split()[2].startswith("#"):
 									for channel in self.query("select name,modes from channelinfo where name = '{0}'".format(data.split()[2])):
-										self.mode(channel[0], channel[1])
+										self.mode(channel["name"], channel["modes"])
 							if len(data.split()) > 5:
 								if self.chanexist(data.split()[2]):
 									splitted = data.split()[4]
@@ -287,12 +287,12 @@ class Services:
 								if self.chanflag("p", data.split()[2]):
 									for user in data.split()[5:]:
 										for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (data.split()[2], self.auth(user))):
-											if str(flag[0]) == "n":
+											if str(flag["flag"]) == "n":
 												self.mode(data.split()[2], "+q %s" % user)
-											elif str(flag[0]) == "Y":
+											elif str(flag["flag"]) == "Y":
 												pass
 											else:
-												self.mode(data.split()[2], "+%s %s" % (str(flag[0]), user))
+												self.mode(data.split()[2], "+%s %s" % (str(flag["flag"]), user))
 						if data.split()[1] == "FJOIN":
 							fjoin_chan = data.split()[2]
 							fjoin_nick = data.split()[5][1:]
@@ -314,20 +314,20 @@ class Services:
 							fjoin_user = self.auth(fjoin_nick)
 							hasflag = False
 							for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (fjoin_chan, fjoin_user)):
-								if str(flag[0]) == "n":
+								if str(flag["flag"]) == "n":
 									self.mode(fjoin_chan, "+q %s" % fjoin_nick)
 									hasflag = True
-								elif str(flag[0]) == "Y":
+								elif str(flag["flag"]) == "Y":
 									pass
 								else:
-									self.mode(fjoin_chan, "+%s %s" % (str(flag[0]), fjoin_nick))
+									self.mode(fjoin_chan, "+%s %s" % (str(flag["flag"]), fjoin_nick))
 									hasflag = True
 							if not hasflag:
 								if self.chanflag("v", fjoin_chan):
 									self.mode(fjoin_chan, "+v %s" % fjoin_nick)
 							for welcome in self.query("select name,welcome from channelinfo where name = '{0}'".format(fjoin_chan)):
 								if self.chanflag("w", fjoin_chan):
-									self.msg(fjoin_nick, "[{0}] {1}".format(welcome[0], welcome[1]))
+									self.msg(fjoin_nick, "[{0}] {1}".format(welcome["name"], welcome["welcome"]))
 							if self.isoper(fjoin_nick) and self.chanexist(fjoin_chan):
 								self.send(":%s NOTICE %s :Operator %s has joined" % (self.services_id, fjoin_chan, self.nick(fjoin_nick)))
 								self.send(":%s PRIVMSG %s :ACTION goes down on his knee and prays to %s." % (self.bot, fjoin_chan, self.nick(fjoin_nick)))
@@ -360,11 +360,11 @@ class Services:
 							conns = 0
 							nicks = list()
 							for connection in self.query("select nick from online where address = '%s'" % data.split()[8]):
-								nicks.append(connection[0])
+								nicks.append(connection["nick"])
 								conns += 1
 							limit = 3
 							for trust in self.query("select `limit` from trust where address = '%s'" % data.split()[8]):
-								limit = int(trust[0])
+								limit = int(trust["limit"])
 								if data.split()[7].startswith("~"):
 									for nick in nicks:
 										self.send(":{0} KILL {1} :G-lined".format(self.bot, nick))
@@ -522,14 +522,14 @@ class Services:
 		if nick == "Q":
 			return self.bot
 		for data in self.query("select uid from online where nick = '{0}'".format(nick)):
-			return str(data[0])
+			return str(data["uid"])
 		return nick
 
 	def nick (self, source):
 		if source == self.bot:
 			return "Q"
 		for data in self.query("select nick from online where uid = '%s'" % source):
-			return str(data[0])
+			return str(data["nick"])
 		return source
 
 	def send(self, text):
@@ -551,13 +551,13 @@ class Services:
 		if user == 0:
 			user = target
 		for data in self.query("select flags from users where name = '%s'" % user):
-			return data[0]
+			return data["flags"]
 
 	def userflag(self, target, flag):
 		user = self.auth(target)
 		if self.ison(user):
 			for data in self.query("select flags from users where name = '%s'" % user):
-				if str(data[0]).find(flag) != -1:
+				if str(data["flags"]).find(flag) != -1:
 					return True
 		else:
 			if flag == "n":
@@ -587,22 +587,22 @@ class Services:
 
 	def auth(self, target):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
-			return str(data[0])
+			return str(data["user"])
 		return 0
 
 	def sid(self, nick):
 		nicks = list()
 		for data in self.query("select nick from temp_nick where user = '%s'" % nick):
-			nicks.append(data[0])
+			nicks.append(data["nick"])
 		return nicks
 
 	def memo(self, user):
 		for data in self.query("select source,message from memo where user = '%s'" % user):
 			for source in self.sid(user):
 				self.msg(source, "\2[MEMO]\2")
-				self.msg(source, "\2FROM:\2 %s" % data[0])
-				self.msg(source, "\2MESSAGE:\2 %s" % data[1])
-			self.query("delete from memo where user = '%s' and source = '%s' and message = '%s'" % (user, data[0], _mysql.escape_string(data[1])))
+				self.msg(source, "\2FROM:\2 %s" % data["source"])
+				self.msg(source, "\2MESSAGE:\2 %s" % data["message"])
+			self.query("delete from memo where user = '%s' and source = '%s' and message = '%s'" % (user, data["source"], _mysql.escape_string(data["message"])))
 
 	def chanexist(self, channel):
 		for data in self.query("select name from channelinfo where name = '%s'" % channel):
@@ -620,17 +620,17 @@ class Services:
 
 	def vhost(self, target):
 		for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(target)):
-			vhost = str(data[0])
-			if str(data[0]).find("@") != -1:
+			vhost = str(data["vhost"])
+			if str(data["vhost"]).find("@") != -1:
 				vident = vhost.split("@")[0]
 				vhost = vhost.split("@")[1]
 				self.send(":%s CHGIDENT %s %s" % (self.bot, target, vident))
 			self.send(":%s CHGHOST %s %s" % (self.bot, target, vhost))
-			self.msg(target, "Your vhost\2 %s\2 has been activated" % data[0])
+			self.msg(target, "Your vhost\2 %s\2 has been activated" % data["vhost"])
 
 	def flag(self, target):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
-			for flag in self.query("select flag,channel from channels where user = '%s'" % str(data[0])):
+			for flag in self.query("select flag,channel from channels where user = '%s'" % str(data["user"])):
 				if str(flag[0]) == "n":
 					self.mode(str(flag[1]), "+q %s" % target)
 				elif str(flag[0]) == "Y":
@@ -643,20 +643,20 @@ class Services:
 		if self.ison(user):
 			if self.userflag(target, "a"):
 				for data in self.query("select channel,flag from channels where user = '%s'" % user):
-					channel = data[0]
-					flag = data[1]
+					channel = data["channel"]
+					flag = data["flag"]
 					if flag == "n" or flag == "q" or flag == "a" or flag == "o" or flag == "h" or flag == "v":
 						self.send(":%s SVSJOIN %s %s" % (self.bot, target, channel))
 
 	def getflag(self, target, channel):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
-			for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (channel, data[0])):
-				return flag[0]
+			for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (channel, data["user"])):
+				return flag["flag"]
 		return 0
 
 	def chanflag(self, flag, channel):
 		for data in self.query("select flags from channelinfo where name = '{0}'".format(channel)):
-			if data[0].find(flag) != -1:
+			if data["flags"].find(flag) != -1:
 				return True
 		return False
 
@@ -674,9 +674,10 @@ class Services:
 	def query(self, string):
 		self.db.query(str(string))
 		result = self.db.store_result()
-		try:
-			return result.fetch_row(maxrows=0)
-		except: pass
+		results = list()
+		for res in result.fetch_row(maxrows=0, how=1):
+			results.append(res)
+		return results
 
 	def mail(self, receiver, message):
 		try:
@@ -750,7 +751,7 @@ class Services:
 	def userlist(self, channel):
 		uid = list()
 		for user in self.query("select uid from chanlist where channel = '%s'" % channel):
-			uid.append(user[0])
+			uid.append(user["uid"])
 		return uid
 
 	def onchan(self, channel, target):
@@ -762,7 +763,7 @@ class Services:
 	def gethost(self, target):
 		uid = self.uid(target)
 		for data in self.query("select host from online where uid = '%s'" % uid):
-			return data[0]
+			return data["host"]
 		return 0
 
 	def hostmask(self, target):
@@ -771,15 +772,15 @@ class Services:
 		nick = None
 		username = None
 		for data in self.query("select nick,username,host from online where uid = '%s'" % uid):
-			nick = data[0]
-			username = data[1]
-			masks.append(data[0]+"!"+data[1]+"@"+data[2])
+			nick = data["nick"]
+			username = data["username"]
+			masks.append(data["nick"]+"!"+data["username"]+"@"+data["host"])
 		if self.auth(uid) != 0:
 			for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(uid)):
-				if str(data[0]).find("@") != -1:
-					masks.append(nick+"!"+data[0])
+				if str(data["vhost"]).find("@") != -1:
+					masks.append(nick+"!"+data["vhost"])
 				else:
-					masks.append(nick+"!"+username+"@"+data[0])
+					masks.append(nick+"!"+username+"@"+data["vhost"])
 		return masks
 
 	def enforceban(self, channel, target):
@@ -793,8 +794,8 @@ class Services:
 		for data in self.query("select ban from banlist where channel = '%s'" % channel):
 			for user in self.userlist(channel):
 				for hostmask in self.hostmask(user):
-					if fnmatch.fnmatch(hostmask, data[0]):
-						self.mode(channel, "+b "+data[0])
+					if fnmatch.fnmatch(hostmask, data["ban"]):
+						self.mode(channel, "+b "+data["ban"])
 						self.kick(channel, user, "Banned.")
 
 	def checkbans(self, channel, bans):
@@ -812,29 +813,30 @@ class Services:
 	def getip(self, target):
 		uid = self.uid(target)
 		for data in self.query("select address from online where uid = '%s'" % uid):
-			return data[0]
+			return data["address"]
 		return 0
 
 	def gline(self, target, reason=""):
 		uid = self.uid(target)
+		ip = self.getip(uid)
 		for data in self.query("select uid from online where address = '%s'" % self.getip(uid)):
-			self.send(":"+self.bot+" KILL "+data+" :G-lined")
-		self.send(":"+self.bot+" GLINE *@"+self.getip(uid)+" 1800 :"+reason)
+			self.send(":"+self.bot+" KILL "+data["uid"]+" :G-lined")
+		self.send(":"+self.bot+" GLINE *@"+ip+" 1800 :"+reason)
 
 	def suspended(self, channel):
 		for data in self.query("select reason from suspended where channel = '%s'" % channel):
-			return data[0]
+			return data["reason"]
 		return False
 
 	def userhost(self, target):
 		uid = self.uid(target)
 		for data in self.query("select username,host from online where uid = '%s'" % uid):
-			return data[0]+"@"+data[1]
+			return data["username"]+"@"+data["host"]
 		return 0
 
 	def getvhost(self, target):
 		for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % target):
-			return data[0]
+			return data["vhost"]
 		return "None"
 
 class Command:
@@ -879,24 +881,24 @@ class Command:
 		Smysql = _mysql.connect(host=self.mysql_host, port=self.mysql_port, db=self.mysql_name, user=self.mysql_user, passwd=self.mysql_passwd)
 		Smysql.query(str(string))
 		result = Smysql.store_result()
-		try:
-			return result.fetch_row(maxrows=0)
-		except:
-			pass
-		finally:
-			Smysql.close()
+		results = list()
+		for res in result.fetch_row(maxrows=0, how=1):
+			results.append(res)
+		Smysql.close()
+		return results
+
 	def uid (self, nick):
 		if nick == "Q":
 			return self.bot
 		for data in self.query("select uid from online where nick = '{0}'".format(nick)):
-			return str(data[0])
+			return data["uid"]
 		return nick
 
 	def nick (self, source):
 		if source == self.bot:
 			return "Q"
 		for data in self.query("select nick from online where uid = '%s'" % source):
-			return str(data[0])
+			return data["nick"]
 		return source
 
 	def push(self, target, message):
@@ -915,13 +917,13 @@ class Command:
 		if user == 0:
 			user = target
 		for data in self.query("select flags from users where name = '%s'" % user):
-			return data[0]
+			return data["flags"]
 
 	def userflag(self, target, flag):
 		user = self.auth(target)
 		if self.ison(user):
 			for data in self.query("select flags from users where name = '%s'" % user):
-				if str(data[0]).find(flag) != -1:
+				if str(data["flags"]).find(flag) != -1:
 					return True
 		else:
 			if flag == "n":
@@ -951,22 +953,22 @@ class Command:
 
 	def auth(self, target):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
-			return str(data[0])
+			return str(data["user"])
 		return 0
 
 	def sid(self, nick):
 		nicks = list()
 		for data in self.query("select nick from temp_nick where user = '%s'" % nick):
-			nicks.append(data[0])
+			nicks.append(data["nick"])
 		return nicks
 
 	def memo(self, user):
 		for data in self.query("select source,message from memo where user = '%s'" % user):
 			for source in self.sid(user):
 				self.msg(source, "\2[MEMO]\2")
-				self.msg(source, "\2FROM:\2 %s" % data[0])
-				self.msg(source, "\2MESSAGE:\2 %s" % data[1])
-			self.query("delete from memo where user = '%s' and source = '%s' and message = '%s'" % (user, data[0], _mysql.escape_string(data[1])))
+				self.msg(source, "\2FROM:\2 %s" % data["source"])
+				self.msg(source, "\2MESSAGE:\2 %s" % data["message"])
+			self.query("delete from memo where user = '%s' and source = '%s' and message = '%s'" % (user, data["source"], _mysql.escape_string(data["message"])))
 
 	def chanexist(self, channel):
 		for data in self.query("select name from channelinfo where name = '%s'" % channel):
@@ -984,43 +986,43 @@ class Command:
 
 	def vhost(self, target):
 		for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(target)):
-			vhost = str(data[0])
-			if str(data[0]).find("@") != -1:
+			vhost = str(data["vhost"])
+			if str(data["vhost"]).find("@") != -1:
 				vident = vhost.split("@")[0]
 				vhost = vhost.split("@")[1]
 				self.send(":%s CHGIDENT %s %s" % (self.bot, target, vident))
 			self.send(":%s CHGHOST %s %s" % (self.bot, target, vhost))
-			self.msg(target, "Your vhost\2 %s\2 has been activated" % data[0])
+			self.msg(target, "Your vhost\2 %s\2 has been activated" % data["vhost"])
 
 	def flag(self, target):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
-			for flag in self.query("select flag,channel from channels where user = '%s'" % str(data[0])):
-				if str(flag[0]) == "n":
-					self.mode(str(flag[1]), "+q %s" % target)
-				elif str(flag[0]) == "Y":
+			for flag in self.query("select flag,channel from channels where user = '%s'" % str(data["user"])):
+				if str(flag["flag"]) == "n":
+					self.mode(str(flag["channel"]), "+q %s" % target)
+				elif str(flag["flag"]) == "Y":
 					pass
 				else:
-					self.mode(str(flag[1]), "+%s %s" % (str(flag[0]), target))
+					self.mode(str(flag["channel"]), "+%s %s" % (str(flag["flag"]), target))
 
 	def autojoin(self, target):
 		user = self.auth(target)
 		if self.ison(user):
 			if self.userflag(target, "a"):
 				for data in self.query("select channel,flag from channels where user = '%s'" % user):
-					channel = data[0]
-					flag = data[1]
+					channel = data["channel"]
+					flag = data["flag"]
 					if flag == "n" or flag == "q" or flag == "a" or flag == "o" or flag == "h" or flag == "v":
 						self.send(":%s SVSJOIN %s %s" % (self.bot, target, channel))
 
 	def getflag(self, target, channel):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
-			for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (channel, data[0])):
-				return flag[0]
+			for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (channel, data["user"])):
+				return flag["flag"]
 		return 0
 
 	def chanflag(self, flag, channel):
 		for data in self.query("select flags from channelinfo where name = '{0}'".format(channel)):
-			if data[0].find(flag) != -1:
+			if data["flags"].find(flag) != -1:
 				return True
 		return False
 
@@ -1122,7 +1124,7 @@ class Command:
 	def userlist(self, channel):
 		uid = list()
 		for user in self.query("select uid from chanlist where channel = '%s'" % channel):
-			uid.append(user[0])
+			uid.append(user["uid"])
 		return uid
 
 	def onchan(self, channel, target):
@@ -1134,7 +1136,7 @@ class Command:
 	def gethost(self, target):
 		uid = self.uid(target)
 		for data in self.query("select host from online where uid = '%s'" % uid):
-			return data[0]
+			return data["host"]
 		return 0
 
 	def hostmask(self, target):
@@ -1143,15 +1145,15 @@ class Command:
 		nick = None
 		username = None
 		for data in self.query("select nick,username,host from online where uid = '%s'" % uid):
-			nick = data[0]
-			username = data[1]
-			masks.append(data[0]+"!"+data[1]+"@"+data[2])
+			nick = data["nick"]
+			username = data["username"]
+			masks.append(data["nick"]+"!"+data["username"]+"@"+data["host"])
 		if self.auth(uid) != 0:
 			for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(uid)):
 				if str(data[0]).find("@") != -1:
-					masks.append(nick+"!"+data[0])
+					masks.append(nick+"!"+data["vhost"])
 				else:
-					masks.append(nick+"!"+username+"@"+data[0])
+					masks.append(nick+"!"+username+"@"+data["vhost"])
 		return masks
 
 	def enforceban(self, channel, target):
@@ -1165,8 +1167,8 @@ class Command:
 		for data in self.query("select ban from banlist where channel = '%s'" % channel):
 			for user in self.userlist(channel):
 				for hostmask in self.hostmask(user):
-					if fnmatch.fnmatch(hostmask, data[0]):
-						self.mode(channel, "+b "+data[0])
+					if fnmatch.fnmatch(hostmask, data["ban"]):
+						self.mode(channel, "+b "+data["ban"])
 						self.kick(channel, user, "Banned.")
 
 	def checkbans(self, channel, bans):
@@ -1186,29 +1188,30 @@ class Command:
 	def getip(self, target):
 		uid = self.uid(target)
 		for data in self.query("select address from online where uid = '%s'" % uid):
-			return data[0]
+			return data["address"]
 		return 0
 
 	def gline(self, target, reason=""):
 		uid = self.uid(target)
+		ip = self.getip(uid)
 		for data in self.query("select uid from online where address = '%s'" % self.getip(uid)):
-			self.send(":"+self.bot+" KILL "+data+" :G-lined")
-		self.send(":"+self.bot+" GLINE *@"+self.getip(uid)+" 1800 :"+reason)
+			self.send(":"+self.bot+" KILL "+data["uid"]+" :G-lined")
+		self.send(":"+self.bot+" GLINE *@"+ip+" 1800 :"+reason)
 
 	def suspended(self, channel):
 		for data in self.query("select reason from suspended where channel = '%s'" % channel):
-			return data[0]
+			return data["reason"]
 		return False
 
 	def userhost(self, target):
 		uid = self.uid(target)
 		for data in self.query("select username,host from online where uid = '%s'" % uid):
-			return data[0]+"@"+data[1]
+			return data["username"]+"@"+data["host"]
 		return 0
 
 	def getvhost(self, target):
 		for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % target):
-			return data[0]
+			return data["vhost"]
 		return "None"
 
 class error(Exception):

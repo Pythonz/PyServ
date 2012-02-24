@@ -12,7 +12,7 @@ class chanlev(pyserv.Command):
 					self.msg(source, "Known users on {0}:".format(channel))
 					self.msg(source, "Username               Flag")
 					for data in self.query("select user,flag from channels where channel='{0}'".format(channel)):
-						self.msg(source, " {0} {1} {2}".format(data[0], " "*int(24-len(data[0])), data[1]))
+						self.msg(source, " {0} {1} {2}".format(data["user"], " "*int(24-len(data["user"])), data["flag"]))
 					self.msg(source, "End of list.")
 				else: self.msg(source, "Denied.")
 			else: self.msg(source, "Invalid channel")
@@ -26,8 +26,8 @@ class chanlev(pyserv.Command):
 					for data in self.query("select name from users where name = '%s'" % username):
 						user = True
 					for data in self.query("select channel,flag from channels where user = '%s' and channel = '%s'" % (username, channel)):
-						self.msg(source, "Flags for #"+username+" on "+data[0]+": +"+data[1])
-						channel = data[0]
+						self.msg(source, "Flags for #"+username+" on "+data["channel"]+": +"+data["flag"])
+						channel = data["channel"]
 						entry = True
 					if user and not entry: self.msg(source, "User #"+username+" is not known on "+channel+".")
 					elif not user: self.msg(source, "Can't find user #"+username+".")
@@ -35,8 +35,8 @@ class chanlev(pyserv.Command):
 					username = self.auth(self.uid(arg[1]))
 					entry = False
 					for data in self.query("select channel,flag from channels where user = '%s' and channel = '%s'" % (username, channel)):
-						self.msg(source, "Flags for "+arg[1]+" on "+data[0]+": +"+data[1])
-						channel = data[0]
+						self.msg(source, "Flags for "+arg[1]+" on "+data["channel"]+": +"+data["flag"])
+						channel = data["channel"]
 						entry = True
 					if username != 0 and not entry: self.msg(source, "User "+arg[1]+" is not known on "+channel+".")
 					if username == 0: self.msg(source, "Can't find user "+arg[1]+".")
@@ -45,10 +45,9 @@ class chanlev(pyserv.Command):
 			channel = arg[0]
 			if channel.startswith("#"):
 				entry = False
-				for channels in self.query("select channel from channels where user = '%s' and flag = 'n'" % self.auth(source)):
-					if channel.lower() == str(channels[0]).lower():
+				for channels in self.query("select channel from channels where user = '%s' and flag = 'n' and channel = '%s'" % (self.auth(source), arg[0])):
 						entry = True
-						channel = str(channels[0])
+						channel = str(channels["channel"])
 				if entry:
 					if arg[1].startswith("#"):
 						username = arg[1][1:]

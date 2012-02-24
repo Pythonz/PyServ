@@ -7,18 +7,18 @@ class trust(pyserv.Command):
 		arg = args.split()
 		if len(arg) == 0:
 			for trust in self.query("select * from trust"):
-				self.msg(source, "IP: {0} {2} Limit: {1}".format(trust[0], trust[1], ' '*int(23-len(trust[0]))))
+				self.msg(source, "IP: {0} {2} Limit: {1}".format(trust["address"], trust["limit"], ' '*int(23-len(trust["address"]))))
 		elif len(arg) == 1:
 			entry = False
 			for trust in self.query("select * from trust where address = '{0}'".format(arg[0])):
 				entry = True
-				self.query("delete from trust where address = '{0}'".format(trust[0]))
+				self.query("delete from trust where address = '{0}'".format(trust["address"]))
 			if entry:
 				self.msg(source, "Trust for {0} has been deleted.".format(arg[0]))
 				conns = 0
 				nicks = list()
 				for online in self.query("select nick from online where address = '{0}'".format(arg[0])):
-					nicks.append(online[0])
+					nicks.append(online["nick"])
 					conns += 1
 				for nick in nicks:
 					self.msg(self.uid(nick), "Your trust has been set to '3'.")
@@ -44,7 +44,7 @@ class trust(pyserv.Command):
 					nicks = list()
 					invalid = False
 					for online in self.query("select nick from online where address = '{0}'".format(arg[0])):
-						nicks.append(online[0])
+						nicks.append(online["nick"])
 						conns += 1
 					for nick in nicks:
 						self.msg(self.uid(nick), "Your trust has been set to '{0}'.".format(limit))
@@ -56,7 +56,7 @@ class trust(pyserv.Command):
 						for nick in nicks:
 							self.msg(nick, "Your IP is scratching the connection limit. If you need more connections please request a trust and give us a reason on #help.")
 					for username in self.query("select username from online where address = '{0}'".format(arg[0])):
-						if username[0].startswith("~"):
+						if username["username"].startswith("~"):
 							for nick in nicks:
 								self.send(":{0} KILL {1} :G-lined".format(self.bot, nick))
 							self.send(":{0} GLINE *@{1} 1800 :You ignored the trust rules. Run an identd before you connect again.".format(self.bot, arg[0]))
@@ -70,7 +70,7 @@ class trust(pyserv.Command):
 					conns = 0
 					nicks = list()
 					for online in self.query("select nick from online where address = '{0}'".format(arg[0])):
-						nicks.append(online[0])
+						nicks.append(online["nick"])
 						conns += 1
 					for nick in nicks:
 						self.msg(self.uid(nick), "Your trust has been set to '{0}'.".format(limit))
@@ -82,7 +82,7 @@ class trust(pyserv.Command):
 						for nick in nicks:
 							self.msg(nick, "Your IP is scratching the connection limit. If you need more connections please request a trust and give us a reason on #help.")
 					for username in self.query("select username from online where address = '{0}'".format(arg[0])):
-						if username[0].startswith("~"):
+						if username["username"].startswith("~"):
 							for nick in nicks:
 								self.send(":{0} KILL {1} :G-lined".format(self.bot, nick))
 							self.send(":{0} GLINE *@{1} 1800 :You ignored the trust rules. Run an identd before you connect again.".format(self.bot, arg[0]))

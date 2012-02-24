@@ -13,7 +13,7 @@ class feedback(pyserv.Command):
 				self.query("insert into feedback values('"+self.auth(source)+"','"+_mysql.escape_string(args)+"')")
 				self.msg(source, "Feedback added to queue.")
 				for op in self.query("select uid from opers"):
-					self.msg(str(op[0]), "New feedback from %s" % self.auth(source))
+					self.msg(str(op["uid"]), "New feedback from %s" % self.auth(source))
 			else:
 				self.msg(source, "You already sent a feedback. Please wait until an operator read it.")
 		else:
