@@ -674,7 +674,7 @@ class Services:
 	def query(self, string):
 		self.db.query(str(string))
 		result = self.db.store_result()
-		if result.num_rows() == 0:
+		if not result:
 			return list()
 		else:
 			return result.fetch_row(maxrows=0, how=1)
@@ -881,11 +881,11 @@ class Command:
 		Smysql = _mysql.connect(host=self.mysql_host, port=self.mysql_port, db=self.mysql_name, user=self.mysql_user, passwd=self.mysql_passwd)
 		Smysql.query(str(string))
 		result = Smysql.store_result()
-		if result.num_rows() == 0:
+		Smysql.close()
+		if not result:
 			return list()
 		else:
 			return result.fetch_row(maxrows=0, how=1)
-		Smysql.close()
 
 	def uid (self, nick):
 		if nick == "Q":
