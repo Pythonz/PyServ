@@ -631,12 +631,12 @@ class Services:
 	def flag(self, target):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
 			for flag in self.query("select flag,channel from channels where user = '%s'" % str(data["user"])):
-				if str(flag[0]) == "n":
-					self.mode(str(flag[1]), "+q %s" % target)
-				elif str(flag[0]) == "Y":
+				if str(flag["flag"]) == "n":
+					self.mode(str(flag["channel"]), "+q %s" % target)
+				elif str(flag["flag"]) == "Y":
 					pass
 				else:
-					self.mode(str(flag[1]), "+%s %s" % (str(flag[0]), target))
+					self.mode(str(flag["channel"]), "+%s %s" % (str(flag["flag"]), target))
 
 	def autojoin(self, target):
 		user = self.auth(target)
