@@ -674,7 +674,7 @@ class Services:
 	def query(self, string):
 		self.db.query(str(string))
 		result = self.db.store_result()
-		if rt.num_rows() == 0:
+		if result.num_rows() == 0:
 			return list()
 		else:
 			return result.fetch_row(maxrows=0, how=1)
