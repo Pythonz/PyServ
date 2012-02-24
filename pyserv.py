@@ -678,7 +678,10 @@ class Services:
 			results = list()
 			for res in result.fetch_row(maxrows=0, how=1):
 				results.append(res)
-			return results
+			if len(results) != 0:
+				return results
+			else:
+				return None
 		except: pass
 
 	def mail(self, receiver, message):
@@ -888,7 +891,10 @@ class Command:
 			results = list()
 			for res in result.fetch_row(maxrows=0, how=1):
 				results.append(res)
-			return results
+			if len(results) != 0:
+				return results
+			else:
+				return None
 		except: pass
 
 	def uid (self, nick):
