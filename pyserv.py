@@ -1,20 +1,21 @@
 #!/usr/bin/env python
 
-import sys
-import socket
-import os
-import ConfigParser
-import time
-import hashlib
-import smtplib
-import _mysql
-import subprocess
-import urllib2
-import traceback
-import thread
-import commands
-import fnmatch
-import ssl
+if __name__ == "__main__":
+	import sys
+	import socket
+	import os
+	import ConfigParser
+	import time
+	import hashlib
+	import smtplib
+	import _mysql
+	import subprocess
+	import urllib2
+	import traceback
+	import thread
+	import fnmatch
+	import ssl
+	import commands
 
 try:
 	if not os.access("logs", os.F_OK):
