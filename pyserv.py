@@ -675,7 +675,7 @@ class Services:
 		self.db.query(str(string))
 		result = self.db.store_result()
 		try:
-			return result.fetch_row(maxrows=0, how=1):
+			return result.fetch_row(maxrows=0, how=1)
 		except: pass
 
 	def mail(self, receiver, message):
@@ -881,7 +881,7 @@ class Command:
 		Smysql.query(str(string))
 		result = Smysql.store_result()
 		try:
-			return result.fetch_row(maxrows=0, how=1):
+			return result.fetch_row(maxrows=0, how=1)
 		except: pass
 		finally: Smysql.close()
 
