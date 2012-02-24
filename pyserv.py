@@ -679,7 +679,8 @@ class Services:
 			for res in result.fetch_row(maxrows=0, how=1):
 				results.append(res)
 		except: pass
-		return results
+		if len(results) != 0:
+			return results
 
 	def mail(self, receiver, message):
 		try:
@@ -889,7 +890,8 @@ class Command:
 				results.append(res)
 		except: pass
 		Smysql.close()
-		return results
+		if len(results) != 0:
+			return results
 
 	def uid (self, nick):
 		if nick == "Q":
