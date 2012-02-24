@@ -3,31 +3,31 @@
 import sys
 import socket
 import os
-import configparser
+import ConfigParser
 import time
 import hashlib
 import smtplib
 import _mysql
 import subprocess
-import urllib.request, urllib.error, urllib.parse
+import urllib2
 import traceback
-import _thread
-import subprocess
+import thread
+import commands
 import fnmatch
 import ssl
 
 try:
 	if not os.access("logs", os.F_OK):
 		os.mkdir("logs")
-	config = configparser.RawConfigParser()
+	config = ConfigParser.RawConfigParser()
 	config.read("pyserv.conf")
 except Exception:
 	et, ev, tb = sys.exc_info()
-	print(("<<ERROR>> {0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb))))
+	print("<<ERROR>> {0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb)))
 
 def debug(text):
 	if config.get("OTHER", "debug") == "1":
-		print((str(text)))
+		print(str(text))
 
 def shell(text):
 	subprocess.Popen(text+" >> /dev/null", shell=True).wait()
@@ -79,7 +79,7 @@ class Services:
 			self.query("delete from chanlist")
 			shell("rm -rf logs/*")
 			if self.status:
-				_thread.start_new_thread(status,())
+				thread.start_new_thread(status,())
 			if self.ipv6:
 				if self.ssl:
 					self.con = ssl.wrap_socket(socket.socket(socket.AF_INET6, socket.SOCK_STREAM))
@@ -94,7 +94,7 @@ class Services:
 			self.send("SERVER %s %s 0 %s :%s" % (self.services_name, self.server_password, self.services_id, self.services_description))
 			self.send(":%s BURST" % self.services_id)
 			self.send(":%s ENDBURST" % self.services_id)
-			_thread.start_new_thread(self.sendcache, (self.con,))
+			thread.start_new_thread(self.sendcache, (self.con,))
 			spamscan = {}
 			_connected = False
 			while 1:
@@ -162,7 +162,7 @@ class Services:
 									for dump in self.query("select spamscan from channelinfo where name = '%s'" % pchan):
 										messages = int(dump["spamscan"].split(":")[0])
 										seconds = [int(dump["spamscan"].split(":")[1]) + 1, int(dump["spamscan"].split(":")[1])]
-									if (pchan, puid) in spamscan:
+									if spamscan.has_key((pchan, puid)):
 										num = spamscan[pchan,puid][0] + 1
 										spamscan[pchan,puid] = [num, spamscan[pchan,puid][1]]
 										timer = int(time.time()) - spamscan[pchan,puid][1]
@@ -445,7 +445,7 @@ class Services:
 				reload(commands)
 				self.msg(source, "Done.")
 			elif cmd == "update" and self.isoper(source):
-				_web = urllib.request.urlopen("https://raw.github.com/Pythonz/PyServ/master/version")
+				_web = urllib2.urlopen("https://raw.github.com/Pythonz/PyServ/master/version")
 				_version = _web.read()
 				_web.close()
 				if open("version", "r").read() != _version:
@@ -685,7 +685,7 @@ class Services:
 			mail = smtplib.SMTP('127.0.0.1', 25)
 			mail.sendmail(self.email, ['%s' % receiver], message)
 			mail.quit()
-		except Exception as e: debug("<<MAIL-ERROR>> "+str(e))
+		except Exception,e: debug("<<MAIL-ERROR>> "+str(e))
 
 	def log(self, source, msgtype, channel, text=""):
 		try:
@@ -843,7 +843,7 @@ class Services:
 class Command:
 	import sys
 	import os
-	import configparser
+	import ConfigParser
 	import time
 	import hashlib
 	import smtplib
@@ -1044,7 +1044,7 @@ class Command:
 			mail = smtplib.SMTP('127.0.0.1', 25)
 			mail.sendmail(self.email, ['%s' % receiver], message)
 			mail.quit()
-		except Exception as e: debug("<<MAIL-ERROR>> "+str(e))
+		except Exception,e: debug("<<MAIL-ERROR>> "+str(e))
 
 	def log(self, source, msgtype, channel, text=""):
 		try:
@@ -1231,5 +1231,5 @@ class error(Exception):
 if __name__ == "__main__":
 	try:
 		Services().run()
-	except Exception as e: print(e)
+	except Exception,e: print(e)
 	except KeyboardInterrupt: print("Aborting ... STRG +C")

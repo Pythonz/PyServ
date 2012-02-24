@@ -36,7 +36,7 @@ class trust(pyserv.Command):
 			for trust in self.query("select * from trust where address = '{0}'".format(arg[0])):
 				entry = True
 			if entry:
-				limit = [x for x in arg[1] if x.isdigit()]
+				limit = filter(lambda x: x.isdigit(), arg[1])
 				if limit != "":
 					self.query("update trust set `limit` = '{0}' where address = '{1}'".format(limit, arg[0]))
 					self.msg(source, "Trust for {0} has been set to {1}.".format(arg[0], limit))
@@ -63,7 +63,7 @@ class trust(pyserv.Command):
 				else:
 					self.msg(source, "Invalid limit")
 			else:
-				limit = [x for x in arg[1] if x.isdigit()]
+				limit = filter(lambda x: x.isdigit(), arg[1])
 				if limit != "":
 					self.query("insert into  trust values ('{1}','{0}')".format(limit, arg[0]))
 					self.msg(source, "Trust for {0} has been set to {1}.".format(arg[0], limit))
