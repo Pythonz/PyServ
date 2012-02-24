@@ -679,7 +679,7 @@ class Services:
 				results = list()
 				for data in result.fetch_row(maxrows, how=1):
 					results.append(data)
-				return results
+				return tuple(results)
 			else:
 				return tuple()
 		except: pass
