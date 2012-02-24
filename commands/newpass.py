@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class newpass(pyserv.Command):
+class newpass(Command):
 	help = "Changes your password at Q@"+pyserv.config.get("SERVICES", "name")
 	nauth = 1
 	def onCommand(self, source, args):

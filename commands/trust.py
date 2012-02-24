@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class trust(pyserv.Command):
+class trust(Command):
 	help = "Manage IP trusts for your network"
 	oper = 1
 	def onCommand(self, source, args):

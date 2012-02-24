@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class email(pyserv.Command):
+class email(Command):
 	help = "Changes your account email"
 	nauth = 1
 	def onCommand(self, uid, args):

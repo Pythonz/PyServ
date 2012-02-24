@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class ofeedback(pyserv.Command):
+class ofeedback(Command):
 	help = "Reads the feedback from users"
 	oper = 1
 	def onCommand(self, source, args):

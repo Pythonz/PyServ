@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class suspend(pyserv.Command):
+class suspend(Command):
 	help = "Suspends a channel"
 	oper = 1
 	def onCommand(self, uid, args):

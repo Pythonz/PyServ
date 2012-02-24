@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class vhost(pyserv.Command):
+class vhost(Command):
 	help = "Request a vHost for your account"
 	nauth = 1
 	def onCommand(self, source, args):

@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class unbanme(pyserv.Command):
+class unbanme(Command):
 	help = "Unbans you from a channel where you are known"
 	nauth = 1
 	def onCommand(self, uid, args):

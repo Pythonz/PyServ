@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class deowner(pyserv.Command):
+class deowner(Command):
 	help = "Removes your owner (+q) flag"
 	nauth = 1
 	def onCommand(self, source, args):

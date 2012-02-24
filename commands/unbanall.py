@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class unbanall(pyserv.Command):
+class unbanall(Command):
 	help = "Removes all bans from your channel"
 	nauth = 1
 	def onCommand(self, uid, args):

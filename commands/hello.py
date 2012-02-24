@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class hello(pyserv.Command):
+class hello(Command):
 	help = "Creates an account for you and sends the data to you"
 	def onCommand(self, source, args):
 		arg = args.split()

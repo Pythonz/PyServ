@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class banlist(pyserv.Command):
+class banlist(Command):
 	help = "Sends you the banlist of your channel"
 	nauth = 1
 	def onCommand(self, uid, args):

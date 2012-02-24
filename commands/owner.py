@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class owner(pyserv.Command):
+class owner(Command):
 	nauth = 1
 	help = "Sets your owner (+q) flag"
 	def onCommand(self, source, args):

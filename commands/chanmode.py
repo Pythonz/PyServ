@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class chanmode(pyserv.Command):
+class chanmode(Command):
 	help = "Sets modes for your channel"
 	nauth = 1
 	def onCommand(self, source, args):

@@ -1,7 +1,7 @@
-import pyserv
+from pyserv import Command, config
 
-class auth(pyserv.Command):
-	help = "Login with your account at Q@"+pyserv.config.get("SERVICES", "name")
+class auth(Command):
+	help = "Login with your account at Q@"+config.get("SERVICES", "name")
 	def onCommand(self, source, args):
 		arg = args.split()
 		if self.auth(source) != 0:

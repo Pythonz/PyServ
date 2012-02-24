@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class welcome(pyserv.Command):
+class welcome(Command):
 	nauth = 1
 	help = "Sets a welcome message for your channel"
 	def onCommand(self, source, args):

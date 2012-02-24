@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class whois(pyserv.Command):
+class whois(Command):
 	help = "Shows information about a user"
 	nauth = 1
 	def onCommand(self, source, args):

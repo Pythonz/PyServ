@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class chanlev(pyserv.Command):
+class chanlev(Command):
 	help = "Edits your channel records"
 	nauth = 1
 	def onCommand(self, source, args):

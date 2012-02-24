@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class kill(pyserv.Command):
+class kill(Command):
 	help = "Kills a user from the network"
 	oper = 1
 	def onCommand(self, source, args):

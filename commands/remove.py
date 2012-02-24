@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class remove(pyserv.Command):
+class remove(Command):
 	help = "Removes Q from your channel"
 	nauth = 1
 	def onCommand(self, source, args):

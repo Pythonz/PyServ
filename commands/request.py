@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class request(pyserv.Command):
+class request(Command):
 	help = "Requests Q for your channel"
 	nauth = 1
 	def onCommand(self, source, args):

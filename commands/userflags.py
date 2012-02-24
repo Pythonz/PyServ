@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class userflags(pyserv.Command):
+class userflags(Command):
 	help = "Changes and shows your userflags"
 	nauth = 1
 	def onCommand(self, uid, args):

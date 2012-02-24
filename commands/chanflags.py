@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class chanflags(pyserv.Command):
+class chanflags(Command):
 	help = "Sets flags for your channel"
 	nauth = 1
 	def onCommand(self, source, args):

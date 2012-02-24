@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class userlist(pyserv.Command):
+class userlist(Command):
 	help = "Shows you a list of users in that channel"
 	oper = 1
 	def onCommand(self, uid, args):

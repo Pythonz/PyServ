@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class voice(pyserv.Command):
+class voice(Command):
 	help = "Sets voice (+v) flag to you or someone on the channel"
 	nauth = 1
 	def onCommand(self, source, args):

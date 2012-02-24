@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class kick(pyserv.Command):
+class kick(Command):
 	help = "Kicks someone from the channel"
 	nauth = 1
 	def onCommand(self, source, args):

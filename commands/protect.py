@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class protect(pyserv.Command):
+class protect(Command):
 	help = "Sets admin (+a) flag to you or someone on the channel"
 	nauth = 1
 	def onCommand(self, source, args):

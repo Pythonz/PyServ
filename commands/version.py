@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class version(pyserv.Command):
+class version(Command):
 	help = "Shows version of services"
 	def onCommand(self, source, args):
 		from hashlib import md5

@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class feedback(pyserv.Command):
+class feedback(Command):
 	help = "Sends your feedback about us to us"
 	nauth = 1
 	def onCommand(self, source, args):

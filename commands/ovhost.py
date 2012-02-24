@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class ovhost(pyserv.Command):
+class ovhost(Command):
 	help = "Manages vhosts of the users"
 	oper = 1
 	def onCommand(self, source, args):

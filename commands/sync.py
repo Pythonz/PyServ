@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class sync(pyserv.Command):
+class sync(Command):
 	nauth = 1
 	help = "Syncs your flags on all channels"
 	def onCommand(self, source, args):

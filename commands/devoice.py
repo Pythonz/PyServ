@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class devoice(pyserv.Command):
+class devoice(Command):
 	help = "Removes voice (+v) flag from you or someone on the channel"
 	nauth = 1
 	def onCommand(self, source, args):

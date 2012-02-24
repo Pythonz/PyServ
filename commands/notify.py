@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class notify(pyserv.Command):
+class notify(Command):
 	help = "Sends a global notify to all users on the network"
 	oper = 1
 	def onCommand(self, source, args):

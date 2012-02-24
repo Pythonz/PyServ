@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class memo(pyserv.Command):
+class memo(Command):
 	help = "Send another user a memo"
 	nauth = 1
 	def onCommand(self, source, args):

@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class spamscan(pyserv.Command):
+class spamscan(Command):
 	help = "Sets the spam settings of your channel (chanflag s)"
 	nauth = 1
 	def onCommand(self, uid, args):

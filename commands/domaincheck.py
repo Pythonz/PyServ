@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class domaincheck(pyserv.Command):
+class domaincheck(Command):
 	help = "Shows you a domain lookup result"
 	oper = 1
 	def onCommand(self, uid, args):

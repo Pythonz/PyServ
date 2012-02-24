@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class setwhois(pyserv.Command):
+class setwhois(Command):
 	help = "Sets cool stuff in your whois"
 	nauth = 1
 	def onCommand(self, source, args):

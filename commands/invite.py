@@ -1,6 +1,6 @@
-import pyserv
+from pyserv import Command
 
-class invite(pyserv.Command):
+class invite(Command):
 	help="Invites you into a channel"
 	nauth = 1
 	def onCommand(self, source, args):
