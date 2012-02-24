@@ -675,7 +675,10 @@ class Services:
 		self.db.query(str(string))
 		result = self.db.store_result()
 		try:
-			return result.fetch_row(maxrows=0, how=1)
+			results = list()
+			for data in result.fetch_row(maxrows, how=1):
+				results.append(data)
+			return results
 		except: pass
 
 	def mail(self, receiver, message):
@@ -882,7 +885,10 @@ class Command:
 		result = Smysql.store_result()
 		Smysql.close()
 		try:
-			return result.fetch_row(maxrows=0, how=1)
+			results = list()
+			for data in result.fetch_row(maxrows=0, how=1):
+				results.append(data)
+			return results
 		except: pass
 
 	def uid (self, nick):
