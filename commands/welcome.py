@@ -4,7 +4,6 @@ class welcome(pyserv.Command):
 	nauth = 1
 	help = "Sets a welcome message for your channel"
 	def onCommand(self, source, args):
-		import _mysql
 		arg = args.split()
 		if len(arg) == 1:
 			if arg[0].startswith("#"):
