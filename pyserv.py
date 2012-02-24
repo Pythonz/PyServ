@@ -11,7 +11,7 @@ import _mysql
 import subprocess
 import urllib2
 import traceback
-import multiprocessing
+import thread
 import commands
 import fnmatch
 import ssl
@@ -79,7 +79,7 @@ class Services:
 			self.query("delete from chanlist")
 			shell("rm -rf logs/*")
 			if self.status:
-				multiprocessing.Process(target=status).start()
+				thread.start_new_thread(status,())
 			if self.ipv6:
 				if self.ssl:
 					self.con = ssl.wrap_socket(socket.socket(socket.AF_INET6, socket.SOCK_STREAM))
@@ -94,7 +94,7 @@ class Services:
 			self.send("SERVER %s %s 0 %s :%s" % (self.services_name, self.server_password, self.services_id, self.services_description))
 			self.send(":%s BURST" % self.services_id)
 			self.send(":%s ENDBURST" % self.services_id)
-			multiprocessing.Process(target=self.sendcache, args=(self.con,)).start()
+			thread.start_new_thread(self.sendcache, (self.con,))
 			spamscan = {}
 			_connected = False
 			while 1:
@@ -132,22 +132,22 @@ class Services:
 											exec("cmd_auth = commands.%s.%s().nauth" % (cmd, cmd))
 											if not cmd_auth:
 												if len(data.split()) == 4:
-													exec("multiprocessing.Process(target=commands.%s.%s().onCommand,args=('%s', '')).start()" % (cmd, cmd, data.split()[0][1:]))
+													exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', ''))" % (cmd, cmd, data.split()[0][1:]))
 												if len(data.split()) > 4:
-													exec("multiprocessing.Process(target=commands.%s.%s().onCommand,args=('%s', '%s')).start()" % (cmd, cmd, data.split()[0][1:], ' '.join(data.split()[4:]).replace("'", "\\'")))
+													exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', '%s'))" % (cmd, cmd, data.split()[0][1:], ' '.join(data.split()[4:]).replace("'", "\\'")))
 											if cmd_auth:
 												if self.auth(data.split()[0][1:]):
 													if len(data.split()) == 4:
-														exec("multiprocessing.Process(target=commands.%s.%s().onCommand,args=('%s', '')).start()" % (cmd, cmd, data.split()[0][1:]))
+														exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', ''))" % (cmd, cmd, data.split()[0][1:]))
 													if len(data.split()) > 4:
-														exec("multiprocessing.Process(target=commands.%s.%s().onCommand,args=('%s', '%s')).start()" % (cmd, cmd, data.split()[0][1:], ' '.join(data.split()[4:]).replace("'", "\\'")))
+														exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', '%s'))" % (cmd, cmd, data.split()[0][1:], ' '.join(data.split()[4:]).replace("'", "\\'")))
 												else: self.msg(data.split()[0][1:], "Unknown command {0}. Please try HELP for more information.".format(cmd.upper()))
 										if oper == 1:
 											if self.isoper(data.split()[0][1:]):
 												if len(data.split()) == 4:
-													exec("multiprocessing.Process(target=commands.%s.%s().onCommand,args=('%s', '')).start()" % (cmd, cmd, data.split()[0][1:]))
+													exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', ''))" % (cmd, cmd, data.split()[0][1:]))
 												if len(data.split()) > 4:
-													exec("multiprocessing.Process(target=commands.%s.%s().onCommand,args=('%s', '%s')).start()" % (cmd, cmd, data.split()[0][1:], ' '.join(data.split()[4:]).replace("'", "\\'")))
+													exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', '%s'))" % (cmd, cmd, data.split()[0][1:], ' '.join(data.split()[4:]).replace("'", "\\'")))
 											else: self.msg(data.split()[0][1:], "You do not have sufficient privileges to use '{0}'".format(data.split()[3][1:].upper()))
 								if not iscmd:
 									self.message(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
