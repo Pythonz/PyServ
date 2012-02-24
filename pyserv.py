@@ -11,10 +11,11 @@ import _mysql
 import subprocess
 import urllib2
 import traceback
-import thread
+import multiprocessing
 import commands
 import fnmatch
 import ssl
+import thread
 
 try:
 	if not os.access("logs", os.F_OK):
@@ -79,7 +80,8 @@ class Services:
 			self.query("delete from chanlist")
 			shell("rm -rf logs/*")
 			if self.status:
-				thread.start_new_thread(status,())
+				self.statussock = multiprocessing.Process(target="status")
+				self.statussock.start()
 			if self.ipv6:
 				if self.ssl:
 					self.con = ssl.wrap_socket(socket.socket(socket.AF_INET6, socket.SOCK_STREAM))
@@ -94,7 +96,7 @@ class Services:
 			self.send("SERVER %s %s 0 %s :%s" % (self.services_name, self.server_password, self.services_id, self.services_description))
 			self.send(":%s BURST" % self.services_id)
 			self.send(":%s ENDBURST" % self.services_id)
-			thread.start_new_thread(self.sendcache, (self.con,))
+			multiprocessing.Process(target="self.sendcache", args=(self.con,)).start()
 			spamscan = {}
 			_connected = False
 			while 1:
