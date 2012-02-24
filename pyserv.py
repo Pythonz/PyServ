@@ -675,10 +675,13 @@ class Services:
 		self.db.query(str(string))
 		result = self.db.store_result()
 		try:
-			results = list()
-			for data in result.fetch_row(maxrows, how=1):
-				results.append(data)
-			return results
+			if result:
+				results = list()
+				for data in result.fetch_row(maxrows, how=1):
+					results.append(data)
+				return results
+			else:
+				return
 		except: pass
 
 	def mail(self, receiver, message):
