@@ -681,7 +681,7 @@ class Services:
 					results.append(data)
 				return results
 			else:
-				return
+				return tuple()
 		except: pass
 
 	def mail(self, receiver, message):
