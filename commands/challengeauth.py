@@ -12,7 +12,7 @@ class challengeauth(Command):
 				user = arg[0]
 				resp = arg[1]
 				alg = arg[2]
-				challenge = hmac.new(self.hostmask(uid)).hexdigest()
+				challenge = hmac.new(self.hostmask(uid)[0]).hexdigest()
 				for data in self.query("select name,pass from users where name = '%s'" % user):
 					if alg.lower() == "hmac-md5" and user == data["name"]:
 						hash_pass = hashlib.md5(self.decode(data["pass"])).hexdigest()
