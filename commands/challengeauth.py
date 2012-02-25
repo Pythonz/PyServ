@@ -17,25 +17,25 @@ class challengeauth(Command):
 					if alg.lower() == "hmac-md5" and user == data["name"]:
 						hash_pass = hashlib.md5(self.decode(data["pass"])).hexdigest()
 						key = hashlib.md5(data["name"]+":"+hash_pass).hexdigest()
-						response = hmac.new(challenge, key)
+						response = hmac.new(challenge, key).hexdigest()
 						if response == resp:
 							correct = True
 					if alg.lower() == "hmac-sha-1" and user == data["name"]:
 						hash_pass = hashlib.sha1(self.decode(data["pass"])).hexdigest()
 						key = hashlib.sha1(data["name"]+":"+hash_pass).hexdigest()
-						response = hmac.new(challenge, key)
+						response = hmac.new(challenge, key).hexdigest()
 						if response == resp:
 							correct = True
 					if alg.lower() == "hmac-sha-256" and user == data["name"]:
 						hash_pass = hashlib.sha256(self.decode(data["pass"])).hexdigest()
 						key = hashlib.sha256(data["name"]+":"+hash_pass).hexdigest()
-						response = hmac.new(challenge, key)
+						response = hmac.new(challenge, key).hexdigest()
 						if response == resp:
 							correct = True
 					if alg.lower() == "hmac-sha-512" and user == data["name"]:
 						hash_pass = hashlib.sha512(self.decode(data["pass"])).hexdigest()
 						key = hashlib.sha512(data["name"]+":"+hash_pass).hexdigest()
-						response = hmac.new(challenge, key)
+						response = hmac.new(challenge, key).hexdigest()
 						if response == resp:
 							correct = True
 					if correct:
