@@ -52,4 +52,4 @@ class challengeauth(Command):
 			else:
 				self.msg(uid, "Syntax: <username> <response> <hmac algorithm>")
 		else:
-			self.msg(uid, "AUTH is not available once you have authed.")
+			self.msg(uid, "CHALLENGEAUTH is not available once you have authed.")
