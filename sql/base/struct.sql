@@ -24,3 +24,5 @@ DROP TABLE IF EXISTS `banlist`;
 CREATE TABLE IF NOT EXISTS `banlist` (channel text, ban text);
 DROP TABLE IF EXISTS `suspended`;
 CREATE TABLE IF NOT EXISTS `suspended` (channel text, reason text);
+DROP TABLE IF EXISTS `ipchan`;
+CREATE TABLE IF NOT EXISTS `ipchan` (ip text, channel text);

@@ -335,6 +335,9 @@ class Services:
 						if data.split()[1] == "PART":
 							pnick = data.split()[0][1:]
 							pchan = data.split()[2]
+							for data in self.query("select channel from ipchan where ip = '%s' and channel = '%s'" % (self.getip(pnick), pchan)):
+								self.send(":%s SVSJOIN %s %s" % (self.bot, pnick, data["channel"]))
+								self.msg(pnick, "Your IP is forced to be in "+data["channel"])
 							self.query("delete from chanlist where uid = '{0}' and channel = '{1}'".format(pnick, pchan))
 							if self.chanflag("l", pchan):
 								if len(data.split()) == 3:
@@ -377,6 +380,8 @@ class Services:
 							elif conns == limit and data.split()[8] != "0.0.0.0":
 								for nick in nicks:
 									self.msg(nick, "Your IP is scratching the connection limit. If you need more connections please request a trust and give us a reason on #help.")
+							for ip in self.query("select channel from ipchan where ip = '%s'" % data.split()[8]):
+								self.send(":%s SVSJOIN %s %s" % (self.bot, data.split()[2], ip["channel"]))
 
 		except Exception:
 			et, ev, tb = sys.exc_info()
