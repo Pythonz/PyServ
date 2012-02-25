@@ -15,6 +15,7 @@ import thread
 import fnmatch
 import ssl
 import commands
+import __builtin__
 
 try:
 	if not os.access("logs", os.F_OK):
@@ -94,6 +95,7 @@ class Services:
 			self.send("SERVER %s %s 0 %s :%s" % (self.services_name, self.server_password, self.services_id, self.services_description))
 			self.send(":%s BURST" % self.services_id)
 			self.send(":%s ENDBURST" % self.services_id)
+			__builtin__.con = self.con
 			thread.start_new_thread(self.sendcache, (self.con,))
 			spamscan = {}
 			_connected = False
@@ -861,6 +863,7 @@ class Command:
 	oper = 0
 	nauth = 0
 	def __init__(self):
+		self.con = con
 		self.mysql_host = config.get("MYSQL", "host")
 		self.mysql_port = config.getint("MYSQL", "port")
 		self.mysql_name = config.get("MYSQL", "name")
@@ -1120,9 +1123,10 @@ class Command:
 		return "%s seconds" % seconds
 
 	def send(self, text):
-		file = open("commands/cache.txt", "a")
-		file.write("{0}\n".format(str(text)))
-		file.close()
+		self.con.send(text+"\n")
+		#file = open("commands/cache.txt", "a")
+		#file.write("{0}\n".format(str(text)))
+		#file.close()
 		debug(">> %s" % text)
 
 	def metadata(self, uid, string, content):
