@@ -680,6 +680,13 @@ class Services:
 				results.append(data)
 			return results
 
+	def query_row(self, string):
+		self.db.query(str(string))
+		result = self.db.store_result()
+		if result:
+			for data in result.fetch_row(maxrows=1, how=1):
+				return data
+
 	def mail(self, receiver, message):
 		try:
 			mail = smtplib.SMTP('127.0.0.1', 25)
@@ -888,6 +895,15 @@ class Command:
 				results.append(data)
 			Smysql.close()
 			return results
+
+	def query_row(self, string):
+		Smysql = _mysql.connect(host=self.mysql_host, port=self.mysql_port, db=self.mysql_name, user=self.mysql_user, passwd=self.mysql_passwd)
+		Smysql.query(str(string))
+		result = Smysql.store_result()
+		if result:
+			for data in result.fetch_row(maxrows=1, how=1):
+				Smysql.close()
+				return data
 
 	def uid (self, nick):
 		if nick == "Q":
