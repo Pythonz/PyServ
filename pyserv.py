@@ -262,7 +262,7 @@ class Services:
 										if splitted.find("v") != -1:
 											for user in musers:
 												flag = self.getflag(self.uid(user), mchan)
-												if flag != "v" and flag != "h" and flag != "o" and flag != "a" and flag != "q" and flag != "n" and self.uid(user) != self.bot:
+												if not self.chanflag("v", mchan) and flag != "v" and flag != "h" and flag != "o" and flag != "a" and flag != "q" and flag != "n" and self.uid(user) != self.bot:
 													self.mode(mchan, "-v "+user)
 										if splitted.find("h") != -1:
 											for user in musers:
