@@ -489,7 +489,7 @@ class Services:
 				else: sys.exit(0)
 			elif cmd == "quit" and self.isoper(source):
 				if os.access("pyserv.pid", os.F_OK):
-					if len(arg) == 0:
+					if not args:
 						msg = "services shutdown"
 						self.send(":%s QUIT :%s" % (self.bot, msg))
 					else:
