@@ -10,7 +10,7 @@ class sahello(Command):
 			for data in self.query("select name from users where name = '%s'" % arg[0]):
 				entry = True
 			if not entry:
-				self.query("insert into users values ('%s', '%s', 'Q@%s', 'n')" % (arg[0], self.hash(arg[1]), self.services_name))
+				self.query("insert into users values ('%s', '%s', 'Q@%s', 'n')" % (arg[0], self.encode(arg[1]), self.services_name))
 				self.msg(uid, "Create account (%s, %s) ..." % (arg[0], arg[1]))
 				self.msg(uid, "Done.")
 			else:

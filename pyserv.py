@@ -5,7 +5,7 @@ import socket
 import os
 import ConfigParser
 import time
-import hashlib
+import base64
 import smtplib
 import _mysql
 import subprocess
@@ -447,7 +447,7 @@ class Services:
 				if open("version", "r").read() != _version:
 					
 					_updates = len(os.listdir("sql/updates"))
-					_hash = hashlib.sha512(open("pyserv.py", "r").read()).hexdigest()
+					_hash = self.encode(open("pyserv.py", "r").read())
 					_modules = list()
 					for module in dir(commands):
 						if os.access("commands/"+module+".py", os.F_OK):
@@ -468,7 +468,7 @@ class Services:
 									for line in file.readlines():
 										self.query(line)
 									file.close()
-					if _hash != hashlib.sha512(open("pyserv.py", "r").read()).hexdigest():
+					if _hash != self.encode(open("pyserv.py", "r").read()):
 						self.msg(source, "Done.")
 						self.msg(source, "Restart ...")
 						msg = "We are restarting for an update, please be patient. We are back as soon as possible."
@@ -660,10 +660,11 @@ class Services:
 			isoper = True 
 		return isoper
 
-	def hash(self, string):
-		sha1 = hashlib.sha1()
-		sha1.update(str(string))
-		return str(sha1.hexdigest())
+	def encode(self, string):
+		return base64.encodestring(string).rstrip()
+
+	def decode(self, string):
+		return base64.decodestring(string).rstrip()
 
 	def query(self, string):
 		self.db.query(str(string))
@@ -846,7 +847,7 @@ class Command:
 	import os
 	import ConfigParser
 	import time
-	import hashlib
+	import base64
 	import smtplib
 	import _mysql
 	import traceback
@@ -1043,10 +1044,11 @@ class Command:
 			isoper = True 
 		return isoper
 
-	def hash(self, string):
-		sha1 = hashlib.sha1()
-		sha1.update(str(string))
-		return str(sha1.hexdigest())
+	def encode(self, string):
+		return base64.encodestring(string).rstrip()
+
+	def decode(self, string):
+		return base64.decodestring(string).rstrip()
 
 	def mail(self, receiver, message):
 		try:
