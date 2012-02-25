@@ -10,7 +10,7 @@ class requestpass(Command):
 				for data in self.query("select name,pass,email from users where name = '%s'" % arg[0]):
 					entry = True
 					self.mail(data["email"], "From: %s <%s>\nTo: %s <%s>\nSubject: Lost password\nThis is an automated message, do not respond to this email!\n\nAccount: %s\nPassword: %s" % (self.services_description, self.email, self.nick(uid), data["email"], data["name"], self.decode(data["pass"])))
-					self.msg(uid, "I've sent an email with your lost password.")
+					self.msg(uid, "I've sent an email with your lost password to %s." % data["email"])
 				if not entry:
 					self.msg(uid, "Can't find user " + arg[0])
 			else:
