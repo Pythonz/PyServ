@@ -1152,7 +1152,7 @@ class Command:
 			masks.append(data["nick"]+"!"+data["username"]+"@"+data["host"])
 		if self.auth(uid) != 0:
 			for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(uid)):
-				if str(data[0]).find("@") != -1:
+				if str(data["vhost"]).find("@") != -1:
 					masks.append(nick+"!"+data["vhost"])
 				else:
 					masks.append(nick+"!"+username+"@"+data["vhost"])
