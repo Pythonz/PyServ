@@ -22,7 +22,7 @@ class version(Command):
 			import psutil
 			self.msg(source, "Usage:")
 			i = 0
-			for cpu in psutil.cpu_percent(interval=1, percpu=True):
+			for cpu in psutil.cpu_percent(interval=0, percpu=True):
 				i += 1
 				self.msg(source, "  CPU_{0}: {1}%".format(i, cpu))
 		self.msg(source, "Developed by Pythonz (https://github.com/Pythonz). Suggestions to pythonz@skyice.tk.")
