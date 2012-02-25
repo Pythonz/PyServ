@@ -15,9 +15,9 @@ class savhost(Command):
 			for data in self.query("select user,vhost from vhosts where active = '0' and user = '%s'" % arg[0]):
 				self.query("update vhosts set active = '1' where user = '%s'" % str(data["user"]))
 				self.query("insert into memo values ('%s', 'Q', 'Your vHost %s has been activated.')" % (data["user"], data["vhost"]))
-				for uid in self.sid(arg[0]):
+				for uid in self.sid(data["user"]):
 					self.vhost(uid)
-					self.memo(arg[0])
+					self.memo(data["user"])
 				self.msg(source, "Done.")
 		elif len(arg) > 1:
 			for data in self.query("select * from vhosts where active = '0' and user = '%s'" % arg[0]):
