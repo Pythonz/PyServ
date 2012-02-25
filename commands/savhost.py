@@ -7,10 +7,10 @@ class savhost(Command):
 		import _mysql
 		arg = args.split()
 		if len(arg) == 0:
-			self.msg(source, "Waiting:")
-			self.msg(source, "  Account               vHost")
+			self.msg(source, "Account                 vHost")
 			for data in self.query("select user,vhost from vhosts where active = '0'"):
 				self.msg(source, "  %s %s %s" % (str(data["user"]), " "*int(13-len(data["user"])), str(data["vhost"])))
+			self.msg(source, "End of list.")
 		elif len(arg) == 1:
 			for data in self.query("select user,vhost from vhosts where active = '0' and user = '%s'" % arg[0]):
 				self.query("update vhosts set active = '1' where user = '%s'" % str(data["user"]))
