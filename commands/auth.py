@@ -12,7 +12,7 @@ class auth(Command):
 			for data in self.query("select name,pass from users where name = '%s'" % arg[0]):
 				if self.hash(arg[1]) == str(data["pass"]):
 					exists = True
-					for user in self.query("select nick from temp_nick where user = '%s'" % str(data[0])):
+					for user in self.query("select nick from temp_nick where user = '%s'" % str(data["name"])):
 						self.msg(str(user["nick"]), "Warning: %s (%s) authed with your password." % (self.nick(source), self.userhost(source)))
 					self.query("insert into temp_nick values ('%s','%s')" % (source, str(data["name"])))
 					self.msg(source, "You are now logged in as %s" % str(data["name"]))
