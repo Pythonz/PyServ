@@ -14,7 +14,7 @@ class safeedback(Command):
 			entry = False
 			for data in self.query("select user,text from feedback where user = '%s'" % arg[1]):
 				entry = True
-				self.msg(source, "[Feedback] From: %s Message: %s" % (data["user"], data["text"]))
+				self.msg(source, "[Feedback] From: %s, Message: %s" % (data["user"], data["text"]))
 				self.query("delete from feedback where user = '%s'" % str(data["user"]))
 			if not entry:
 				self.msg(source, "There is no feedback from %s" % arg[0])
