@@ -3,8 +3,8 @@ from pyserv import Command
 class whoami(Command):
 	help = "Shows information about you"
 	nauth = 1
-	def onCommand(self, uid, args):
-		auth = self.auth(uid)
+	def onCommand(self, source, args):
+		auth = self.auth(source)
 		for user in self.query("select name,email from users where name = '{0}'".format(auth)):
 			self.msg(source, "-Information for account {0}:".format(user["name"]))
 			online = list()
