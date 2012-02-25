@@ -96,7 +96,6 @@ class Services:
 			self.send(":%s BURST" % self.services_id)
 			self.send(":%s ENDBURST" % self.services_id)
 			__builtin__.con = self.con
-			thread.start_new_thread(self.sendcache, (self.con,))
 			spamscan = {}
 			_connected = False
 			while 1:
@@ -391,18 +390,6 @@ class Services:
 			self.con.close()
 		except: pass
 		self.run()
-
-	def sendcache(self, sock):
-		try:
-			file = open("commands/cache.txt", "w")
-			file.write("")
-			file.close()
-			file = open("commands/cache.txt", "r")
-			while 1:
-				for line in file.readlines():
-					sock.send(line.rstrip()+"\n")
-			file.close()
-		except: pass
 			
 	def metadata(self, uid, string, content):
 		if string == "accountname":
@@ -1124,9 +1111,6 @@ class Command:
 
 	def send(self, text):
 		self.con.send(text+"\n")
-		#file = open("commands/cache.txt", "a")
-		#file.write("{0}\n".format(str(text)))
-		#file.close()
 		debug(">> %s" % text)
 
 	def metadata(self, uid, string, content):
