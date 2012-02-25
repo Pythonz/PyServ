@@ -10,14 +10,14 @@ class savhost(Command):
 			self.msg(source, "Waiting:")
 			self.msg(source, "  Account               vHost")
 			for data in self.query("select user,vhost from vhosts where active = '0'"):
-				self.msg(source, "%s %s %s" % (str(data["user"]), " "*int(13-len(data["user"])), str(data["vhost"])))
+				self.msg(source, "  %s %s %s" % (str(data["user"]), " "*int(13-len(data["user"])), str(data["vhost"])))
 		elif len(arg) == 1:
 			for data in self.query("select user,vhost from vhosts where active = '0' and user = '%s'" % arg[0]):
 				self.query("update vhosts set active = '1' where user = '%s'" % str(data["user"]))
 				self.query("insert into memo values ('%s', 'Q', 'Your vHost %s has been activated.')" % (data["user"], data["vhost"]))
-				for uid in self.sid(data["user"]):
+				for uid in self.sid(arg[0]):
 					self.vhost(uid)
-					self.memo(data["user"])
+					self.memo(arg[0])
 				self.msg(source, "Done.")
 		elif len(arg) > 1:
 			for data in self.query("select * from vhosts where active = '0' and user = '%s'" % arg[0]):
