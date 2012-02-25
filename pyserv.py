@@ -479,7 +479,7 @@ class Services:
 						self.msg(source, "Done.")
 				else: self.msg(source, "No update available.")
 			elif cmd == "restart" and self.isoper(source):
-				if len(arg) == 0:
+				if not args:
 					msg = "services restart"
 					self.send(":%s QUIT :%s" % (self.bot, msg))
 				else:
