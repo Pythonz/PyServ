@@ -595,9 +595,7 @@ class Services:
 	def memo(self, user):
 		for data in self.query("select source,message from memo where user = '%s'" % user):
 			for source in self.sid(user):
-				self.msg(source, "\2[MEMO]\2")
-				self.msg(source, "\2FROM:\2 %s" % data["source"])
-				self.msg(source, "\2MESSAGE:\2 %s" % data["message"])
+				self.msg(source, "[Memo] From: %s Message: %s" % (data["source"], data["message"]))
 			self.query("delete from memo where user = '%s' and source = '%s' and message = '%s'" % (user, data["source"], _mysql.escape_string(data["message"])))
 
 	def chanexist(self, channel):
@@ -622,7 +620,7 @@ class Services:
 				vhost = vhost.split("@")[1]
 				self.send(":%s CHGIDENT %s %s" % (self.bot, target, vident))
 			self.send(":%s CHGHOST %s %s" % (self.bot, target, vhost))
-			self.msg(target, "Your vhost\2 %s\2 has been activated" % data["vhost"])
+			self.msg(target, "Your vhost %s has been activated" % data["vhost"])
 
 	def flag(self, target):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
@@ -980,9 +978,7 @@ class Command:
 	def memo(self, user):
 		for data in self.query("select source,message from memo where user = '%s'" % user):
 			for source in self.sid(user):
-				self.msg(source, "\2[MEMO]\2")
-				self.msg(source, "\2FROM:\2 %s" % data["source"])
-				self.msg(source, "\2MESSAGE:\2 %s" % data["message"])
+				self.msg(source, "[Memo] From: %s Message: %s" % (data["source"], data["message"]))
 			self.query("delete from memo where user = '%s' and source = '%s' and message = '%s'" % (user, data["source"], _mysql.escape_string(data["message"])))
 
 	def chanexist(self, channel):
@@ -1007,7 +1003,7 @@ class Command:
 				vhost = vhost.split("@")[1]
 				self.send(":%s CHGIDENT %s %s" % (self.bot, target, vident))
 			self.send(":%s CHGHOST %s %s" % (self.bot, target, vhost))
-			self.msg(target, "Your vhost\2 %s\2 has been activated" % data["vhost"])
+			self.msg(target, "Your vhost %s has been activated" % data["vhost"])
 
 	def flag(self, target):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):

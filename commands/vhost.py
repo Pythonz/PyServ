@@ -31,12 +31,12 @@ class vhost(Command):
 				if not entry:
 					self.query("delete from vhosts where user = '%s'" % self.auth(source))
 					self.query("insert into vhosts values ('%s','%s','0')" % (self.auth(source), arg[0]))
-					self.msg(source, "Your new vhost\2 %s\2 has been requested" % arg[0])
+					self.msg(source, "Your new vhost %s has been requested" % arg[0])
 					for data in self.query("select host,username from online where uid = '%s'" % source):
 						self.send(":%s CHGIDENT %s %s" % (self.bot, source, data["username"]))
 						self.send(":%s CHGHOST %s %s" % (self.bot, source, data["host"]))
 					for data in self.query("select uid from opers"):
-						self.msg(data["uid"], "vHost request received from\2 %s\2" % self.auth(source))
+						self.msg(data["uid"], "vHost request received from %s" % self.auth(source))
 				else:
 					self.msg(source, "%s is already using this vHost." % user)
 		elif len(arg) == 0:
