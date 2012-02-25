@@ -335,9 +335,9 @@ class Services:
 						if data.split()[1] == "PART":
 							pnick = data.split()[0][1:]
 							pchan = data.split()[2]
-							for data in self.query("select channel from ipchan where ip = '%s' and channel = '%s'" % (self.getip(pnick), pchan)):
-								self.send(":%s SVSJOIN %s %s" % (self.bot, pnick, data["channel"]))
-								self.msg(pnick, "Your IP is forced to be in "+data["channel"])
+							for parted in self.query("select channel from ipchan where ip = '%s' and channel = '%s'" % (self.getip(pnick), pchan)):
+								self.send(":%s SVSJOIN %s %s" % (self.bot, pnick, parted["channel"]))
+								self.msg(pnick, "Your IP is forced to be in "+parted["channel"])
 							self.query("delete from chanlist where uid = '{0}' and channel = '{1}'".format(pnick, pchan))
 							if self.chanflag("l", pchan):
 								if len(data.split()) == 3:
