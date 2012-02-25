@@ -403,8 +403,8 @@ class Services:
 	def message(self, source, text):
 		try:
 			cmd = text.lower().split()[0]
-			arg = False
-			args = False
+			arg = None
+			args = None
 			if len(text.split()) > 1:
 				arg = text.split()[1:]
 				args = ' '.join(text.split()[1:])
