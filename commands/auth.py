@@ -5,7 +5,7 @@ class auth(Command):
 	def onCommand(self, source, args):
 		arg = args.split()
 		if self.auth(source) != 0:
-			self.msg(source, "AUTH is not available once you have authed.");
+			self.msg(source, "AUTH is not available once you have authed.")
 			return 0
 		if len(arg) == 2:
 			exists = False
