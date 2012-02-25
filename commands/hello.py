@@ -17,7 +17,7 @@ class hello(Command):
 					self.msg(source, "The account %s has been created successfully. You can login now with /msg Q auth account password" % self.nick(source))
 					if self.regmail == "1":
 						self.msg(source, "An email had been send to you with your password!")
-						self.mail(arg[0], """From: %s <%s>\nTo: %s <%s>\nSubject: Your account on %s\n\nWelcome to %s\nYour account data:\n\nUser: %s\nPassword: %s\n\nAuth via "/msg Q auth %s %s"\nChange your password as soon as possible with "/msg Q newpass NEWPASS"!""" % (self.services_description, self.email, self.nick(source), arg[0], self.services_description, self.services_description, self.nick(source), hash(arg[0]), self.nick(source), hash(arg[0])))
+						self.mail(arg[0], """From: %s <%s>\nTo: %s <%s>\nSubject: Your account on %s\n\nWelcome to %s\nYour account data:\n\nUser: %s\nPassword: %s\n\nAuth via "/MSG Q@%s AUTH %s %s"\nChange your password as soon as possible with "/MSG Q%s NEWPASS NEWPASS"!""" % (self.services_description, self.email, self.nick(source), arg[0], self.services_description, self.services_description, self.nick(source), hash(arg[0]), self.services_name, self.nick(source), hash(arg[0]), self.services_name))
 					else:
 						self.msg(source, """Use "/msg Q auth %s %s" to auth""" % (self.nick(source), hash(arg[0])))
 						self.msg(source, "Change your password as soon as possible!")
