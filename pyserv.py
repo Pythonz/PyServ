@@ -403,6 +403,8 @@ class Services:
 	def message(self, source, text):
 		try:
 			cmd = text.lower().split()[0]
+			arg = False
+			args = False
 			if len(text.split()) > 1:
 				arg = text.split()[1:]
 				args = ' '.join(text.split()[1:])
@@ -479,7 +481,7 @@ class Services:
 						self.msg(source, "Done.")
 				else: self.msg(source, "No update available.")
 			elif cmd == "restart" and self.isoper(source):
-				if not args:
+				if len(arg) == 0:
 					msg = "services restart"
 					self.send(":%s QUIT :%s" % (self.bot, msg))
 				else:
@@ -489,7 +491,7 @@ class Services:
 				else: sys.exit(0)
 			elif cmd == "quit" and self.isoper(source):
 				if os.access("pyserv.pid", os.F_OK):
-					if not args:
+					if len(arg) == 0:
 						msg = "services shutdown"
 						self.send(":%s QUIT :%s" % (self.bot, msg))
 					else:
