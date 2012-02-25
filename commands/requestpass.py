@@ -7,7 +7,7 @@ class requestpass(Command):
 			arg = args.split()
 			if len(arg) == 1:
 				entry = False
-				for data in self.query("select name,pass,email from users where user = '%s'" % arg[0]):
+				for data in self.query("select name,pass,email from users where name = '%s'" % arg[0]):
 					entry = True
 					self.mail(data["email"], "From: %s <%s>\nTo: %s <%s>\nSubject: Lost password\nThis is an automated message, do not respond to this email!\n\nAccount: %s\nPassword: %s" % (self.services_description, self.email, self.nick(uid), data["email"], data["name"], data["pass"]))
 					self.msg(uid, "I've sent an email with your lost password.")
