@@ -1,7 +1,7 @@
-from pyserv import Command
+from pyserv import Command, config
 
 class challengeauth(Command):
-	help = "Authes you with your CHALLENGE request"
+	help = "Authes you with your CHALLENGE request at Q@" + config.get("SERVICES", "name")
 	def onCommand(self, uid, args):
 		if self.auth(uid) == 0:
 			arg = args.split()

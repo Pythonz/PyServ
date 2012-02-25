@@ -1,7 +1,7 @@
-from pyserv import Command
+from pyserv import Command, config
 
 class challenge(Command):
-	help = "Request a challenge"
+	help = "Request a challenge at Q@" + config.get("SERVICES", "name")
 	def onCommand(self, uid, args):
 		if self.auth(uid) == 0:
 			import hmac
