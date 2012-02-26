@@ -13,7 +13,7 @@ class challengeauth(Command):
 				resp = arg[1]
 				alg = arg[2]
 				entry = False
-				for challenges in self.query("select challenge where hostmask = '%s'" % self.hostmask(uid)[0])
+				for challenges in self.query("select challenge where hostmask = '%s'" % self.hostmask(uid)[0]):
 					entry = True
 					challenge = challenges["challenge"]
 					self.query("delete from challenges where hostmask = '%s'" % self.hostmask(uid)[0])

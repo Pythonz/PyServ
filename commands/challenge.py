@@ -7,7 +7,7 @@ class challenge(Command):
 			import hmac
 			import time
 			entry = False
-			for data in self.query("select challenge from challenges where hostmask = '%s'" % self.hostmask(uid)[0])
+			for data in self.query("select challenge from challenges where hostmask = '%s'" % self.hostmask(uid)[0]):
 				entry = True
 				ChallengeCode = data["challenge"]
 				self.msg(uid, "CHALLENGE {0} HMAC-MD5 HMAC-SHA-1 HMAC-SHA-256 HMAC-SHA-512".format(ChallengeCode))
