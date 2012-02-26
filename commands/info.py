@@ -12,10 +12,13 @@ class info(Command):
 					self.msg(uid, "-Information for account {0}:".format(user["name"]))
 					online = list()
 					userhosts = list()
+					hosts = list()
 					for uuid in self.sid(user["name"]):
 						online.append(self.nick(uuid))
 						userhosts.append(self.userhost(uuid))
+						hosts.append(self.gethost(uuid))
 					self.msg(uid, "Online Nicks  : {0}".format(' '.join(online)))
+					self.msg(uid, "Hosts         : {0}".format(' '.join(hosts)))
 					self.msg(uid, "User hosts    : {0}".format(' '.join(userhosts)))
 					self.msg(uid, "User flags    : {0}".format(user["flags"]))
 					self.msg(uid, "User modes    : {0}".format(user["modes"]))
