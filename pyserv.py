@@ -42,11 +42,14 @@ def perror(text):
 	except: pass
 
 def status():
-	sock = socket.socket()
-	sock.bind(("0.0.0.0", 5556))
-	sock.listen(1024)
-	while 1: pass
-	sock.close()
+	try:
+		sock = socket.socket()
+		sock.bind(("0.0.0.0", 5556))
+		sock.listen(1024)
+		while 1:
+			time.sleep(1)
+		sock.close()
+	except: pass
 
 class Services:
 	def __init__(self):
