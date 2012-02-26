@@ -13,10 +13,10 @@ class savhost(Command):
 			self.msg(source, "End of list.")
 		elif len(arg) == 1:
 			if arg[0] == "?list":
-				self.msg(uid, "Account                 vHost")
+				self.msg(source, "Account                 vHost")
 				for data in self.query("select user,vhost from vhosts where active = '1'"):
-					self.msg(uid, "  {0} {1} {2}".format(data["user"], " "*int(13-len(data["user"])), data["vhost"]))
-				self.msg(uid, "End of list.")
+					self.msg(source, "  {0} {1} {2}".format(data["user"], " "*int(13-len(data["user"])), data["vhost"]))
+				self.msg(source, "End of list.")
 			else:
 				for data in self.query("select user,vhost from vhosts where active = '0' and user = '%s'" % arg[0]):
 					self.query("update vhosts set active = '1' where user = '%s'" % str(data["user"]))
@@ -40,11 +40,11 @@ class savhost(Command):
 						for uid in self.sid(arg[1]):
 							self.vhost(uid)
 						self.memo(arg[1])
-						self.msg(uid, "Done.")
+						self.msg(source, "Done.")
 					else:
-						self.msg(uid, "User %s is alreading using this vHost (%s)." % (user, vhost))
+						self.msg(source, "User %s is alreading using this vHost (%s)." % (user, vhost))
 				else:
-					self.msg(uid, "Can't find user "+arg[1]+".")
+					self.msg(source, "Can't find user "+arg[1]+".")
 			else:
 				for data in self.query("select * from vhosts where active = '0' and user = '%s'" % arg[0]):
 					self.query("delete from vhosts where user = '%s'" % str(data["user"]))
