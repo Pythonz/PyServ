@@ -12,7 +12,7 @@ class challenge(Command):
 				ChallengeCode = data["challenge"]
 				self.msg(uid, "CHALLENGE {0} HMAC-MD5 HMAC-SHA-1 HMAC-SHA-256 HMAC-SHA-512".format(ChallengeCode))
 			if not entry:
-				ChallengeCode = hmac.new(time.time(), self.hostmask(uid)[0]).hexdigest()
+				ChallengeCode = hmac.new(str(time.time()), self.hostmask(uid)[0]).hexdigest()
 				self.msg(uid, "CHALLENGE {0} HMAC-MD5 HMAC-SHA-1 HMAC-SHA-256 HMAC-SHA-512".format(ChallengeCode))
 				self.query("insert into challenges values ('%s', '%s')" % (self.hostmask(uid)[0], ChallengeCode))
 		else:
