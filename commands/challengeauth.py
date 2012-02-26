@@ -4,6 +4,7 @@ class challengeauth(Command):
 	help = "Authes you with your CHALLENGE request at Q@" + config.get("SERVICES", "name")
 	def onCommand(self, uid, args):
 		if self.auth(uid) == 0:
+			import _mysql
 			arg = args.split()
 			if len(arg) == 3:
 				import hashlib
@@ -13,10 +14,10 @@ class challengeauth(Command):
 				resp = arg[1]
 				alg = arg[2]
 				entry = False
-				for challenges in self.query("select challenge where hostmask = '%s'" % self.hostmask(uid)[0]):
+				for challenges in self.query("select challenge where hostmask = '%s'" % _mysql.escape_string(self.hostmask(uid)[0])):
 					entry = True
 					challenge = challenges["challenge"]
-					self.query("delete from challenges where hostmask = '%s'" % self.hostmask(uid)[0])
+					self.query("delete from challenges where hostmask = '%s'" % _mysql.escape_string(self.hostmask(uid)[0]))
 					for data in self.query("select name,pass from users where name = '%s'" % user):
 						if alg.lower() == "hmac-md5" and user == data["name"]:
 							hash_pass = hashlib.md5(self.decode(data["pass"])).hexdigest()
