@@ -916,6 +916,15 @@ class Services:
 			return data["vhost"]
 		return "None"
 
+	def scanport(self, host, port):
+		try:
+			scpo = socket.socket()
+			scpo.connect((str(host), int(port)))
+			scpo.close()
+			return True
+		except socket.error:
+			return False
+
 class Command:
 	import sys
 	import os
@@ -1346,6 +1355,15 @@ class Command:
 		for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % target):
 			return data["vhost"]
 		return "None"
+
+	def scanport(self, host, port):
+		try:
+			scpo = socket.socket()
+			scpo.connect((str(host), int(port)))
+			scpo.close()
+			return True
+		except socket.error:
+			return False
 
 class error(Exception):
 	def __init__(self, value):
