@@ -5,6 +5,14 @@ class challenge(Command):
 	def onCommand(self, uid, args):
 		if self.auth(uid) == 0:
 			import hmac
-			self.msg(uid, "CHALLENGE {0} HMAC-MD5 HMAC-SHA-1 HMAC-SHA-256 HMAC-SHA-512".format(hmac.new(self.hostmask(uid)[0]).hexdigest()))
+			import time
+			data = self.query_row("select challenge from challenges where hostmask = '%s'" % self.hostmask(uid)[0])
+			if not data:
+				ChallengeCode = hmac.new(time.time(), self.hostmask(uid)[0]).hexdigest()
+				self.msg(uid, "CHALLENGE {0} HMAC-MD5 HMAC-SHA-1 HMAC-SHA-256 HMAC-SHA-512".format(ChallengeCode))
+				self.query("insert into challenges values ('%s', '%s')" % (self.hostmask(uid)[0], ChallengeCode))
+			else:
+				ChallengeCode = data["challenge"]
+				self.msg(uid, "CHALLENGE {0} HMAC-MD5 HMAC-SHA-1 HMAC-SHA-256 HMAC-SHA-512".format(ChallengeCode))
 		else:
 			self.msg(uid, "CHALLENGE is not available once you have authed.")

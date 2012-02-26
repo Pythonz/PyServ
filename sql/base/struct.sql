@@ -26,3 +26,5 @@ DROP TABLE IF EXISTS `suspended`;
 CREATE TABLE IF NOT EXISTS `suspended` (channel text, reason text);
 DROP TABLE IF EXISTS `ipchan`;
 CREATE TABLE IF NOT EXISTS `ipchan` (ip text, channel text);
+DROP TABLE IF EXISTS `challenges`;
+CREATE TABLE IF NOT EXISTS `challenges` (hostmask text, challenge text);
