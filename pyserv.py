@@ -205,6 +205,7 @@ class Services:
 										self.log(qchan["uid"], "quit", qchan["channel"], ' '.join(data.split()[2:])[1:])
 							self.query("delete from chanlist where uid = '{0}'".format(data.split()[0][1:]))
 							self.query("delete from temp_nick where nick = '%s'" % str(data.split()[0])[1:])
+							self.query("delete from bots where uid = '%s'" % str(data.split()[0])[1:])
 							self.query("delete from online where uid = '%s'" % str(data.split()[0])[1:])
 						if data.split()[1] == "TOPIC":
 							if len(data.split()) > 1:
@@ -362,8 +363,27 @@ class Services:
 						if data.split()[1] == "IDLE":
 							if len(data.split()) == 3:
 								self.send(":{uid} IDLE {source} 0 0".format(uid=data.split()[2], source=data.split()[0][1:]))
+						if data.split()[1] == "MODE":
+							smodes = data.split()[3]
+							if smodes.find("+") != -1:
+								smodes = smodes.split("+")[1]
+								if smodes.find("-") != -1:
+									smodes = smodes.split("-")[0]
+								if smodes.find("B") != -1:
+									crypthost = ''.join([char for char in self.encode(data.split()[0][1:]) if char.isalnum()])
+									self.send(":%s CHGHOST %s %s.bots.gateway.%s" % (self.bot, data.split()[0][1:], crypthost, '.'.join(self.services_name.split(".")[-2:])))
+									self.query("insert into bots values ('%s')" % data.split()[0][1:])
+							smodes = data.split()[3]
+							if smodes.find("-") != -1:
+								smodes = smodes.split("-")[1]
+								if smodes.find("+") != -1:
+									smodes = smodes.split("+")[0]
+								if smodes.find("B") != -1:
+									self.send(":%s CHGHOST %s %s" % (self.bot, data.split()[0][1:], self.gethost(data.split()[0][1:]))
+									self.query("delete from bots where uid = '%s'" % data.split()[0][1:])
 						if data.split()[1] == "UID":
 							self.query("delete from temp_nick where nick = '%s'" % data.split()[2])
+							self.query("delete from bots where uid = '%s'" % data.split()[2])
 							self.query("delete from online where uid = '%s'" % data.split()[2])
 							self.query("delete from online where nick = '%s'" % data.split()[4])
 							self.query("insert into online values ('%s','%s','%s','%s','%s')" % (data.split()[2], data.split()[4], data.split()[8], data.split()[5], data.split()[7]))
@@ -388,7 +408,10 @@ class Services:
 									self.msg(nick, "Your IP is scratching the connection limit. If you need more connections please request a trust and give us a reason on #help.")
 							for ip in self.query("select channel from ipchan where ip = '%s'" % data.split()[8]):
 								self.send(":%s SVSJOIN %s %s" % (self.bot, data.split()[2], ip["channel"]))
-
+							if data.split()[10].find("B") != -1:
+								crypthost = ''.join([char for char in self.encode(data.split()[2]) if char.isalnum()])
+								self.send(":%s CHGHOST %s %s.bots.gateway.%s" % (self.bot, data.split()[2], crypthost, '.'.join(self.services_name.split(".")[-2:])))
+								self.query("insert into bots values ('%s')" % data.split()[2])
 		except Exception:
 			et, ev, tb = sys.exc_info()
 			e = "{0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb))
@@ -541,6 +564,12 @@ class Services:
 			return str(data["name"])
 		return False
 
+	def isbot (self, target):
+		uid = self.uid(target)
+		for data in self.query("select uid from bots where uid = '%s'" % uid):
+			return True
+		return False
+
 	def send(self, text):
 		self.con.send(text+"\n")
 		debug(">> %s" % text)
@@ -624,14 +653,21 @@ class Services:
 			self.send(":%s KILL %s :Killed (%s (%s))" % (self.bot, target, self.services_name, reason))
 
 	def vhost(self, target):
-		for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(target)):
-			vhost = str(data["vhost"])
-			if str(data["vhost"]).find("@") != -1:
-				vident = vhost.split("@")[0]
-				vhost = vhost.split("@")[1]
-				self.send(":%s CHGIDENT %s %s" % (self.bot, target, vident))
-			self.send(":%s CHGHOST %s %s" % (self.bot, target, vhost))
-			self.msg(target, "Your vhost %s has been activated" % data["vhost"])
+		if not self.isbot(target):
+			for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(target)):
+				vhost = str(data["vhost"])
+				if str(data["vhost"]).find("@") != -1:
+					vident = vhost.split("@")[0]
+					vhost = vhost.split("@")[1]
+					self.send(":%s CHGIDENT %s %s" % (self.bot, target, vident))
+				self.send(":%s CHGHOST %s %s" % (self.bot, target, vhost))
+				self.msg(target, "Your vhost %s has been activated" % data["vhost"])
+		else:
+			username = self.userhost(target).split("@")[0]
+			self.send(":%s CHGIDENT %s %s" % (self.bot, target, username))
+			crypthost = ''.join([char for char in self.encode(target) if char.isalnum()])
+			self.send(":%s CHGHOST %s %s.bots.gateway.%s" % (self.bot, target, crypthost, '.'.join(self.services_name.split(".")[-2:])))
+			self.msg(target, "Your vhost %s has been activated" % crypthost)
 
 	def flag(self, target):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
@@ -936,6 +972,12 @@ class Command:
 			return str(data["name"])
 		return False
 
+	def isbot (self, target):
+		uid = self.uid(target)
+		for data in self.query("select uid from bots where uid = '%s'" % uid):
+			return True
+		return False
+
 	def push(self, target, message):
 		self.send(":{uid} PUSH {target} ::{message}".format(uid=self.services_id, target=target, message=message))
 
@@ -1016,14 +1058,21 @@ class Command:
 			self.send(":%s KILL %s :Killed (%s (%s))" % (self.bot, target, self.services_name, reason))
 
 	def vhost(self, target):
-		for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(target)):
-			vhost = str(data["vhost"])
-			if str(data["vhost"]).find("@") != -1:
-				vident = vhost.split("@")[0]
-				vhost = vhost.split("@")[1]
-				self.send(":%s CHGIDENT %s %s" % (self.bot, target, vident))
-			self.send(":%s CHGHOST %s %s" % (self.bot, target, vhost))
-			self.msg(target, "Your vhost %s has been activated" % data["vhost"])
+		if not self.isbot(target):
+			for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(target)):
+				vhost = str(data["vhost"])
+				if str(data["vhost"]).find("@") != -1:
+					vident = vhost.split("@")[0]
+					vhost = vhost.split("@")[1]
+					self.send(":%s CHGIDENT %s %s" % (self.bot, target, vident))
+				self.send(":%s CHGHOST %s %s" % (self.bot, target, vhost))
+				self.msg(target, "Your vhost %s has been activated" % data["vhost"])
+		else:
+			username = self.userhost(target).split("@")[0]
+			self.send(":%s CHGIDENT %s %s" % (self.bot, target, username))
+			crypthost = ''.join([char for char in self.encode(target) if char.isalnum()])
+			self.send(":%s CHGHOST %s %s.bots.gateway.%s" % (self.bot, target, crypthost, '.'.join(self.services_name.split(".")[-2:])))
+			self.msg(target, "Your vhost %s has been activated" % crypthost)
 
 	def flag(self, target):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
