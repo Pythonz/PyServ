@@ -18,7 +18,7 @@ class request(Command):
 						self.mode(arg[0], "+q {0}".format(source))
 						self.msg(source, "Channel %s has been registered for you" % arg[0])
 					else:
-						self.msg(source, "Channel " + arg[0] + " is suspended.")
+						self.msg(source, "Channel " + arg[0] + " is suspended: " + self.suspended(arg[0]))
 				else:
 					self.msg(source, "Channel %s is already registered" % arg[0])
 			else: self.msg(source, "Invalid channel")
