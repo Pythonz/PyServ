@@ -304,6 +304,8 @@ class Services:
 						if data.split()[1] == "JOIN":
 							juid = data.split()[0][1:]
 							jchan = data.split()[2][1:]
+							if self.suspended(jchan):
+								self.kick(jchan, juid, "Suspended: "+self.suspended(jchan))
 							self.query("insert into chanlist value ('%s', '%s')" % (juid, jchan))
 							if self.chanexist(jchan): self.enforcebans(jchan)
 							if self.chanflag("l", jchan):
