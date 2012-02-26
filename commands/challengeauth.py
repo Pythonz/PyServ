@@ -56,8 +56,8 @@ class challengeauth(Command):
 							self.memo(data["name"])
 						else:
 							self.msg(uid, "CHALLENGEAUTH failed. CHALLENGEAUTH is case-sensitive.")
-					if not entry:
-						self.msg(uid, "You have to request a CHALLENGE first.")
+				if not entry:
+					self.msg(uid, "You have to request a CHALLENGE first.")
 			else:
 				self.msg(uid, "Syntax: <username> <response> <hmac algorithm>")
 		else:
