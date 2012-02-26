@@ -18,7 +18,7 @@ class auth(Command):
 					self.msg(source, "You are now logged in as %s" % str(data["name"]))
 					self.msg(source, "Remember: NO-ONE from %s will ever ask for your password.  NEVER send your password to ANYONE except Q@%s." % (self.services_description, self.services_name))
 					self.meta(source, "accountname", str(data["name"]))
-					self.usermodes(uid)
+					self.usermodes(source)
 					self.vhost(source)
 					self.flag(source)
 					self.autojoin(source)
