@@ -597,7 +597,7 @@ class Services:
 						if not self.isbot(target):
 							self.query("insert into bots values ('%s')" % target)
 							self.vhost(target)
-				if data["modes"].find("-") !) -1:
+				if data["modes"].find("-") != -1:
 					modes = data["modes"].split("-")[1]
 					if modes.find("+") != -1:
 						modes.split("+")[0]
@@ -1029,7 +1029,7 @@ class Command:
 						if not self.isbot(target):
 							self.query("insert into bots values ('%s')" % target)
 							self.vhost(target)
-				if data["modes"].find("-") !) -1:
+				if data["modes"].find("-") != -1:
 					modes = data["modes"].split("-")[1]
 					if modes.find("+") != -1:
 						modes.split("+")[0]
