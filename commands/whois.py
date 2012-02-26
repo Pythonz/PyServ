@@ -27,21 +27,24 @@ class whois(Command):
 				for data in self.query("select uid from online where nick = '{0}'".format(arg[0])):
 					entry = True
 					user = self.auth(data["uid"])
-					for account in self.query("select email from users where name = '{0}'".format(user)):
-						self.msg(source, "-Information for account {0}:".format(user))
-						online = list()
-						for uid in self.sid(user):
-							online.append(self.nick(uid))
-						self.msg(source, "Online Nicks  : {0}".format(' '.join(online)))
-						self.msg(source, "User flags    : {0}".format(self.userflags(user)))
-						self.msg(source, "Email address : {0}".format(account["email"]))
-						self.msg(source, "vHost         : {0}".format(self.getvhost(user)))
-						self.msg(source, "Known on following channels:")
-						self.msg(source, "Channel              Flag")
-					for channel in self.query("select channel,flag from channels where user = '{0}'".format(user)):
-						self.msg(source, " {0}{1}{2}".format(channel["channel"], " "*int(20-len(channel["channel"])), channel["flag"]))
-					self.msg(source, "End of list.")
+						if user != 0:
+						for account in self.query("select email from users where name = '{0}'".format(user)):
+							self.msg(source, "-Information for account {0}:".format(user))
+							online = list()
+							for uid in self.sid(user):
+								online.append(self.nick(uid))
+							self.msg(source, "Online Nicks  : {0}".format(' '.join(online)))
+							self.msg(source, "User flags    : {0}".format(self.userflags(user)))
+							self.msg(source, "Email address : {0}".format(account["email"]))
+							self.msg(source, "vHost         : {0}".format(self.getvhost(user)))
+							self.msg(source, "Known on following channels:")
+							self.msg(source, "Channel              Flag")
+						for channel in self.query("select channel,flag from channels where user = '{0}'".format(user)):
+							self.msg(source, " {0}{1}{2}".format(channel["channel"], " "*int(20-len(channel["channel"])), channel["flag"]))
+						self.msg(source, "End of list.")
+					else:
+						self.msg(source, "User " + arg[0] + " is not authed.")
 			if not entry:
-				self.msg(source, "Can\'t find user {0}".format(arg[0]))
+				self.msg(source, "Can't find user {0}".format(arg[0]))
 		else:
 			self.msg(source, "Syntax: WHOIS <nick>/<#account>")
