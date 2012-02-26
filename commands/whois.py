@@ -27,7 +27,7 @@ class whois(Command):
 				for data in self.query("select uid from online where nick = '{0}'".format(arg[0])):
 					entry = True
 					user = self.auth(data["uid"])
-						if user != 0:
+					if user != 0:
 						for account in self.query("select email from users where name = '{0}'".format(user)):
 							self.msg(source, "-Information for account {0}:".format(user))
 							online = list()
