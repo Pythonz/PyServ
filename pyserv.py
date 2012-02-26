@@ -301,6 +301,34 @@ class Services:
 												pass
 											else:
 												self.mode(data.split()[2], "+%s %s" % (str(flag["flag"]), user))
+						if data.split()[1] == "JOIN":
+							juid = data.split()[0][1:]
+							jchan = data.split()[2][1:]
+							self.query("insert into chanlist value ('%s', '%s')" % (juid, jchan))
+							if self.chanexist(jchan): self.enforcebans(jchan)
+							if self.chanflag("l", jchan):
+								self.showlog(juid, jchan)
+								self.log(juid, "join", jchan)
+							fjoin_user = self.auth(juid)
+							hasflag = False
+							for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (jchan, fjoin_user)):
+								if str(flag["flag"]) == "n":
+									self.mode(jchan, "+q %s" % juid)
+									hasflag = True
+								elif str(flag["flag"]) == "Y":
+									pass
+								else:
+									self.mode(jchan, "+%s %s" % (str(flag["flag"]), juid))
+									hasflag = True
+							if not hasflag:
+								if self.chanflag("v", jchan):
+									self.mode(jchan, "+v %s" % juid)
+							for welcome in self.query("select name,welcome from channelinfo where name = '{0}'".format(jchan)):
+								if self.chanflag("w", jchan):
+									self.msg(juid, "[{0}] {1}".format(welcome["name"], welcome["welcome"]))
+							if self.isoper(juid) and self.chanexist(jchan):
+								self.send(":%s NOTICE %s :Operator %s has joined" % (self.services_id, jchan, self.nick(juid)))
+								self.send(":%s PRIVMSG %s :ACTION goes down on his knee and prays to %s." % (self.bot, jchan, self.nick(juid)))
 						if data.split()[1] == "FJOIN":
 							fjoin_chan = data.split()[2]
 							fjoin_nick = data.split()[5][1:]
