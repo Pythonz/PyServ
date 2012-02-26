@@ -919,6 +919,7 @@ class Services:
 	def scanport(self, host, port):
 		try:
 			scpo = socket.socket()
+			scpo.settimeout(1)
 			scpo.connect((str(host), int(port)))
 			scpo.close()
 			return True
@@ -1359,6 +1360,7 @@ class Command:
 	def scanport(self, host, port):
 		try:
 			scpo = socket.socket()
+			scpo.settimeout(1)
 			scpo.connect((str(host), int(port)))
 			scpo.close()
 			return True
