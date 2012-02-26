@@ -588,7 +588,7 @@ class Services:
 		user = self.auth(target)
 		if self.ison(user):
 			for data in self.query("select modes from users where name = '%s'" % user):
-				self.send(":%s MODE %s %s" % (target, target, data["modes"]))
+				self.mode(target, data["modes"])
 
 	def userflags(self, target):
 		user = self.auth(target)
@@ -999,7 +999,7 @@ class Command:
 		user = self.auth(target)
 		if self.ison(user):
 			for data in self.query("select modes from users where name = '%s'" % user):
-				self.send(":%s MODE %s %s" % (target, target, data["modes"]))
+				self.mode(target, data["modes"])
 
 	def userflags(self, target):
 		user = self.auth(target)
