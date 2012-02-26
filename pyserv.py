@@ -589,6 +589,22 @@ class Services:
 		if self.ison(user):
 			for data in self.query("select modes from users where name = '%s'" % user):
 				self.mode(target, data["modes"])
+				if data["modes"].find("+") != -1:
+					modes = data["modes"].split("+")[1]
+					if modes.find("-") != -1:
+						modes = modes.split("-")[0]
+					if modes.find("B") != -1:
+						if not self.isbot(target):
+							self.query("insert into bots values ('%s')" % target)
+							self.vhost(target)
+				if data["modes"].find("-") !) -1:
+					modes = data["modes"].split("-")[1]
+					if modes.find("+") != -1:
+						modes.split("+")[0]
+					if modes.find("B") != -1:
+						if self.isbot(target):
+							self.query("delete from bots where uid = '%s'" % target)
+							self.vhost(target)
 
 	def userflags(self, target):
 		user = self.auth(target)
@@ -660,7 +676,9 @@ class Services:
 
 	def vhost(self, target):
 		if not self.isbot(target):
+			entry = False
 			for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(target)):
+				entry = True
 				vhost = str(data["vhost"])
 				if str(data["vhost"]).find("@") != -1:
 					vident = vhost.split("@")[0]
@@ -668,6 +686,9 @@ class Services:
 					self.send(":%s CHGIDENT %s %s" % (self.bot, target, vident))
 				self.send(":%s CHGHOST %s %s" % (self.bot, target, vhost))
 				self.msg(target, "Your vhost %s has been activated" % data["vhost"])
+			if not entry:
+				self.send(":%s CHGIDENT %s %s" % (self.bot, target, self.userhost(target).split("@")[0]))
+				self.send(":%s CHGHOST %s %s" % (self.bot, target, self.gethost(target)))
 		else:
 			username = self.userhost(target).split("@")[0]
 			self.send(":%s CHGIDENT %s %s" % (self.bot, target, username))
@@ -1000,6 +1021,22 @@ class Command:
 		if self.ison(user):
 			for data in self.query("select modes from users where name = '%s'" % user):
 				self.mode(target, data["modes"])
+				if data["modes"].find("+") != -1:
+					modes = data["modes"].split("+")[1]
+					if modes.find("-") != -1:
+						modes = modes.split("-")[0]
+					if modes.find("B") != -1:
+						if not self.isbot(target):
+							self.query("insert into bots values ('%s')" % target)
+							self.vhost(target)
+				if data["modes"].find("-") !) -1:
+					modes = data["modes"].split("-")[1]
+					if modes.find("+") != -1:
+						modes.split("+")[0]
+					if modes.find("B") != -1:
+						if self.isbot(target):
+							self.query("delete from bots where uid = '%s'" % target)
+							self.vhost(target)
 
 	def userflags(self, target):
 		user = self.auth(target)
@@ -1071,7 +1108,9 @@ class Command:
 
 	def vhost(self, target):
 		if not self.isbot(target):
+			entry = False
 			for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(target)):
+				entry = True
 				vhost = str(data["vhost"])
 				if str(data["vhost"]).find("@") != -1:
 					vident = vhost.split("@")[0]
@@ -1079,6 +1118,9 @@ class Command:
 					self.send(":%s CHGIDENT %s %s" % (self.bot, target, vident))
 				self.send(":%s CHGHOST %s %s" % (self.bot, target, vhost))
 				self.msg(target, "Your vhost %s has been activated" % data["vhost"])
+			if not entry:
+				self.send(":%s CHGIDENT %s %s" % (self.bot, target, self.userhost(target).split("@")[0]))
+				self.send(":%s CHGHOST %s %s" % (self.bot, target, self.gethost(target)))
 		else:
 			username = self.userhost(target).split("@")[0]
 			self.send(":%s CHGIDENT %s %s" % (self.bot, target, username))
