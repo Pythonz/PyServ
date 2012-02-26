@@ -10,6 +10,6 @@ class scanport(Command):
 			if self.scanport(arg[0], arg[1]):
 				self.msg(uid, arg[0] + ":" + arg[1] + ": Open.")
 			else:
-				self.msg(uid, arg[0] + ":" + arg[1] + ": Open.")
+				self.msg(uid, arg[0] + ":" + arg[1] + ": Closed.")
 		else:
 			self.msg(uid, "Syntax: SCANPORT <host> <port>")
