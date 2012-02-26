@@ -29,7 +29,7 @@ class savhost(Command):
 						entry = True
 					if not entry:
 						self.query("delete from vhosts where user = '%s'" % arg[1])
-						self.query("insert into vhosts values ('%s', '%s', '1')" % (self.user(arg[1]), arg[2])))
+						self.query("insert into vhosts values ('%s', '%s', '1')" % (self.user(arg[1]), arg[2]))
 						self.query("insert into memo values ('%s', '%s', '%s has been set as your vHost")
 						for uid in self.sid(arg[1]):
 							self.vhost(uid)
