@@ -70,8 +70,8 @@ class Services:
 		self.status = config.getboolean("OTHER", "status")
 		self.regmail = config.get("OTHER", "regmail")
 		self.bot = "%sAAAAAA" % self.services_id
-		self.bot_nick = config.get("BOT", "nick")
-		self.bot_user = config.get("BOT", "user")
+		self.bot_nick = config.get("BOT", "nick").split()[0]
+		self.bot_user = config.get("BOT", "user").split()[0]
 		self.bot_real = config.get("BOT", "real")
 		self.db = _mysql.connect(host=self.mysql_host, port=self.mysql_port, db=self.mysql_name, user=self.mysql_user, passwd=self.mysql_passwd)
 
@@ -875,8 +875,8 @@ class Command:
 		self.status = config.getboolean("OTHER", "status")
 		self.regmail = config.get("OTHER", "regmail")
 		self.bot = "%sAAAAAA" % self.services_id
-		self.bot_nick = config.get("BOT", "nick")
-		self.bot_user = config.get("BOT", "user")
+		self.bot_nick = config.get("BOT", "nick").split()[0]
+		self.bot_user = config.get("BOT", "user").split()[0]
 		self.bot_real = config.get("BOT", "real")
 
 	def onCommand(self, uid, arguments):
