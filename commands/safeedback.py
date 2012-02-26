@@ -12,7 +12,7 @@ class safeedback(Command):
 			self.msg(source, "To read a feedback: SAFEEDBACK <user>")
 		else:
 			entry = False
-			for data in self.query("select user,text from feedback where user = '%s'" % arg[1]):
+			for data in self.query("select user,text from feedback where user = '%s'" % arg[0]):
 				entry = True
 				self.msg(source, "[Feedback] From: %s, Message: %s" % (data["user"], data["text"]))
 				self.query("delete from feedback where user = '%s'" % str(data["user"]))
