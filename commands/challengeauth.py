@@ -12,8 +12,9 @@ class challengeauth(Command):
 				user = arg[0]
 				resp = arg[1]
 				alg = arg[2]
-				challenges = self.query_row("select challenge where hostmask = '%s'" % self.hostmask(uid)[0])
-				if challenges:
+				entry = False
+				for challenges in self.query("select challenge where hostmask = '%s'" % self.hostmask(uid)[0])
+					entry = True
 					challenge = challenges["challenge"]
 					self.query("delete from challenges where hostmask = '%s'" % self.hostmask(uid)[0])
 					for data in self.query("select name,pass from users where name = '%s'" % user):
@@ -54,7 +55,7 @@ class challengeauth(Command):
 							self.memo(data["name"])
 						else:
 							self.msg(uid, "CHALLENGEAUTH failed. CHALLENGEAUTH is case-sensitive.")
-					else:
+					if not entry:
 						self.msg(uid, "You have to request a CHALLENGE first.")
 			else:
 				self.msg(uid, "Syntax: <username> <response> <hmac algorithm>")
