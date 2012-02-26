@@ -584,6 +584,12 @@ class Services:
 			return True
 		return False
 
+	def usermodes(self, target):
+		user = self.auth(target):
+		if self.ison(user):
+			for data in self.query("select modes from users where name = '%s'" % user):
+				self.send(":%s MODE %s %s" % (target, target, data["modes"]))
+
 	def userflags(self, target):
 		user = self.auth(target)
 		if user == 0:
@@ -988,6 +994,12 @@ class Command:
 		for data in self.query("select * from temp_nick where user = '%s'" % user):
 			return True
 		return False
+
+	def usermodes(self, target):
+		user = self.auth(target):
+		if self.ison(user):
+			for data in self.query("select modes from users where name = '%s'" % user):
+				self.send(":%s MODE %s %s" % (target, target, data["modes"]))
 
 	def userflags(self, target):
 		user = self.auth(target)
