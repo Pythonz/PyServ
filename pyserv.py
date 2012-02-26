@@ -534,6 +534,13 @@ class Services:
 			return str(data["nick"])
 		return source
 
+	def user (self, user):
+		if user.lower() == self.bot_nick.lower():
+			return self.bot_nick
+		for data in self.query("select name from users where name = '%s'" % user):
+			return str(data["name"])
+		return False
+
 	def send(self, text):
 		self.con.send(text+"\n")
 		debug(">> %s" % text)
@@ -594,9 +601,12 @@ class Services:
 
 	def memo(self, user):
 		for data in self.query("select source,message from memo where user = '%s'" % user):
+			online = False
 			for source in self.sid(user):
+				online = True
 				self.msg(source, "[Memo] From: %s, Message: %s" % (data["source"], data["message"]))
-			self.query("delete from memo where user = '%s' and source = '%s' and message = '%s'" % (user, data["source"], _mysql.escape_string(data["message"])))
+			if online:
+				self.query("delete from memo where user = '%s' and source = '%s' and message = '%s'" % (user, data["source"], _mysql.escape_string(data["message"])))
 
 	def chanexist(self, channel):
 		for data in self.query("select name from channelinfo where name = '%s'" % channel):
@@ -919,6 +929,13 @@ class Command:
 			return data["nick"]
 		return source
 
+	def user (self, user):
+		if user.lower() == self.bot_nick.lower():
+			return self.bot_nick
+		for data in self.query("select name from users where name = '%s'" % user):
+			return str(data["name"])
+		return False
+
 	def push(self, target, message):
 		self.send(":{uid} PUSH {target} ::{message}".format(uid=self.services_id, target=target, message=message))
 
@@ -976,9 +993,12 @@ class Command:
 
 	def memo(self, user):
 		for data in self.query("select source,message from memo where user = '%s'" % user):
+			online = False
 			for source in self.sid(user):
+				online = True
 				self.msg(source, "[Memo] From: %s, Message: %s" % (data["source"], data["message"]))
-			self.query("delete from memo where user = '%s' and source = '%s' and message = '%s'" % (user, data["source"], _mysql.escape_string(data["message"])))
+			if online:
+				self.query("delete from memo where user = '%s' and source = '%s' and message = '%s'" % (user, data["source"], _mysql.escape_string(data["message"])))
 
 	def chanexist(self, channel):
 		for data in self.query("select name from channelinfo where name = '%s'" % channel):
