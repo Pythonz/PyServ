@@ -38,7 +38,7 @@ class vhost(Command):
 							self.send(":%s CHGHOST %s %s" % (self.bot, source, data["host"]))
 						else:
 							self.send(":%s CHGIDENT %s %s" % (self.bot, source, data["username"]))
-							crypthost = ''.join([char for char in self.encode(source) if char.isalnum()]).lower()
+							crypthost = ''.join([char for char in self.encode(source) if char.isalnum()])
 							self.send(":%s CHGHOST %s %s.bots.gateway.%s" % (self.bot, source, crypthost, '.'.join(self.services_name.split(".")[-2:])))
 					for data in self.query("select uid from opers"):
 						self.msg(data["uid"], "vHost request received from %s" % self.auth(source))
@@ -53,7 +53,7 @@ class vhost(Command):
 					self.send(":%s CHGHOST %s %s" % (self.bot, source, data["host"]))
 				else:
 					self.send(":%s CHGIDENT %s %s" % (self.bot, source, data["username"]))
-					crypthost = ''.join([char for char in self.encode(source) if char.isalnum()]).lower()
+					crypthost = ''.join([char for char in self.encode(source) if char.isalnum()])
 					self.send(":%s CHGHOST %s %s.bots.gateway.%s" % (self.bot, source, crypthost, '.'.join(self.services_name.split(".")[-2:])))
 		else:
 			self.msg(source, "Syntax: VHOST <vhost>")
