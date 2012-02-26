@@ -370,7 +370,7 @@ class Services:
 								if smodes.find("-") != -1:
 									smodes = smodes.split("-")[0]
 								if smodes.find("B") != -1:
-									crypthost = ''.join([char for char in self.encode(data.split()[0][1:]) if char.isalnum()])
+									crypthost = ''.join([char for char in self.encode(data.split()[0][1:]) if char.isalnum()]).lower()
 									self.send(":%s CHGHOST %s %s.bots.gateway.%s" % (self.bot, data.split()[0][1:], crypthost, '.'.join(self.services_name.split(".")[-2:])))
 									self.query("insert into bots values ('%s')" % data.split()[0][1:])
 							smodes = data.split()[3]
@@ -409,7 +409,7 @@ class Services:
 							for ip in self.query("select channel from ipchan where ip = '%s'" % data.split()[8]):
 								self.send(":%s SVSJOIN %s %s" % (self.bot, data.split()[2], ip["channel"]))
 							if data.split()[10].find("B") != -1:
-								crypthost = ''.join([char for char in self.encode(data.split()[2]) if char.isalnum()])
+								crypthost = ''.join([char for char in self.encode(data.split()[2]) if char.isalnum()]).lower()
 								self.send(":%s CHGHOST %s %s.bots.gateway.%s" % (self.bot, data.split()[2], crypthost, '.'.join(self.services_name.split(".")[-2:])))
 								self.query("insert into bots values ('%s')" % data.split()[2])
 		except Exception:
@@ -665,9 +665,9 @@ class Services:
 		else:
 			username = self.userhost(target).split("@")[0]
 			self.send(":%s CHGIDENT %s %s" % (self.bot, target, username))
-			crypthost = ''.join([char for char in self.encode(target) if char.isalnum()])
+			crypthost = ''.join([char for char in self.encode(target) if char.isalnum()]).lower()
 			self.send(":%s CHGHOST %s %s.bots.gateway.%s" % (self.bot, target, crypthost, '.'.join(self.services_name.split(".")[-2:])))
-			self.msg(target, "Your vhost %s has been activated" % crypthost)
+			self.msg(target, "Your vhost %s.bots.gateway.%s has been activated" % (crypthost, '.'.join(self.services_name.split(".")[-2:])))
 
 	def flag(self, target):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
@@ -1070,9 +1070,9 @@ class Command:
 		else:
 			username = self.userhost(target).split("@")[0]
 			self.send(":%s CHGIDENT %s %s" % (self.bot, target, username))
-			crypthost = ''.join([char for char in self.encode(target) if char.isalnum()])
+			crypthost = ''.join([char for char in self.encode(target) if char.isalnum()]).lower()
 			self.send(":%s CHGHOST %s %s.bots.gateway.%s" % (self.bot, target, crypthost, '.'.join(self.services_name.split(".")[-2:])))
-			self.msg(target, "Your vhost %s has been activated" % crypthost)
+			self.msg(target, "Your vhost %s.bots.gateway.%s has been activated" % (crypthost, '.'.join(self.services_name.split(".")[-2:])))
 
 	def flag(self, target):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
