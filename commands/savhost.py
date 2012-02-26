@@ -9,13 +9,13 @@ class savhost(Command):
 		if len(arg) == 0:
 			self.msg(source, "Account                   vHost")
 			for data in self.query("select user,vhost from vhosts where active = '0'"):
-				self.msg(source, "  %s %s %s" % (str(data["user"]), " "*int(13-len(data["user"])), str(data["vhost"])))
+				self.msg(source, "  %s %s %s" % (str(data["user"]), " "*int(22-len(data["user"])), str(data["vhost"])))
 			self.msg(source, "End of list.")
 		elif len(arg) == 1:
 			if arg[0] == "?list":
 				self.msg(source, "Account                 vHost")
 				for data in self.query("select user,vhost from vhosts where active = '1'"):
-					self.msg(source, "  {0} {1} {2}".format(data["user"], " "*int(13-len(data["user"])), data["vhost"]))
+					self.msg(source, "  {0} {1} {2}".format(data["user"], " "*int(22-len(data["user"])), data["vhost"]))
 				self.msg(source, "End of list.")
 			else:
 				for data in self.query("select user,vhost from vhosts where active = '0' and user = '%s'" % arg[0]):
