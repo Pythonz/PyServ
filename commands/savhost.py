@@ -45,6 +45,17 @@ class savhost(Command):
 						self.msg(source, "User %s is alreading using this vHost (%s)." % (user, vhost))
 				else:
 					self.msg(source, "Can't find user "+arg[1]+".")
+			elif arg[0] == "?unset":
+				if self.user(arg[1]):
+					vhost = self.getvhost(arg[1])
+					self.query("delete from vhosts where user = '%s'" % arg[1])
+					self.query("insert into memo values ('%s', '%s', 'Your vHost %s has been deleted.')" % (self.user(arg[1]), self.bot_nick, vhost))
+					for uid in self.sid(arg[1]):
+						self.vhost(uid)
+					self.memo(arg[1])
+					self.msg(source, "Done.")
+				else:
+					self.msg(source, "Can't find user " + arg[1] + ".")
 			else:
 				for data in self.query("select * from vhosts where active = '0' and user = '%s'" % arg[0]):
 					self.query("delete from vhosts where user = '%s'" % str(data["user"]))
