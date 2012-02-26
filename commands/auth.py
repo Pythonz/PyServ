@@ -1,7 +1,7 @@
 from pyserv import Command, config
 
 class auth(Command):
-	help = "Login with your account at Q@"+config.get("SERVICES", "name")
+	help = "Login with your account at " + config.get("BOT", "nick") + "@"+config.get("SERVICES", "name")
 	def onCommand(self, source, args):
 		arg = args.split()
 		if self.auth(source) != 0:

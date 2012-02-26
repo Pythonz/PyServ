@@ -23,6 +23,6 @@ class savhost(Command):
 			for data in self.query("select * from vhosts where active = '0' and user = '%s'" % arg[0]):
 				self.query("delete from vhosts where user = '%s'" % str(data["user"]))
 				self.msg(source, "vHost for user %s has been rejected" % str(data["user"]))
-				self.query("insert into memo values ('%s', 'Q', 'Your vHost %s has been rejected. Reason: %s')" % (data["user"], data["vhost"], _mysql.escape_string(' '.join(arg[1:]))))
+				self.query("insert into memo values ('%s', '%s', 'Your vHost %s has been rejected. Reason: %s')" % (data["user"], self.bot_nick, data["vhost"], _mysql.escape_string(' '.join(arg[1:]))))
 				self.memo(data[0])
 		else: self.msg(source, "Syntax: SAVHOST [<user> [<reject-reason>]]")

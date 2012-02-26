@@ -70,6 +70,9 @@ class Services:
 		self.status = config.getboolean("OTHER", "status")
 		self.regmail = config.get("OTHER", "regmail")
 		self.bot = "%sAAAAAA" % self.services_id
+		self.bot_nick = config.get("BOT", "nick")
+		self.bot_user = config.get("BOT", "user")
+		self.bot_real = config.get("BOT", "real")
 		self.db = _mysql.connect(host=self.mysql_host, port=self.mysql_port, db=self.mysql_name, user=self.mysql_user, passwd=self.mysql_passwd)
 
 	def run(self):
@@ -110,10 +113,10 @@ class Services:
 							self.send(":%s PONG %s %s" % (self.services_id, self.services_id, data.split()[2]))
 							self.send(":%s PING %s %s" % (self.services_id, self.services_id, data.split()[2]))
 						if data.split()[1] == "ENDBURST" and not _connected:
-							self.send(":%s UID %s %s Q %s %s TheQBot 0.0.0.0 %s +Ik :The Q Bot" % (self.services_id, self.bot, time.time(), self.services_name, self.services_name, time.time()))
+							self.send(":%s UID %s %s %s %s %s %s 0.0.0.0 %s +Ik :%s" % (self.services_id, self.bot, time.time(), self.bot_nick, self.services_name, self.services_name, self.bot_user, time.time(), self.bot_real))
 							_connected = True
 							self.send(":%s OPERTYPE Service" % self.bot)
-							self.meta(self.bot, "accountname", "Q")
+							self.meta(self.bot, "accountname", self.bot_nick)
 							self.msg("$*", "Services are now back online. Have a nice day :)")
 							for channel in self.query("select name,modes,topic from channelinfo"):
 								self.join(str(channel["name"]))
@@ -121,7 +124,7 @@ class Services:
 									self.mode(channel["name"], channel["modes"])
 								if self.chanflag("t", channel["name"]):
 									self.send(":{0} TOPIC {1} :{2}".format(self.bot, channel["name"], channel["topic"]))
-									if self.chanflag("l", channel["name"]): self.log("Q", "topic", channel["name"], ":"+channel["topic"])
+									if self.chanflag("l", channel["name"]): self.log(self.bot_nick, "topic", channel["name"], ":"+channel["topic"])
 						if data.split()[1] == "PRIVMSG":
 							if data.split()[2] == self.bot:
 								iscmd = False
@@ -206,7 +209,7 @@ class Services:
 								if self.chanflag("t", data.split()[2]):
 									for channel in self.query("select topic from channelinfo where name = '{0}'".format(data.split()[2])):
 										self.send(":{0} TOPIC {1} :{2}".format(self.bot, data.split()[2], channel["topic"]))
-										if self.chanflag("l", data.split()[2]): self.log("Q", "topic", data.split()[2], ":"+channel["topic"])
+										if self.chanflag("l", data.split()[2]): self.log(self.bot_nick, "topic", data.split()[2], ":"+channel["topic"])
 						if data.split()[1] == "FMODE":
 							if self.chanflag("l", data.split()[2]) and len(data.split()) > 4:
 								self.log(data.split()[0][1:], "mode", data.split()[2], ' '.join(data.split()[4:]))
@@ -222,7 +225,7 @@ class Services:
 									if splitted.find("-") != -1:
 										splitted = splitted.split("-")[0]
 									flag = self.getflag(data.split()[0][1:], data.split()[2])
-									if flag == "h" or flag == "o" or flag == "a" or flag == "q" or flag == "n":
+									if flag == "h" or flag == "o" or flag == "a" or flag == self.bot_nick or flag == "n":
 										if splitted.find("b") != -1:
 											self.checkbans(data.split()[2], ' '.join(data.split()[5:]))
 											for ban in data.split()[5:]:
@@ -240,7 +243,7 @@ class Services:
 										if splitted.find("+") != -1:
 											splitted = splitted.split("+")[0]
 										flag = self.getflag(data.split()[0][1:], data.split()[2])
-										if flag == "h" or flag == "o" or flag == "a" or flag == "q" or flag == "n":
+										if flag == "h" or flag == "o" or flag == "a" or flag == self.bot_nick or flag == "n":
 											if splitted.find("b") != -1:
 												for ban in data.split()[5:]:
 													if fnmatch.fnmatch(ban, "*!*@*"):
@@ -262,27 +265,27 @@ class Services:
 										if splitted.find("v") != -1:
 											for user in musers:
 												flag = self.getflag(self.uid(user), mchan)
-												if not self.chanflag("v", mchan) and flag != "v" and flag != "h" and flag != "o" and flag != "a" and flag != "q" and flag != "n" and self.uid(user) != self.bot:
+												if not self.chanflag("v", mchan) and flag != "v" and flag != "h" and flag != "o" and flag != "a" and flag != self.bot_nick and flag != "n" and self.uid(user) != self.bot:
 													self.mode(mchan, "-v "+user)
 										if splitted.find("h") != -1:
 											for user in musers:
 												flag = self.getflag(self.uid(user), mchan)
-												if flag != "h" and flag != "o" and flag != "a" and flag != "q" and flag != "n" and self.uid(user) != self.bot:
+												if flag != "h" and flag != "o" and flag != "a" and flag != self.bot_nick and flag != "n" and self.uid(user) != self.bot:
 													self.mode(mchan, "-h "+user)
 										if splitted.find("o") != -1:
 											for user in musers:
 												flag = self.getflag(self.uid(user), mchan)
-												if flag != "o" and flag != "a" and flag != "q" and flag != "n" and self.uid(user) != self.bot:
+												if flag != "o" and flag != "a" and flag != self.bot_nick and flag != "n" and self.uid(user) != self.bot:
 													self.mode(mchan, "-o "+user)
 										if splitted.find("a") != -1:
 											for user in musers:
 												flag = self.getflag(self.uid(user), mchan)
-												if flag != "a" and flag != "q" and flag != "n" and self.uid(user) != self.bot:
+												if flag != "a" and flag != self.bot_nick and flag != "n" and self.uid(user) != self.bot:
 													self.mode(mchan, "-a "+user)
-										if splitted.find("q") != -1:
+										if splitted.find(self.bot_nick) != -1:
 											for user in musers:
 												flag = self.getflag(self.uid(user), mchan)
-												if flag != "q" and flag != "n" and self.uid(user) != self.bot:
+												if flag != self.bot_nick and flag != "n" and self.uid(user) != self.bot:
 													self.mode(mchan, "-q "+user)
 													
 								if self.chanflag("p", data.split()[2]):
@@ -515,7 +518,7 @@ class Services:
 			debug("<<MSG-ERROR>> "+str(e))
 
 	def uid (self, nick):
-		if nick == "Q":
+		if nick == self.bot_nick:
 			return self.bot
 		for data in self.query("select uid from online where nick = '{0}'".format(nick)):
 			return str(data["uid"])
@@ -523,7 +526,7 @@ class Services:
 
 	def nick (self, source):
 		if source == self.bot:
-			return "Q"
+			return self.bot_nick
 		for data in self.query("select nick from online where uid = '%s'" % source):
 			return str(data["nick"])
 		return source
@@ -570,7 +573,7 @@ class Services:
 		self.send(":%s SVSMODE %s %s" % (self.bot, target, mode))
 		if target.startswith("#"):
 			if self.chanflag("l", target):
-				self.log("Q", "mode", target, mode)
+				self.log(self.bot_nick, "mode", target, mode)
 
 	def meta(self, target, meta, content):
 		self.send(":%s METADATA %s %s :%s" % (self.services_id, target, meta, content))
@@ -604,7 +607,7 @@ class Services:
 			self.mode(channel, "+q %s" % self.bot)
 
 	def kill(self, target, reason="You're violating network rules"):
-		if target.lower() != "q" and not self.isoper(self.uid(target)):
+		if target.lower() != self.bot_nick and not self.isoper(self.uid(target)):
 			self.send(":%s KILL %s :Killed (%s (%s))" % (self.bot, target, self.services_name, reason))
 
 	def vhost(self, target):
@@ -634,7 +637,7 @@ class Services:
 				for data in self.query("select channel,flag from channels where user = '%s'" % user):
 					channel = data["channel"]
 					flag = data["flag"]
-					if flag == "n" or flag == "q" or flag == "a" or flag == "o" or flag == "h" or flag == "v":
+					if flag == "n" or flag == self.bot_nick or flag == "a" or flag == "o" or flag == "h" or flag == "v":
 						self.send(":%s SVSJOIN %s %s" % (self.bot, target, channel))
 
 	def getflag(self, target, channel):
@@ -872,6 +875,9 @@ class Command:
 		self.status = config.getboolean("OTHER", "status")
 		self.regmail = config.get("OTHER", "regmail")
 		self.bot = "%sAAAAAA" % self.services_id
+		self.bot_nick = config.get("BOT", "nick")
+		self.bot_user = config.get("BOT", "user")
+		self.bot_real = config.get("BOT", "real")
 
 	def onCommand(self, uid, arguments):
 		pass
@@ -897,7 +903,7 @@ class Command:
 				return data
 
 	def uid (self, nick):
-		if nick == "Q":
+		if nick == self.bot_nick:
 			return self.bot
 		for data in self.query("select uid from online where nick = '{0}'".format(nick)):
 			return data["uid"]
@@ -905,7 +911,7 @@ class Command:
 
 	def nick (self, source):
 		if source == self.bot:
-			return "Q"
+			return self.bot_nick
 		for data in self.query("select nick from online where uid = '%s'" % source):
 			return data["nick"]
 		return source
@@ -949,7 +955,7 @@ class Command:
 		self.send(":%s SVSMODE %s %s" % (self.bot, target, mode))
 		if target.startswith("#"):
 			if self.chanflag("l", target):
-				self.log("Q", "mode", target, mode)
+				self.log(self.bot_nick, "mode", target, mode)
 
 	def meta(self, target, meta, content):
 		self.send(":%s METADATA %s %s :%s" % (self.services_id, target, meta, content))
@@ -983,7 +989,7 @@ class Command:
 			self.mode(channel, "+q %s" % self.bot)
 
 	def kill(self, target, reason="You're violating network rules"):
-		if target.lower() != "q" and not self.isoper(self.uid(target)):
+		if target.lower() != self.bot_nick and not self.isoper(self.uid(target)):
 			self.send(":%s KILL %s :Killed (%s (%s))" % (self.bot, target, self.services_name, reason))
 
 	def vhost(self, target):
@@ -1013,7 +1019,7 @@ class Command:
 				for data in self.query("select channel,flag from channels where user = '%s'" % user):
 					channel = data["channel"]
 					flag = data["flag"]
-					if flag == "n" or flag == "q" or flag == "a" or flag == "o" or flag == "h" or flag == "v":
+					if flag == "n" or flag == self.bot_nick or flag == "a" or flag == "o" or flag == "h" or flag == "v":
 						self.send(":%s SVSJOIN %s %s" % (self.bot, target, channel))
 
 	def getflag(self, target, channel):

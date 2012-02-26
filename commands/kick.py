@@ -9,7 +9,7 @@ class kick(Command):
 			if arg[0].startswith("#"):
 				flag = self.getflag(source, arg[0])
 				if flag == "n" or flag == "q" or flag == "a" or flag =="o"or flag =="h":
-					if arg[1].lower() != "q" and not self.isoper(self.uid(arg[1])):
+					if arg[1].lower() != self.bot_nick.lower() and not self.isoper(self.uid(arg[1])):
 						if self.onchan(arg[0],arg[1]):
 							self.send(":{0} KICK {1} {2} :{2}".format(self.bot, arg[0], arg[1]))
 							self.msg(source, "Done.")
@@ -21,7 +21,7 @@ class kick(Command):
 			if arg[0].startswith("#"):
 				flag = self.getflag(source, arg[0])
 				if flag == "n" or flag == "q" or flag == "a" or flag =="o"or flag =="h":
-					if arg[1].lower() != "q" and not self.isoper(self.uid(arg[1])):
+					if arg[1].lower() != self.bot_nick.lower() and not self.isoper(self.uid(arg[1])):
 						if self.onchan(arg[0],arg[1]):
 							self.send(":{0} KICK {1} {2} :{3}".format(self.bot, arg[0], arg[1], ' '.join(arg[2:])))
 							self.msg(source, "Done.")
