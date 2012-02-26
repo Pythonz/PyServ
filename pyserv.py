@@ -572,12 +572,6 @@ class Services:
 			if self.chanflag("l", target):
 				self.log("Q", "mode", target, mode)
 
-	def smode(self, target, mode):
-		self.send(":%s SVSMODE %s %s" % (self.services_id, target, mode))
-		if target.startswith("#"):
-			if self.chanflag("l", target):
-				self.log("Q", "mode", target, mode)
-
 	def meta(self, target, meta, content):
 		self.send(":%s METADATA %s %s :%s" % (self.services_id, target, meta, content))
 
@@ -604,9 +598,10 @@ class Services:
 		return False
 
 	def join(self, channel):
-		self.send(":%s JOIN %s" % (self.bot, channel))
-		self.mode(channel, "+r")
-		self.mode(channel, "+q %s" % self.bot)
+		if self.chanexist(channel) and not self.suspended(channel):
+			self.send(":%s JOIN %s" % (self.bot, channel))
+			self.mode(channel, "+r")
+			self.mode(channel, "+q %s" % self.bot)
 
 	def kill(self, target, reason="You're violating network rules"):
 		if target.lower() != "q" and not self.isoper(self.uid(target)):
@@ -956,12 +951,6 @@ class Command:
 			if self.chanflag("l", target):
 				self.log("Q", "mode", target, mode)
 
-	def smode(self, target, mode):
-		self.send(":%s SVSMODE %s %s" % (self.services_id, target, mode))
-		if target.startswith("#"):
-			if self.chanflag("l", target):
-				self.log("Q", "mode", target, mode)
-
 	def meta(self, target, meta, content):
 		self.send(":%s METADATA %s %s :%s" % (self.services_id, target, meta, content))
 
@@ -988,9 +977,10 @@ class Command:
 		return False
 
 	def join(self, channel):
-		self.send(":%s JOIN %s" % (self.bot, channel))
-		self.mode(channel, "+r")
-		self.mode(channel, "+q %s" % self.bot)
+		if self.chanexist(channel) and not self.suspended(channel):
+			self.send(":%s JOIN %s" % (self.bot, channel))
+			self.mode(channel, "+r")
+			self.mode(channel, "+q %s" % self.bot)
 
 	def kill(self, target, reason="You're violating network rules"):
 		if target.lower() != "q" and not self.isoper(self.uid(target)):

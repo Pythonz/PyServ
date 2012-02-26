@@ -18,6 +18,10 @@ class suspend(Command):
 			if arg[0].startswith("#"):
 				if not self.suspended(arg[0]):
 					self.query("insert into suspended values ('%s', '%s')" % (arg[0], _mysql.escape_string(' '.join(arg[1:]))))
+					if self.chanexist(arg[0]):
+						self.query("delete from channels where channel = '{0}'".format(arg[0]))
+						self.query("delete from channelinfo where name = '{0}'".format(arg[0]))
+						self.send(":{0} PART {1} :Channel {1} has been suspended.".format(self.bot, arg[0]))
 					for user in self.userlist(arg[0]):
 						if not self.isoper(user):
 							self.kick(arg[0], user, "Suspended: "+' '.join(arg[1:]))
