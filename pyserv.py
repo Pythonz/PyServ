@@ -379,7 +379,7 @@ class Services:
 								if smodes.find("+") != -1:
 									smodes = smodes.split("+")[0]
 								if smodes.find("B") != -1:
-									self.send(":%s CHGHOST %s %s" % (self.bot, data.split()[0][1:], self.gethost(data.split()[0][1:]))
+									self.send(":%s CHGHOST %s %s" % (self.bot, data.split()[0][1:], self.gethost(data.split()[0][1:])))
 									self.query("delete from bots where uid = '%s'" % data.split()[0][1:])
 						if data.split()[1] == "UID":
 							self.query("delete from temp_nick where nick = '%s'" % data.split()[2])

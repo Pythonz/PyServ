@@ -28,3 +28,5 @@ DROP TABLE IF EXISTS `ipchan`;
 CREATE TABLE IF NOT EXISTS `ipchan` (ip text, channel text);
 DROP TABLE IF EXISTS `challenges`;
 CREATE TABLE IF NOT EXISTS `challenges` (hostmask text, challenge text);
+DROP TABLE IF EXISTS `bots`;
+CREATE TABLE IF NOT EXISTS `bots` (uid text);

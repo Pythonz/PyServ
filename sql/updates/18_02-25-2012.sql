@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS `bots`;
+CREATE TABLE IF NOT EXISTS `bots` (uid text);
