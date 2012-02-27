@@ -27,3 +27,6 @@ class op(Command):
 				else: self.msg(source, "Denied.")
 			else: self.msg(source, "Invalid channel")
 		else: self.msg(source, "Syntax: OP <#channel> [<nick> [<nick>]]")
+
+	def onFantasy(self, uid, chan, args):
+		self.onCommand(uid, chan + " " + args)

@@ -118,3 +118,6 @@ class chanlev(Command):
 				else: self.msg(source, "Denied.")
 			else: self.msg(source, "Invalid channel")
 		else: self.msg(source, "Syntax: CHANLEV <#channel> [<user> [<flag>]]")
+
+	def onFantasy(self, uid, chan, args):
+		self.onCommand(uid, chan + " " + args)

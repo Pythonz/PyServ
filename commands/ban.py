@@ -25,4 +25,6 @@ class ban(Command):
 				else: self.msg(uid, "Invalid channel: "+arg[0])
 			else: self.msg(uid, "Syntax: BAN <#channel> <hostmask>")
 		except pyserv.error,e: pass
-		
+
+	def onFantasy(self, uid, chan, args):
+		self.onCommand(uid, chan + " " + args)

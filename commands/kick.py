@@ -30,3 +30,6 @@ class kick(Command):
 				else: self.msg(source, "Denied.")
 			else: self.msg(source, "Invalid channel")
 		else: self.msg(source, "Syntax: KICK <#channel> <user> [,<user>] [reason]")
+
+	def onFantasy(self, uid, chan, args):
+		self.onCommand(uid, chan + " " + args)

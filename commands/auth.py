@@ -27,6 +27,3 @@ class auth(Command):
 				self.msg(source, "Username or password incorrect.")
 		else:
 			self.msg(source, "Syntax: AUTH <username> <password>")
-
-	def onFantasy(self, uid, chan, args):
-		self.msg(uid, "WHAT THE HELL ARE YOU DOING?! \27NEVER\27 SEND AUTH WITH FANTASY!")

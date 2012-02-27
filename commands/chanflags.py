@@ -54,3 +54,6 @@ class chanflags(Command):
 				self.msg(source, "Invalid channel '{0}'".format(arg[0]))
 		else:
 			self.msg(source, "Syntax: CHANFLAGS <#channel> [<flags>]")
+
+	def onFantasy(self, uid, chan, args):
+		self.onCommand(uid, chan + " " + args)

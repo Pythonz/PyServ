@@ -28,3 +28,6 @@ class chanmode(Command):
 				self.msg(source, "Invalid channel '{0}'".format(arg[0]))
 		else:
 			self.msg(source, "Syntax: CHANMODE <#channel> [<modes>]")
+
+	def onFantasy(self, uid, chan, args):
+		self.onCommand(uid, chan + " " + args)

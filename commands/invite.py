@@ -13,3 +13,6 @@ class invite(Command):
 				else: self.msg(source, "Denied.")
 			else: self.msg(source, "Invalid channel")
 		else: self.msg(source, "Syntax: INVITE <#channel>")
+
+	def onFantasy(self, uid, chan, args):
+		self.onCommand(uid, chan + " " + args)

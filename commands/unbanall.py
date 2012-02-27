@@ -16,3 +16,6 @@ class unbanall(Command):
 				else: self.msg(uid, "Denied.")
 			else: self.msg(uid, "Invalid channel: "+arg[0])
 		else: self.msg(uid, "Syntax: UNBANALL <#channel>")
+
+	def onFantasy(self, uid, chan, args):
+		self.onCommand(uid, chan + " " + args)
