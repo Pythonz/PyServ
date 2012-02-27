@@ -23,7 +23,7 @@ class halfop(Command):
 							self.mode(arg[0], "+h "+user)
 							if self.chanflag("b", arg[0]):
 								uflag = self.getflag(user, arg[0])
-								if uflag != "h" and uflag != "o" and uflag != "a" and uflag != "q" and uflag != "n"::
+								if uflag != "h" and uflag != "o" and uflag != "a" and uflag != "q" and uflag != "n":
 									self.mode(arg[0], "-h "+user)
 					self.msg(source, "Done.")
 				else: self.msg(source, "Denied.")

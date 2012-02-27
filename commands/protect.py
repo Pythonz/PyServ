@@ -23,7 +23,7 @@ class protect(Command):
 							self.mode(arg[0], "+a "+user)
 							if self.chanflag("b", arg[0]):
 								uflag = self.getflag(user, arg[0])
-								if uflag != "a" and uflag != "q" and uflag != "n"::
+								if uflag != "a" and uflag != "q" and uflag != "n":
 									self.mode(arg[0], "-a "+user)
 					self.msg(source, "Done.")
 				else: self.msg(source, "Denied.")
