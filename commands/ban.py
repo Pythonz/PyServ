@@ -26,7 +26,10 @@ class ban(Command):
 								if self.nick(user).lower() == arg[1].lower():
 									uentry = True
 									entry = False
-									ban = "*!*"+self.userhost(user).split("@")[0]+"@*."+'.'.join(self.gethost(user).split(".")[1:])
+									if self.gethost(user) == self.getip(user):
+										ban = "*!*"+self.userhost(user).split("@")[0]+"@"+'.'.join(self.getip(user).split(".")[:-1])+".*"
+									else:
+										ban = "*!*"+self.userhost(user).split("@")[0]+"@*."+'.'.join(self.gethost(user).split(".")[1:])
 									for data in self.query("select * from banlist where ban = '%s' and channel='%s'" % (ban, arg[0])):
 										entry = True
 									if not entry:
