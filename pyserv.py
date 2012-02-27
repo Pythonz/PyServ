@@ -163,7 +163,7 @@ class Services:
 									iscmd = False
 									fuid = data.split()[0][1:]
 									fchan = data.split()[2]
-									cmd = data.split()[3][1:]
+									cmd = data.split()[3][2:]
 									if len(data.split()) > 4:
 										args = ' '.join(data.split()[4:]).replace("'", "\\'")
 									if os.access("commands/"+cmd.lower()+".py", os.F_OK):
