@@ -29,4 +29,4 @@ class auth(Command):
 			self.msg(source, "Syntax: AUTH <username> <password>")
 
 	def onFantasy(self, uid, chan, args):
-		self.msg(uid, "WHAT THE HELL ARE YOU DOING?! \0027NEVER\0027 SEND AUTH WITH FANTASY!")
+		self.msg(uid, "WHAT THE HELL ARE YOU DOING?! \027NEVER\027 SEND AUTH WITH FANTASY!")
