@@ -24,6 +24,8 @@ class chanflags(Command):
 		desc.append("Bitchmode")
 		mode.append("s")
 		desc.append("Spamscan, prevents channel flooding")
+		mode.append("f")
+		desc.append("Fantasy commands")
 		arg = args.split()
 		if len(arg) == 1:
 			if arg[0].startswith("#"):

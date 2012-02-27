@@ -131,33 +131,70 @@ class Services:
 						if data.split()[1] == "PRIVMSG":
 							if data.split()[2] == self.bot:
 								iscmd = False
-								for cmd in dir(commands):
-									if not cmd.startswith("__") and not cmd.endswith("__") and os.access("commands/"+cmd+".py", os.F_OK) and cmd.lower() == data.split()[3][1:].lower():
+								cmd == data.split()[3][1:]
+								if os.access("commands/"+cmd.lower(), os.F_OK):
+									iscmd = True
+									exec("oper = commands.%s.%s().oper" % (cmd, cmd))
+									if oper == 0:
+										exec("cmd_auth = commands.%s.%s().nauth" % (cmd, cmd))
+										if not cmd_auth:
+											if len(data.split()) == 4:
+												exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', ''))" % (cmd.lower(), cmd.lower(), data.split()[0][1:]))
+											if len(data.split()) > 4:
+												exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', '%s'))" % (cmd.lower(), cmd.lower(), data.split()[0][1:], ' '.join(data.split()[4:]).replace("'", "\\'")))
+										if cmd_auth:
+											if self.auth(data.split()[0][1:]):
+												if len(data.split()) == 4:
+													exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', ''))" % (cmd.lower(), cmd.lower(), data.split()[0][1:]))
+												if len(data.split()) > 4:
+													exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', '%s'))" % (cmd.lower(), cmd.lower(), data.split()[0][1:], ' '.join(data.split()[4:]).replace("'", "\\'")))
+											else: self.msg(data.split()[0][1:], "Unknown command {0}. Please try HELP for more information.".format(cmd.upper()))
+									if oper == 1:
+										if self.isoper(data.split()[0][1:]):
+											if len(data.split()) == 4:
+												exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', ''))" % (cmd.lower(), cmd.lower(), data.split()[0][1:]))
+											if len(data.split()) > 4:
+												exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', '%s'))" % (cmd.lower(), cmd.lower(), data.split()[0][1:], ' '.join(data.split()[4:]).replace("'", "\\'")))
+										else: self.msg(data.split()[0][1:], "You do not have sufficient privileges to use '{0}'".format(data.split()[3][1:].upper()))
+								if not iscmd:
+									self.message(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
+							if data.split()[2].startswith("#") and self.chanflag("f", data.split()[2]):
+								if data.split()[3][1] == "!":
+									iscmd = False
+									fuid = data.split()[0][1:]
+									fchan = data.split()[2]
+									cmd = data.split()[3][1:]
+									if len(data.split()) > 4:
+										args = ' '.join(data.split()[4:]).replace("'", "\\'")
+									if os.access("commands/"+cmd.lower(), os.F_OK):
 										iscmd = True
 										exec("oper = commands.%s.%s().oper" % (cmd, cmd))
 										if oper == 0:
 											exec("cmd_auth = commands.%s.%s().nauth" % (cmd, cmd))
 											if not cmd_auth:
 												if len(data.split()) == 4:
-													exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', ''))" % (cmd, cmd, data.split()[0][1:]))
+													exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', ''))" % (cmd.lower(), cmd.lower(), fuid, fchan))
 												if len(data.split()) > 4:
-													exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', '%s'))" % (cmd, cmd, data.split()[0][1:], ' '.join(data.split()[4:]).replace("'", "\\'")))
+													exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', '%s'))" % (cmd.lower(), cmd.lower(), fuid, fchan, args))
 											if cmd_auth:
-												if self.auth(data.split()[0][1:]):
+												if self.auth(fuid):
 													if len(data.split()) == 4:
-														exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', ''))" % (cmd, cmd, data.split()[0][1:]))
+														exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', ''))" % (cmd.lower(), cmd.lower(), fuid, fchan))
 													if len(data.split()) > 4:
-														exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', '%s'))" % (cmd, cmd, data.split()[0][1:], ' '.join(data.split()[4:]).replace("'", "\\'")))
-												else: self.msg(data.split()[0][1:], "Unknown command {0}. Please try HELP for more information.".format(cmd.upper()))
+														exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', '%s'))" % (cmd.lower(), cmd.lower(), fuid, fchan, args))
+												else: self.msg(fuid, "Unknown command {0}. Please try HELP for more information.".format(cmd.upper()))
 										if oper == 1:
-											if self.isoper(data.split()[0][1:]):
+											if self.isoper(fuid):
 												if len(data.split()) == 4:
-													exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', ''))" % (cmd, cmd, data.split()[0][1:]))
+													exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', ''))" % (cmd.lower(), cmd.lower(), fuid, fchan))
 												if len(data.split()) > 4:
-													exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', '%s'))" % (cmd, cmd, data.split()[0][1:], ' '.join(data.split()[4:]).replace("'", "\\'")))
-											else: self.msg(data.split()[0][1:], "You do not have sufficient privileges to use '{0}'".format(data.split()[3][1:].upper()))
-								if not iscmd:
-									self.message(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
+													exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', '%s'))" % (cmd.lower(), cmd.lower(), fuid, fchan, args))
+											else: self.msg(fuid, "You do not have sufficient privileges to use '{0}'".format(cmd.upper()))
+									if not iscmd:
+										if len(data.split()) == 4:
+											self.message(fuid, cmd)
+										if len(data.split()) > 4:
+											self.message(fuid, cmd + " " + args)
 							if data.split()[2].startswith("#") and self.chanflag("l", data.split()[2]):
 								self.log(data.split()[0][1:], "privmsg", data.split()[2], ' '.join(data.split()[3:]))
 							if self.chanexist(data.split()[2]):
@@ -996,6 +1033,9 @@ class Command:
 		self.bot_real = config.get("BOT", "real")
 
 	def onCommand(self, uid, arguments):
+		pass
+
+	def onFantasy(self, uid, channel, arguments):
 		pass
 
 	def query(self, string):
