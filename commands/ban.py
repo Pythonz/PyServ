@@ -27,7 +27,10 @@ class ban(Command):
 									uentry = True
 									entry = False
 									if self.gethost(user) == self.getip(user):
-										ban = "*!*"+self.userhost(user).split("@")[0]+"@"+'.'.join(self.getip(user).split(".")[:-1])+".*"
+										if self.getip(user).find(":") != -1:
+											ban = "*!*"+self.userhost(user).split("@")[0]+"@*:"+':'.join(self.getip(user).split(":")[1:])
+										else:
+											ban = "*!*"+self.userhost(user).split("@")[0]+"@"+'.'.join(self.getip(user).split(".")[:-1])+".*"
 									else:
 										ban = "*!*"+self.userhost(user).split("@")[0]+"@*."+'.'.join(self.gethost(user).split(".")[1:])
 									for data in self.query("select * from banlist where ban = '%s' and channel='%s'" % (ban, arg[0])):
