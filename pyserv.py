@@ -929,6 +929,11 @@ class Services:
 
 	def enforceban(self, channel, target):
 		for user in self.userlist(channel):
+			if self.isbot(user):
+				crypthost = ''.join([char for char in self.encode(user) if char.isalnum()])+".bots.gateway."+'.'.join(self.services_name.split(".")[-2:])
+				if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, target):
+					self.mode(channel, "+b "+target)
+					self.kick(channel, user, "Banned.")
 			for hostmask in self.hostmask(user):
 				if fnmatch.fnmatch(hostmask, target):
 					self.mode(channel, "+b "+target)
@@ -937,6 +942,11 @@ class Services:
 	def enforcebans(self, channel):
 		for data in self.query("select ban from banlist where channel = '%s'" % channel):
 			for user in self.userlist(channel):
+				if self.isbot(user):
+					crypthost = ''.join([char for char in self.encode(user) if char.isalnum()])+".bots.gateway."+'.'.join(self.services_name.split(".")[-2:])
+					if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, ban):
+						self.mode(channel, "+b "+data["ban"])
+						self.kick(channel, user, "Banned.")
 				for hostmask in self.hostmask(user):
 					if fnmatch.fnmatch(hostmask, data["ban"]):
 						self.mode(channel, "+b "+data["ban"])
@@ -1375,6 +1385,11 @@ class Command:
 
 	def enforceban(self, channel, target):
 		for user in self.userlist(channel):
+			if self.isbot(user):
+				crypthost = ''.join([char for char in self.encode(user) if char.isalnum()])+".bots.gateway."+'.'.join(self.services_name.split(".")[-2:])
+				if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, target):
+					self.mode(channel, "+b "+target)
+					self.kick(channel, user, "Banned.")
 			for hostmask in self.hostmask(user):
 				if fnmatch.fnmatch(hostmask, target):
 					self.mode(channel, "+b "+target)
@@ -1383,6 +1398,11 @@ class Command:
 	def enforcebans(self, channel):
 		for data in self.query("select ban from banlist where channel = '%s'" % channel):
 			for user in self.userlist(channel):
+				if self.isbot(user):
+					crypthost = ''.join([char for char in self.encode(user) if char.isalnum()])+".bots.gateway."+'.'.join(self.services_name.split(".")[-2:])
+					if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, ban):
+						self.mode(channel, "+b "+data["ban"])
+						self.kick(channel, user, "Banned.")
 				for hostmask in self.hostmask(user):
 					if fnmatch.fnmatch(hostmask, data["ban"]):
 						self.mode(channel, "+b "+data["ban"])
