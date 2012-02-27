@@ -944,7 +944,7 @@ class Services:
 			for user in self.userlist(channel):
 				if self.isbot(user):
 					crypthost = ''.join([char for char in self.encode(user) if char.isalnum()])+".bots.gateway."+'.'.join(self.services_name.split(".")[-2:])
-					if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, ban):
+					if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, data["ban"]):
 						self.mode(channel, "+b "+data["ban"])
 						self.kick(channel, user, "Banned.")
 				for hostmask in self.hostmask(user):
@@ -1400,7 +1400,7 @@ class Command:
 			for user in self.userlist(channel):
 				if self.isbot(user):
 					crypthost = ''.join([char for char in self.encode(user) if char.isalnum()])+".bots.gateway."+'.'.join(self.services_name.split(".")[-2:])
-					if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, ban):
+					if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, data["ban"]):
 						self.mode(channel, "+b "+data["ban"])
 						self.kick(channel, user, "Banned.")
 				for hostmask in self.hostmask(user):
