@@ -15,4 +15,4 @@ class owner(Command):
 		else: self.msg(source, "Syntax: OWNER <#channel>")
 
 	def onFantasy(self, uid, chan, args):
-		self.onCommand(uid, chan + " " + args)
+		self.onCommand(uid, chan)
