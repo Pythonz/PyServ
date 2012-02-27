@@ -158,7 +158,7 @@ class Services:
 										else: self.msg(data.split()[0][1:], "You do not have sufficient privileges to use '{0}'".format(data.split()[3][1:].upper()))
 								if not iscmd:
 									self.message(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
-							if data.split()[2].startswith("#") and self.chanflag("f", data.split()[2]):
+							if data.split()[2].startswith("#") and self.chanflag("f", data.split()[2]) and self.chanexist(data.split()[2]):
 								if data.split()[3][1] == "!":
 									iscmd = False
 									fuid = data.split()[0][1:]
