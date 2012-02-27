@@ -1,4 +1,5 @@
 from pyserv import Command
+from fnmatch import fnmatch
 
 class devoice(Command):
 	help = "Removes voice (+v) flag from you or someone on the channel"

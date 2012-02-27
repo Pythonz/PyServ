@@ -1,4 +1,5 @@
 from pyserv import Command
+from fnmatch import fnmatch
 
 class halfop(Command):
 	help = "Sets halfop (+h) flag to you or someone on the channel"

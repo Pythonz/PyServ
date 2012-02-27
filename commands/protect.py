@@ -1,4 +1,5 @@
 from pyserv import Command
+from fnmatch import fnmatch
 
 class protect(Command):
 	help = "Sets admin (+a) flag to you or someone on the channel"

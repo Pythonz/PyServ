@@ -1,4 +1,5 @@
 from pyserv import Command
+from fnmatch import fnmatch
 
 class op(Command):
 	help = "Sets op (+o) flag to you or someone on the channel"

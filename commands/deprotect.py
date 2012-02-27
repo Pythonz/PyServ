@@ -1,4 +1,5 @@
 from pyserv import Command
+from fnmatch import fnmatch
 
 class deprotect(Command):
 	help = "Removes admin (+a) flag from you or someone on the channel"

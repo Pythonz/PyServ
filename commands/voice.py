@@ -1,4 +1,5 @@
 from pyserv import Command
+from fnmatch import fnmatch
 
 class voice(Command):
 	help = "Sets voice (+v) flag to you or someone on the channel"
