@@ -131,7 +131,7 @@ class Services:
 						if data.split()[1] == "PRIVMSG":
 							if data.split()[2] == self.bot:
 								iscmd = False
-								cmd == data.split()[3][1:]
+								cmd = data.split()[3][1:]
 								if os.access("commands/"+cmd.lower(), os.F_OK):
 									iscmd = True
 									exec("oper = commands.%s.%s().oper" % (cmd, cmd))
