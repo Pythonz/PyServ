@@ -19,7 +19,7 @@ class devoice(Command):
 				flag = self.getflag(source, arg[0])
 				if flag == "n" or flag == "q" or flag == "a" or flag == "o" or flag == "h":
 					for user in self.userlist(arg[0]):
-						if fnmatch(self.nick(user), arg[1]):
+						if fnmatch(self.nick(user).lower(), arg[1].lower()):
 							self.mode(arg[0], "-v "+user)
 							if self.chanflag("p", arg[0]):
 								uflag = self.getflag(user, arg[0])
