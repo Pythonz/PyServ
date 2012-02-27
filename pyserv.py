@@ -132,11 +132,11 @@ class Services:
 							if data.split()[2] == self.bot:
 								iscmd = False
 								cmd = data.split()[3][1:]
-								if os.access("commands/"+cmd.lower(), os.F_OK):
+								if os.access("commands/"+cmd.lower()+".py", os.F_OK):
 									iscmd = True
-									exec("oper = commands.%s.%s().oper" % (cmd, cmd))
+									exec("oper = commands.%s.%s().oper" % (cmd.lower(), cmd.lower()))
 									if oper == 0:
-										exec("cmd_auth = commands.%s.%s().nauth" % (cmd, cmd))
+										exec("cmd_auth = commands.%s.%s().nauth" % (cmd.lower(), cmd.lower()))
 										if not cmd_auth:
 											if len(data.split()) == 4:
 												exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', ''))" % (cmd.lower(), cmd.lower(), data.split()[0][1:]))
@@ -166,11 +166,11 @@ class Services:
 									cmd = data.split()[3][1:]
 									if len(data.split()) > 4:
 										args = ' '.join(data.split()[4:]).replace("'", "\\'")
-									if os.access("commands/"+cmd.lower(), os.F_OK):
+									if os.access("commands/"+cmd.lower()+".py", os.F_OK):
 										iscmd = True
-										exec("oper = commands.%s.%s().oper" % (cmd, cmd))
+										exec("oper = commands.%s.%s().oper" % (cmd.lower(), cmd.lower()))
 										if oper == 0:
-											exec("cmd_auth = commands.%s.%s().nauth" % (cmd, cmd))
+											exec("cmd_auth = commands.%s.%s().nauth" % (cmd.lower(), cmd.lower()))
 											if not cmd_auth:
 												if len(data.split()) == 4:
 													exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', ''))" % (cmd.lower(), cmd.lower(), fuid, fchan))
