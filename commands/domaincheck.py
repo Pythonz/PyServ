@@ -13,6 +13,3 @@ class domaincheck(Command):
 				self.msg(uid, line)
 			self.msg(uid, "End of check.")
 		else: self.msg(uid, "Syntax: DOMAINCHECK <domain>")
-
-	def onFantasy(self, uid, chan, args):
-		self.onCommand(uid, args)

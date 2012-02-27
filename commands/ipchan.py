@@ -34,6 +34,3 @@ class ipchan(Command):
 				self.msg(uid, "Invalid channel: "+arg[1])
 		else:
 			self.msg(uid, "Syntax: IPCHAN [<ip> [<channel>]]")
-
-	def onFantasy(self, uid, chan, args):
-		self.onCommand(uid, args)
