@@ -276,6 +276,8 @@ class Services:
 														entry = True
 													if not entry:
 														self.query("insert into banlist values ('%s','%s')" % (data.split()[2], ban))
+														if self.chanflag("e", data.split()[2]):
+															self.enforceban(data.split()[2], ban)
 														self.msg(data.split()[0][1:], "Done.")
 									else: self.mode(data.split()[2], "-{0} {1}".format("b"*len(data.split()[5:]), ' '.join(data.split()[5:])))
 									splitted = data.split()[4]
