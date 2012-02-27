@@ -20,7 +20,22 @@ class ban(Command):
 								self.msg(uid, "Done.")
 								self.enforceban(arg[0], arg[1])
 							else: self.msg(uid, arg[1]+" is already in the banlist of "+arg[0])
-						else: self.msg(uid, "Invalid hostmask: "+arg[1])
+						else:
+							uentry = False
+							for user in self.userlist(arg[0]):
+								if self.nick(user).lower() == arg[1].lower():
+									uentry = True
+									entry = False
+									ban = "*!*"+self.userhost(user).split("@")[0]+"@*."+'.'.join(self.gethost(user).split(".")[1:])
+									for data in self.query("select * from banlist where ban = '%s' and channel='%s'" % (ban, arg[0])):
+										entry = True
+									if not entry:
+										self.query("insert into banlist values ('%s', '%s')" % (arg[0], ban))
+										self.msg(uid, "Done.")
+										self.enforceban(arg[0], ban)
+									else: self.msg(uid, ban+" is already in the banlist of "+arg[0])
+							if not uentry:
+								self.msg(uid, "Can't find user "+arg[1]+" on "+arg[0]+".")
 					else: self.msg(uid, "Denied.")
 				else: self.msg(uid, "Invalid channel: "+arg[0])
 			else: self.msg(uid, "Syntax: BAN <#channel> <hostmask>")
