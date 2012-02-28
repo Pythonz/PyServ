@@ -24,4 +24,4 @@ class sauserflags(Command):
 				self.query("update users set flags = '%s' where name = '%s'" % (flags, self.auth(self.uid(arg[0]))))
 				self.msg(uid, "Done.")
 		else:
-			self.msg(uid, "Syntax: SAUSERFLAGS [<flags>]")
+			self.msg(uid, "Syntax: SAUSERFLAGS <user> [<flags>]")
