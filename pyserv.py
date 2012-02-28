@@ -522,7 +522,7 @@ class Services:
 						if cmd_auth and not cmd_oper and self.auth(source):
 							self.help(source, command, cmd_help)
 				if self.isoper(source):
-					self.msg(source, "")
+					self.msg(source, " ")
 					self.msg(source, "For operators:")
 					for command in dir(commands):
 						if not command.startswith("__") and not command.endswith("__") and not command == "commands" and os.access("commands/"+command+".py", os.F_OK):
