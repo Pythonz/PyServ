@@ -6,7 +6,7 @@ class accban(Command):
 	oper = 1
 	def onCommand(self, uid, args):
 		arg = args.split()
-		if len(arg) == 1:
+		if len(arg) == 0:
 			self.msg(uid, "Account                 Reason")
 			for data in self.query("select * from users where suspended != '0'"):
 				self.msg(uid, "  {0} {1} {2}".format(data["name"], int(13-len(data["name"])), data["suspended"]))
