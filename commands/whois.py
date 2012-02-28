@@ -23,7 +23,7 @@ class whois(Command):
 					for channel in self.query("select channel,flag from channels where user = '{0}'".format(user["name"])):
 						self.msg(source, " {0}{1}{2}".format(channel["channel"], " "*int(20-len(channel["channel"])), channel["flag"]))
 					self.msg(source, "End of list.")
-					if self.banned(user):
+					if self.banned(user["name"]):
 						if self.isoper(source):
 							self.msg(source, "--- User " + user["name"] + " is banned: " + self.banned(user["name"]) + " ---")
 						else:
