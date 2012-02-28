@@ -521,9 +521,15 @@ class Services:
 							self.help(source, command, cmd_help)
 						if cmd_auth and not cmd_oper and self.auth(source):
 							self.help(source, command, cmd_help)
-						if cmd_oper and self.isoper(source):
-							self.help(source, command, cmd_help+" \2(oper only)\2")
 				if self.isoper(source):
+					self.msg(source, "")
+					self.msg(source, "For operators:")
+					for command in dir(commands):
+						if not command.startswith("__") and not command.endswith("__") and not command == "commands" and os.access("commands/"+command+".py", os.F_OK):
+							exec("cmd_oper = commands.%s.%s().oper" % (command, command))
+							exec("cmd_help = commands.%s.%s().help" % (command, command))
+							if cmd_oper and self.isoper(source):
+								self.help(source, command, cmd_help+" \2(oper only)\2")
 					self.help(source, "RELOAD", "Reloads the config \2(oper only)\2")
 					self.help(source, "UPDATE", "Updates the services \2(oper only)\2")
 					self.help(source, "RESTART", "Restarts the services \2(oper only)\2")
