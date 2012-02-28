@@ -522,18 +522,19 @@ class Services:
 						if cmd_auth and not cmd_oper and self.auth(source):
 							self.help(source, command, cmd_help)
 				if self.isoper(source):
-					self.msg(source, " ")
+					self.msg(source)
 					self.msg(source, "For operators:")
+					self.msg(source)
 					for command in dir(commands):
 						if not command.startswith("__") and not command.endswith("__") and not command == "commands" and os.access("commands/"+command+".py", os.F_OK):
 							exec("cmd_oper = commands.%s.%s().oper" % (command, command))
 							exec("cmd_help = commands.%s.%s().help" % (command, command))
 							if cmd_oper and self.isoper(source):
-								self.help(source, command, cmd_help+" \2(oper only)\2")
-					self.help(source, "RELOAD", "Reloads the config \2(oper only)\2")
-					self.help(source, "UPDATE", "Updates the services \2(oper only)\2")
-					self.help(source, "RESTART", "Restarts the services \2(oper only)\2")
-					self.help(source, "QUIT", "Shutdowns the services \2(oper only)\2")
+								self.help(source, command, cmd_help)
+					self.help(source, "RELOAD", "Reloads the config")
+					self.help(source, "UPDATE", "Updates the services")
+					self.help(source, "RESTART", "Restarts the services")
+					self.help(source, "QUIT", "Shutdowns the services")
 				self.msg(source, "End of list.")
 			elif cmd == "reload" and self.isoper(source):
 				config.read("pyserv.conf")
@@ -697,7 +698,7 @@ class Services:
 				return True
 		return False
 
-	def msg(self, target, text):
+	def msg(self, target, text=" "):
 		if self.userflag(target, "n"):
 			self.send(":%s NOTICE %s :%s" % (self.bot, target, text))
 		else:
@@ -1156,7 +1157,7 @@ class Command:
 				return True
 		return False
 
-	def msg(self, target, text):
+	def msg(self, target, text=" "):
 		if self.userflag(target, "n"):
 			self.send(":%s NOTICE %s :%s" % (self.bot, target, text))
 		else:
