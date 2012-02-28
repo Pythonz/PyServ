@@ -51,7 +51,7 @@ class whois(Command):
 						self.msg(source, "End of list.")
 						if self.banned(user):
 							if self.isoper(source):
-								self.msg(source, "--- User " + user + " is banned: " + self.banned(arg[0]) + " ---")
+								self.msg(source, "--- User " + user + " is banned: " + self.banned(user) + " ---")
 							else:
 								self.msg(source, "--- User " + user + " is banned. ---")
 					else:
