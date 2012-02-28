@@ -638,6 +638,11 @@ class Services:
 			return str(data["name"])
 		return False
 
+	def banned(self, user):
+		for data in self.query("select * from users where name = '%s' and suspended != '0'" % user):
+			return data["suspended"]
+		return False
+
 	def isbot (self, target):
 		uid = self.uid(target)
 		for data in self.query("select uid from bots where uid = '%s'" % uid):
@@ -1098,6 +1103,11 @@ class Command:
 			return self.bot_nick
 		for data in self.query("select name from users where name = '%s'" % user):
 			return str(data["name"])
+		return False
+
+	def banned(self, user):
+		for data in self.query("select * from users where name = '%s' and suspended != '0'" % user):
+			return data["suspended"]
 		return False
 
 	def isbot (self, target):
