@@ -45,7 +45,7 @@ class challengeauth(Command):
 								if response == resp:
 									correct = True
 						else:
-							self.msg(source, "Your account have been banned from " + self.services_description + ". Reason: " + data["suspended"])
+							self.msg(uid, "Your account have been banned from " + self.services_description + ". Reason: " + data["suspended"])
 						if correct:
 							for temp in self.query("select nick from temp_nick where user = '%s'" % user):
 								self.msg(temp["nick"], "Warning: %s (%s) authed with your password." % (self.nick(uid), self.userhost(uid)))

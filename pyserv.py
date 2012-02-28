@@ -80,10 +80,11 @@ class Services:
 
 	def run(self):
 		try:
-			self.query("delete from temp_nick")
-			self.query("delete from opers")
-			self.query("delete from online")
-			self.query("delete from chanlist")
+			self.query("truncate temp_nick")
+			self.query("truncate opers")
+			self.query("truncate online")
+			self.query("truncate chanlist")
+			self.query("truncate challanges")
 			shell("rm -rf logs/*")
 			if self.status:
 				thread.start_new_thread(status,())

@@ -13,7 +13,7 @@ class requestpass(Command):
 						self.mail(data["email"], "From: %s <%s>\nTo: %s <%s>\nSubject: Lost password\nThis is an automated message, do not respond to this email!\n\nAccount: %s\nPassword: %s" % (self.services_description, self.email, data["name"], data["email"], data["name"], self.decode(data["pass"])))
 						self.msg(uid, "I've sent an email with your lost password to %s." % data["email"])
 					else:
-						self.msg(source, "Your account have been banned from " + self.services_description + ". Reason: " + data["suspended"])
+						self.msg(uid, "Your account have been banned from " + self.services_description + ". Reason: " + data["suspended"])
 				if not entry:
 					self.msg(uid, "Can't find user " + arg[0])
 			else:
