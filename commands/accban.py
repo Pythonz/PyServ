@@ -1,7 +1,7 @@
 from pyserv import Command, config
 from _mysql import escape_string
 
-class accban(Command)
+class accban(Command):
 	help = "Bans an account from " + config.get("SERVICES", "description")
 	oper = 1
 	def onCommand(self, uid, args):
