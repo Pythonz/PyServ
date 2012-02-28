@@ -26,7 +26,7 @@ class accban(Command):
 					self.msg(uid, "Can't find user " + arg[0])
 		elif len(arg) > 1:
 			if self.user(arg[0]):
-				self.query("update users set suspended = '%s'" % escape_string(' '.join(arg[1:])))
+				self.query("update users set suspended = '%s' where name = '%s'" % (escape_string(' '.join(arg[1:])), arg[0]))
 				self.msg(uid, "Done.")
 			else:
 				self.msg(uid, "Can't find user " + arg[0])
