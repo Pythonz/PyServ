@@ -25,9 +25,9 @@ class whois(Command):
 					self.msg(source, "End of list.")
 					if self.banned(user):
 						if self.isoper(source):
-							self.msg(source, "--- User " + user + " is banned: " + self.banned(user) + " ---")
+							self.msg(source, "--- User " + user["name"] + " is banned: " + self.banned(user["name"]) + " ---")
 						else:
-							self.msg(source, "--- User " + user + " is banned. ---")
+							self.msg(source, "--- User " + user["name"] + " is banned. ---")
 			else:
 				for data in self.query("select uid from online where nick = '{0}'".format(arg[0])):
 					entry = True
