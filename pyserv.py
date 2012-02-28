@@ -84,7 +84,7 @@ class Services:
 			self.query("truncate opers")
 			self.query("truncate online")
 			self.query("truncate chanlist")
-			self.query("truncate challanges")
+			self.query("truncate challenges")
 			shell("rm -rf logs/*")
 			if self.status:
 				thread.start_new_thread(status,())
