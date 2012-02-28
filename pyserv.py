@@ -525,7 +525,6 @@ class Services:
 				if self.isoper(source):
 					self.msg(source)
 					self.msg(source, "For operators:")
-					self.msg(source)
 					for command in dir(commands):
 						if not command.startswith("__") and not command.endswith("__") and not command == "commands" and os.access("commands/"+command+".py", os.F_OK):
 							exec("cmd_oper = commands.%s.%s().oper" % (command, command))
@@ -536,6 +535,7 @@ class Services:
 					self.help(source, "UPDATE", "Updates the services")
 					self.help(source, "RESTART", "Restarts the services")
 					self.help(source, "QUIT", "Shutdowns the services")
+					self.msg(source)
 				self.msg(source, "End of list.")
 			elif cmd == "reload" and self.isoper(source):
 				config.read("pyserv.conf")
