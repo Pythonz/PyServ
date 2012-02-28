@@ -29,6 +29,8 @@ class info(Command):
 					for channel in self.query("select channel,flag from channels where user = '{0}'".format(user["name"])):
 						self.msg(uid, " {0}{1}{2}".format(channel["channel"], " "*int(20-len(channel["channel"])), channel["flag"]))
 					self.msg(uid, "End of list.")
+					if self.banned(arg[0]):
+						self.msg(uid, "--- User " + arg[0] + " is banned: " + self.banned(arg[0]) + " ---")
 			else:
 				self.msg(uid, "Can't find user " + arg[0] + ".")
 		else:

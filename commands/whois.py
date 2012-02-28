@@ -23,6 +23,11 @@ class whois(Command):
 					for channel in self.query("select channel,flag from channels where user = '{0}'".format(user["name"])):
 						self.msg(source, " {0}{1}{2}".format(channel["channel"], " "*int(20-len(channel["channel"])), channel["flag"]))
 					self.msg(source, "End of list.")
+					if self.banned(user):
+						if self.isoper(source):
+							self.msg(source, "--- User " + user + " is banned: " + self.banned(arg[0]) + " ---")
+						else:
+							self.msg(source, "--- User " + user + " is banned. ---")
 			else:
 				for data in self.query("select uid from online where nick = '{0}'".format(arg[0])):
 					entry = True
@@ -44,6 +49,11 @@ class whois(Command):
 							if self.isoper(source) or self.auth(source) == user or self.getflag(source, channel["channel"]) != 0:
 								self.msg(source, " {0}{1}{2}".format(channel["channel"], " "*int(20-len(channel["channel"])), channel["flag"]))
 						self.msg(source, "End of list.")
+						if self.banned(user):
+							if self.isoper(source):
+								self.msg(source, "--- User " + user + " is banned: " + self.banned(arg[0]) + " ---")
+							else:
+								self.msg(source, "--- User " + user + " is banned. ---")
 					else:
 						self.msg(source, "User " + arg[0] + " is not authed.")
 			if not entry:
