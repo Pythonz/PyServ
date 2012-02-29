@@ -6,7 +6,10 @@ class sapart(Command):
 	def onCommand(self, uid, args):
 		arg = args.split()
 		if len(arg) == 2:
-			self.send(":"+self.bot+" SVSPART "+self.uid(arg[0])+" "+arg[1])
+			self.send(":"+self.bot+" SVSPART "+self.uid(arg[1])+" "+arg[0])
 			self.msg(uid, "Done.")
 		else:
-			self.msg(uid, "Syntax: SAPART <nick> <#channel>")
+			self.msg(uid, "Syntax: SAPART <#channel> <nick>")
+
+	def onFantasy(self, uid, channel, args):
+		self.onCommand(uid, channel + " " + args)

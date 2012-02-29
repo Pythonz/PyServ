@@ -6,7 +6,10 @@ class sajoin(Command):
 	def onCommand(self, uid, args):
 		arg = args.split()
 		if len(arg) == 2:
-			self.send(":"+self.bot+" SVSJOIN "+self.uid(arg[0])+" "+arg[1])
+			self.send(":"+self.bot+" SVSJOIN "+self.uid(arg[1])+" "+arg[2])
 			self.msg(uid, "Done.")
 		else:
-			self.msg(uid, "Syntax: SAJOIN <nick> <#channel>")
+			self.msg(uid, "Syntax: SAJOIN <#channel> <nick>")
+
+	def onFantasy(self, uid, channel, args):
+		self.onCommand(uid, channel + " " + args)

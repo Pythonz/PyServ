@@ -39,3 +39,6 @@ class suspend(Command):
 		else:
 			for data in self.query("select * from suspended"):
 				self.msg(uid, "Channel: {0} {1} Reason: {2}".format(data["channel"], " "*int(23-len(data["channel"])), data["reason"]))
+
+	def onFantasy(self, uid, channel, args):
+		self.onCommand(uid, channel + " " + args)

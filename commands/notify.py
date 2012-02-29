@@ -6,3 +6,6 @@ class notify(Command):
 	def onCommand(self, source, args):
 		self.msg("$*", "[{nick}] {message}".format(nick=self.nick(source), message=args))
 		self.msg(source, "Done.")
+
+	def onFantasy(self, uid, channel, args):
+		self.onCommand(uid, args)

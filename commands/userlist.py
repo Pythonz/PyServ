@@ -15,3 +15,6 @@ class userlist(Command):
 				else: self.msg(uid, "Channel "+arg[0]+" is not known.")
 			else: self.msg(uid, "Invalid channel: "+arg[0])
 		else: self.msg(uid, "Syntax: USERLIST <#channel>")
+
+	def onFantasy(self, uid, channel, args):
+		self.onCommand(uid, args)

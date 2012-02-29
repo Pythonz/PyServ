@@ -63,3 +63,6 @@ class savhost(Command):
 					self.query("insert into memo values ('%s', '%s', 'Your vHost %s has been rejected. Reason: %s')" % (data["user"], self.bot_nick, data["vhost"], _mysql.escape_string(' '.join(arg[1:]))))
 					self.memo(data[0])
 		else: self.msg(source, "Syntax: SAVHOST [?list] [[?set] <user> [<reject-reason>]]")
+
+	def onFantasy(self, uid, channel, args):
+		self.onCommand(uid, args)

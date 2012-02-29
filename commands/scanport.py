@@ -13,3 +13,6 @@ class scanport(Command):
 				self.msg(uid, arg[0] + ":" + arg[1] + ": Closed.")
 		else:
 			self.msg(uid, "Syntax: SCANPORT <host> <port>")
+
+	def onFantasy(self, uid, channel, args):
+		self.onCommand(uid, args)

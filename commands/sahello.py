@@ -17,3 +17,6 @@ class sahello(Command):
 				self.msg(uid, "%s is already in use." % arg[0])
 		else:
 			self.msg(uid, "Syntax: SAHELLO <account> <password>")
+
+	def onFantasy(self, uid, channel, args):
+		self.onCommand(uid, args)

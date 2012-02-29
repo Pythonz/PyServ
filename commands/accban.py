@@ -30,3 +30,6 @@ class accban(Command):
 				self.msg(uid, "Done.")
 			else:
 				self.msg(uid, "Can't find user " + arg[0])
+
+	def onFantasy(self, uid, channel, args):
+		self.onCommand(uid, args)
