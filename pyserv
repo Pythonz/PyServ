@@ -1,4 +1,5 @@
 #!/bin/sh
+ver=$(cat version)
 case $1 in
 	start)
 		if [ ! -f pyserv.pid ]; then
@@ -9,7 +10,7 @@ case $1 in
 			python pyserv.py >> /dev/null &
 			pid=$!
 			echo $pid > pyserv.pid
-			echo "PyServ started into background (PID: $pid)"
+			echo "PyServ ($ver) started into background (PID: $pid)"
 		else
 			pid=$(cat pyserv.pid)
 			status="false"
@@ -20,7 +21,7 @@ case $1 in
 				rm -f pyserv.pid
 				sh pyserv start
 			else
-				echo "PyServ is already running"
+				echo "PyServ ($ver) is already running"
 			fi
 		fi
 		;;
@@ -33,9 +34,9 @@ case $1 in
 			if [ -f pyserv.pyc ]; then
 				rm -f pyserv.pyc
 			fi
-			echo "PyServ is stopped (PID: $pid)"
+			echo "PyServ ($ver) is stopped (PID: $pid)"
 		else
-			echo "PyServ is not running"
+			echo "PyServ ($ver) is not running"
 		fi
 		;;
 	restart)
@@ -83,12 +84,12 @@ case $1 in
 	status)
 		if [ -f pyserv.pid ]; then
 			pid=$(cat pyserv.pid)
-			status="PyServ seems to be crashed"
+			status="PyServ ($ver) seems to be crashed"
 			for data in $(ps | grep $pid); do
-				status="PyServ is running"
+				status="PyServ ($ver) is running"
 			done
 		else
-			status="PyServ is not running"
+			status="PyServ ($ver) is not running"
 		fi
 		echo $status
 		;;
