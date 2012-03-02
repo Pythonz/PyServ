@@ -6,7 +6,7 @@ class Cache:
 		return None
 
 	def connect(self, ip="127.0.0.1", port=1270):
-		self.socket.connect(("127.0.0.1", 1270))
+		self.socket.connect((ip, port))
 
 	def stor(self, string, data):
 		self.socket.send("STOR " + string + " " + data + "\n")
@@ -40,6 +40,28 @@ class Cache:
 		self.socket.send("EXIS " + string + "\n")
 		recv = self.socket.recv(10).rstrip()
 		if recv == "OK":
+			return True
+		return False
+
+	def line(self, integer):
+		self.socket.send("LINE " + integer + "\n")
+		recv = self.socket.recv(10).rstrip()
+		if recv == "OK":
+			return True
+		return False
+
+	def dele(self):
+		self.socket.send("DELE\n")
+		recv = self.socket.recv(10).rstrip()
+		if recv == "OK":
+			return True
+		return False
+
+	def quit(self):
+		self.socket.send("QUIT\n")
+		recv = self.socket.recv(10).rstrip()
+		if recv == "OK":
+			self.socket.close()
 			return True
 		return False
 
