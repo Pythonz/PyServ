@@ -1,4 +1,5 @@
 from pyserv import Command
+import _mysql
 
 class memo(Command):
 	help = "Send another user a memo"
