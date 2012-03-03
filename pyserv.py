@@ -506,7 +506,11 @@ class Services:
 				args = ' '.join(text.split()[1:])
 			if cmd == "help":
 				self.msg(source, "The following commands are available to you.")
-				self.help(source, "HELP", "Shows information about all commands that are available to you")
+				if len(args) != 0:
+					if fnmatch.fnmatch("help", args.lower()):
+						self.help(source, "HELP", "Shows information about all commands that are available to you")
+				else:
+					self.help(source, "HELP", "Shows information about all commands that are available to you")
 				for command in dir(commands):
 					if command != "__init__" and os.access("commands/"+command+".py", os.F_OK):
 						exec("cmd_auth = commands.%s.%s().nauth" % (command, command))
