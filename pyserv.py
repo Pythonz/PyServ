@@ -21,7 +21,10 @@ try:
 	if not os.access("logs", os.F_OK):
 		os.mkdir("logs")
 	config = ConfigParser.RawConfigParser()
-	config.read("pyserv.conf")
+	if len(sys.argv) == 1:
+		config.read("config.cfg")
+	else
+		config.read(sys.argv[1])
 except Exception:
 	et, ev, tb = sys.exc_info()
 	print("<<ERROR>> {0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb)))
@@ -108,8 +111,7 @@ class Services:
 			while 1:
 				recv = self.con.recv(25600)
 				if not recv:
-					self.reconnect()
-					return 0
+					return 1
 				for data in recv.splitlines():
 					debug("<< %s" % data)
 					if data.rstrip() != "":
@@ -484,12 +486,6 @@ class Services:
 			et, ev, tb = sys.exc_info()
 			e = "{0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb))
 			debug("<<ERROR>> " + str(e))
-
-	def reconnect(self):
-		try:
-			self.con.close()
-		except: pass
-		self.run()
 			
 	def metadata(self, uid, string, content):
 		if string == "accountname":
@@ -1497,6 +1493,15 @@ class error(Exception):
 
 if __name__ == "__main__":
 	try:
-		Services().run()
+		while True:
+			__version__ = open("version", "r").read()
+			if len(sys.argv) == 1:
+				__config__ = "config.cfg"
+			else:
+				__config__ = sys.argv[1]
+			print("PyServ (" + __version__ + ") started (config: " + __config__ + ")")
+			Services().run()
+			print("PyServ (" + __version__ + ") stopped (config: " + __config__ + ")")
+			time.sleep(5)
 	except Exception,e: print(e)
 	except KeyboardInterrupt: print("Aborting ... STRG +C")
