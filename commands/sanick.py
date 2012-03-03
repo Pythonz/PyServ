@@ -14,3 +14,6 @@ class sanick(Command):
 				self.msg(uid, "Denied.")
 		else:
 			self.msg(uid, "Syntax: SANICK <nick> <newnick>")
+
+	def onFantasy(self, uid, chan, args):
+		self.onCommand(uid, args)

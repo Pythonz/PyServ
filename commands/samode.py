@@ -3,7 +3,7 @@ from pyserv import Command
 class samode(Command):
 	help = "Change modes on a channel where you have no rights"
 	oper = 1
-	def onCommand(self, uid. args):
+	def onCommand(self, uid, args):
 		arg = args.split()
 		if len(arg) > 1:
 			if arg[0].startswith("#"):
