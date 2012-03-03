@@ -13,7 +13,7 @@ class ipchan(Command):
 			self.msg(uid, "End of list.")
 		elif len(arg) == 1:
 			self.msg(uid, "IP forced channels:")
-			self.msg(uid, "  IP                 Channel")
+			self.msg(uid, "IP                 Channel")
 			for data in self.query("select ip,channel from ipchan where channel = '%s'" % arg[0]):
 				self.msg(uid, "  {0} {1} {2}".format(data["ip"], " "*int(15-len(data["ip"])), data["channel"]))
 			self.msg(uid, "End of list.")
