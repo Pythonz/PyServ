@@ -23,7 +23,7 @@ try:
 	config = ConfigParser.RawConfigParser()
 	if len(sys.argv) == 1:
 		config.read("config.cfg")
-	else
+	else:
 		config.read(sys.argv[1])
 except Exception:
 	et, ev, tb = sys.exc_info()
