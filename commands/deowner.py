@@ -8,7 +8,7 @@ class deowner(Command):
 		if len(arg) == 1:
 			if arg[0].startswith("#"):
 				if self.getflag(source, arg[0]) == "n" or self.getflag(source, arg[0]) == "q":
-					self.mode(arg[0], "-q {0}".format(source))
+					self.mode(arg[0], "-qo {0} {0}".format(source))
 					self.msg(source, "Done.")
 				else: self.msg(source, "Denied.")
 			else: self.msg(source, "Invalid channel")

@@ -10,7 +10,7 @@ class deprotect(Command):
 			if arg[0].startswith("#"):
 				flag = self.getflag(source, arg[0])
 				if flag == "n" or flag == "q" or flag == "a":
-					self.mode(arg[0], "-a {0}".format(source))
+					self.mode(arg[0], "-ao {0} {0}".format(source))
 					self.msg(source, "Done.")
 				else: self.msg(source, "Denied.")
 			else: self.msg(source, "Invalid channel")
