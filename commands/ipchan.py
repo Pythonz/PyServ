@@ -7,15 +7,15 @@ class ipchan(Command):
 		arg = args.split()
 		if len(arg) == 0:
 			self.msg(uid, "IP forced channels:")
-			self.msg(uid, "  IP                 Channel")
+			self.msg(uid, "IP                 Channel")
 			for data in self.query("select ip,channel from ipchan"):
-				self.msg(uid, "  {0} {1} {2}".format(data["ip"], " "*int(17-len(data["ip"])), data["channel"]))
+				self.msg(uid, "  {0} {1} {2}".format(data["ip"], " "*int(15-len(data["ip"])), data["channel"]))
 			self.msg(uid, "End of list.")
 		elif len(arg) == 1:
 			self.msg(uid, "IP forced channels:")
 			self.msg(uid, "  IP                 Channel")
 			for data in self.query("select ip,channel from ipchan where channel = '%s'" % arg[0]):
-				self.msg(uid, "  {0} {1} {2}".format(data["ip"], " "*int(17-len(data["ip"])), data["channel"]))
+				self.msg(uid, "  {0} {1} {2}".format(data["ip"], " "*int(15-len(data["ip"])), data["channel"]))
 			self.msg(uid, "End of list.")
 		elif len(arg) == 2:
 			if self.chanexist(arg[0]):
