@@ -230,7 +230,7 @@ class Services:
 							arg = data.split()
 							knick = arg[0][1:]
 							kchan = arg[2]
-							ktarget = arg[3]
+							ktarget = self.uid(arg[3])
 							kreason = ' '.join(arg[4:])[1:]
 							if ktarget == self.bot:
 								self.join(kchan)
