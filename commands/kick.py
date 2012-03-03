@@ -11,7 +11,7 @@ class kick(Command):
 				if flag == "n" or flag == "q" or flag == "a" or flag =="o"or flag =="h":
 					if arg[1].lower() != self.bot_nick.lower() and not self.isoper(self.uid(arg[1])):
 						if self.onchan(arg[0],arg[1]):
-							self.send(":{0} KICK {1} {2} :{2}".format(self.bot, arg[0], arg[1]))
+							self.kick(arg[0], arg[1])
 							self.msg(source, "Done.")
 						else: self.msg(source, arg[1]+" is not on channel "+arg[0])
 					else: self.msg(source, "Denied.")
@@ -23,7 +23,7 @@ class kick(Command):
 				if flag == "n" or flag == "q" or flag == "a" or flag =="o"or flag =="h":
 					if arg[1].lower() != self.bot_nick.lower() and not self.isoper(self.uid(arg[1])):
 						if self.onchan(arg[0],arg[1]):
-							self.send(":{0} KICK {1} {2} :{3}".format(self.bot, arg[0], arg[1], ' '.join(arg[2:])))
+							self.kick(arg[0], arg[1], ' '.join(arg[2:]))
 							self.msg(source, "Done.")
 						else: self.msg(source, arg[1]+" is not on channel "+arg[0])
 					else: self.msg(source, "Denied.")

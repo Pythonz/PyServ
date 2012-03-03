@@ -901,9 +901,10 @@ class Services:
 		return "%s seconds" % seconds
 
 	def kick(self, channel, target, reason="Requested."):
+		uid = self.uid(target)
 		if self.onchan(channel, target):
-			self.send(":{uid} KICK {channel} {target} :{reason}".format(uid=self.bot, target=target, channel=channel, reason=reason))
-			self.query("delete from chanlist where channel = '{0}' and uid = '{1}'".format(channel, target))
+			self.send(":{uid} KICK {channel} {target} :{reason}".format(uid=self.bot, target=uid, channel=channel, reason=reason))
+			self.query("delete from chanlist where channel = '{0}' and uid = '{1}'".format(channel, uid))
 
 	def userlist(self, channel):
 		uid = list()
@@ -1362,9 +1363,10 @@ class Command:
 			self.memo(content)
 
 	def kick(self, channel, target, reason="Requested."):
+		uid = self.uid(target)
 		if self.onchan(channel, target):
-			self.send(":{uid} KICK {channel} {target} :{reason}".format(uid=self.bot, target=target, channel=channel, reason=reason))
-			self.query("delete from chanlist where channel = '{0}' and uid = '{1}'".format(channel, target))
+			self.send(":{uid} KICK {channel} {target} :{reason}".format(uid=self.bot, target=uid, channel=channel, reason=reason))
+			self.query("delete from chanlist where channel = '{0}' and uid = '{1}'".format(channel, uid))
 
 	def userlist(self, channel):
 		uid = list()

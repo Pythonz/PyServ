@@ -15,7 +15,7 @@ class invite(Command):
 		elif len(arg) == 2:
 			if self.chanexist(arg[0]):
 				if self.getflag(source, arg[0]) != 0:
-					self.send(":{0} INVITE {1} {2}".format(self.bot, arg[1], arg[0]))
+					self.send(":{0} INVITE {1} {2}".format(self.bot, self.uid(arg[1]), arg[0]))
 					self.msg(source, "Done.")
 				else: self.msg(source, "Denied.")
 			else: self.msg(source, "Invalid channel: "+arg[0])
