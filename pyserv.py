@@ -309,38 +309,49 @@ class Services:
 										if splitted.find("v") != -1:
 											for user in musers:
 												flag = self.getflag(self.uid(user), mchan)
-												if not self.chanflag("v", mchan) and flag != "v" and flag != "h" and flag != "o" and flag != "a" and flag != self.bot_nick and flag != "n" and self.uid(user) != self.bot:
+												if not self.chanflag("v", mchan) and flag != "v" and flag != "h" and flag != "o" and flag != "a" and flag != "q" and flag != "n" and self.uid(user) != self.bot:
 													self.mode(mchan, "-v "+user)
 										if splitted.find("h") != -1:
 											for user in musers:
 												flag = self.getflag(self.uid(user), mchan)
-												if flag != "h" and flag != "o" and flag != "a" and flag != self.bot_nick and flag != "n" and self.uid(user) != self.bot:
+												if flag != "h" and flag != "o" and flag != "a" and flag != "q" and flag != "n" and self.uid(user) != self.bot:
 													self.mode(mchan, "-h "+user)
 										if splitted.find("o") != -1:
 											for user in musers:
 												flag = self.getflag(self.uid(user), mchan)
-												if flag != "o" and flag != "a" and flag != self.bot_nick and flag != "n" and self.uid(user) != self.bot:
+												if flag != "o" and flag != "a" and flag != "q" and flag != "n" and self.uid(user) != self.bot:
 													self.mode(mchan, "-o "+user)
 										if splitted.find("a") != -1:
 											for user in musers:
 												flag = self.getflag(self.uid(user), mchan)
 												if flag != "a" and flag != self.bot_nick and flag != "n" and self.uid(user) != self.bot:
 													self.mode(mchan, "-a "+user)
+												if flag != "o":
+													self.mode(mchan, "-o "+user)
 										if splitted.find(self.bot_nick) != -1:
 											for user in musers:
 												flag = self.getflag(self.uid(user), mchan)
-												if flag != self.bot_nick and flag != "n" and self.uid(user) != self.bot:
+												if flag != "q" and flag != "n" and self.uid(user) != self.bot:
 													self.mode(mchan, "-q "+user)
+												if flag != "o":
+													self.mode(mchan, "-o "+user)
 													
 								if self.chanflag("p", data.split()[2]):
 									for user in data.split()[5:]:
+										fm_chan = data.split()[2]
 										for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (data.split()[2], self.auth(user))):
-											if str(flag["flag"]) == "n":
-												self.mode(data.split()[2], "+q %s" % user)
-											elif str(flag["flag"]) == "Y":
-												pass
-											else:
-												self.mode(data.split()[2], "+%s %s" % (str(flag["flag"]), user))
+											if flag["flag"] == "n" or flag["flag"] == "q":
+												self.mode(fm_chan, "+qo {0} {0}".format(user))
+											elif flag["flag"] == "a":
+												self.mode(fm_chan, "+ao {0} {0}".format(user))
+											elif flag["flag"] == "o":
+												self.mode(fm_chan, "+o {0}".format(user))
+											elif flag["flag"] == "h":
+												self.mode(fm_chan, "+h {0}".format(user))
+											elif flag["flag"] == "v":
+												self.mode(fm_chan, "+v {0}".format(user))
+											elif flag["flag"] == "b":
+												self.kick(fm_chan, user, "Banned.")
 						if data.split()[1] == "JOIN":
 							juid = data.split()[0][1:]
 							jchan = data.split()[2][1:]
