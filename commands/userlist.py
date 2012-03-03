@@ -17,4 +17,4 @@ class userlist(Command):
 		else: self.msg(uid, "Syntax: USERLIST <#channel>")
 
 	def onFantasy(self, uid, channel, args):
-		self.onCommand(uid, args)
+		self.onCommand(uid, channel)
