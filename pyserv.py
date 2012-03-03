@@ -165,7 +165,7 @@ class Services:
 								if data.split()[3][1] == ".":
 									iscmd = False
 									fuid = data.split()[0][1:]
-									cmd = ""
+									cmd = "."
 									if len(data.split()[3]) > 2:
 										fchan = data.split()[2]
 										cmd = data.split()[3][2:]
