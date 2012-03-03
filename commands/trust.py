@@ -74,11 +74,11 @@ class trust(Command):
 						conns += 1
 					for nick in nicks:
 						self.msg(self.uid(nick), "Your trust has been set to '{0}'.".format(limit))
-					if conns > int(limit) and arg[0] != "0.0.0.0":
+					if conns > int(limit) and arg[0] != "0.0.0.0" and limit != 0:
 						for nick in nicks:
 							self.send(":{0} KILL {1} :G-lined".format(self.bot, nick))
 						self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.bot, arg[0], limit))
-					elif conns == int(limit) and arg[0] != "0.0.0.0":
+					elif conns == int(limit) and arg[0] != "0.0.0.0" and limit != 0:
 						for nick in nicks:
 							self.msg(nick, "Your IP is scratching the connection limit. If you need more connections please request a trust and give us a reason on #help.")
 					for username in self.query("select username from online where address = '{0}'".format(arg[0])):

@@ -469,7 +469,7 @@ class Services:
 									for nick in nicks:
 										self.send(":{0} KILL {1} :G-lined".format(self.bot, nick))
 									self.send(":{0} GLINE *@{1} 1800 :You ignored the trust rules. Run an identd before you connect again.".format(self.bot, data.split()[8]))
-							if conns > limit and data.split()[8] != "0.0.0.0":
+							if conns > limit and data.split()[8] != "0.0.0.0" and limit != 0:
 								for nick in nicks:
 									self.send(":{0} KILL {1} :G-lined".format(self.bot, nick))
 								self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.bot, data.split()[8], limit))
