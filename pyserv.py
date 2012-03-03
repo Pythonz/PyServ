@@ -164,8 +164,9 @@ class Services:
 							if data.split()[2].startswith("#") and self.chanflag("f", data.split()[2]) and self.chanexist(data.split()[2]):
 								if data.split()[3][1] == ".":
 									iscmd = False
+									fuid = data.split()[0][1:]
+									cmd = ""
 									if len(data.split()[3]) > 2:
-										fuid = data.split()[0][1:]
 										fchan = data.split()[2]
 										cmd = data.split()[3][2:]
 										if len(data.split()) > 4:
