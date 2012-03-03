@@ -21,11 +21,13 @@ class protect(Command):
 					for user in self.userlist(arg[0]):
 						for target in arg[1:]:
 							if fnmatch(self.nick(user).lower(), target.lower()):
-								self.mode(arg[0], "+a "+user)
+								self.mode(arg[0], "+ao "+user+" "+user)
 								if self.chanflag("b", arg[0]):
 									uflag = self.getflag(user, arg[0])
 									if uflag != "a" and uflag != "q" and uflag != "n":
 										self.mode(arg[0], "-a "+user)
+									if uflag != "o":
+										self.mode(arg[0], "-o "+user)
 					self.msg(source, "Done.")
 				else: self.msg(source, "Denied.")
 			else: self.msg(source, "Invalid channel")
