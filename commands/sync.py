@@ -6,3 +6,6 @@ class sync(Command):
 	def onCommand(self, source, args):
 		self.flag(source)
 		self.msg(source, "Done.")
+
+	def onFantasy(self, uid, channel, args):
+		self.onCommand(uid, args)

@@ -11,3 +11,6 @@ class setwhois(Command):
 		else:
 			self.send(":{uid} SWHOIS {target} :".format(uid=self.bot, target=source))
 			self.msg(source, "Done.")
+
+	def onFantasy(self, uid, channel, args):
+		self.onCommand(uid, args)

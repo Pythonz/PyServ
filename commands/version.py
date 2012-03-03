@@ -31,3 +31,6 @@ class version(Command):
 			self.msg(source, "  Used: {0} mb".format(psutil.phymem_usage()[2] / 1024 / 1024))
 			
 		self.msg(source, "Developed by Pythonz (https://github.com/Pythonz). Suggestions to pythonz@skyice.tk.")
+
+	def onFantasy(self, uid, channel, args):
+		self.onCommand(uid, args)
