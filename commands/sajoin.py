@@ -6,7 +6,7 @@ class sajoin(Command):
 	def onCommand(self, uid, args):
 		arg = args.split()
 		if len(arg) == 2:
-			self.send(":"+self.bot+" SVSJOIN "+self.uid(arg[1])+" "+arg[2])
+			self.send(":"+self.bot+" SVSJOIN "+self.uid(arg[1])+" "+arg[0])
 			self.msg(uid, "Done.")
 		else:
 			self.msg(uid, "Syntax: SAJOIN <#channel> <nick>")
