@@ -19,12 +19,13 @@ class voice(Command):
 				flag = self.getflag(source, arg[0])
 				if flag == "n" or flag == "q" or flag == "a" or flag == "o" or flag == "h":
 					for user in self.userlist(arg[0]):
-						if fnmatch(self.nick(user).lower(), arg[1].lower()):
-							self.mode(arg[0], "+v "+user)
-							if self.chanflag("b", arg[0]):
-								uflag = self.getflag(user, arg[0])
-								if uflag != "v" and uflag != "h" and uflag != "o" and uflag != "a" and uflag != "q" and uflag != "n":
-									self.mode(arg[0], "-v "+user)
+						for target in arg[1:]:
+							if fnmatch(self.nick(user).lower(), target.lower()):
+								self.mode(arg[0], "+v "+user)
+								if self.chanflag("b", arg[0]):
+									uflag = self.getflag(user, arg[0])
+									if uflag != "v" and uflag != "h" and uflag != "o" and uflag != "a" and uflag != "q" and uflag != "n":
+										self.mode(arg[0], "-v "+user)
 					self.msg(source, "Done.")
 				else: self.msg(source, "Denied.")
 			else: self.msg(source, "Invalid channel")

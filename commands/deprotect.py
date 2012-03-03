@@ -19,12 +19,13 @@ class deprotect(Command):
 				flag = self.getflag(source, arg[0])
 				if flag == "n" or flag == "q":
 					for user in self.userlist(arg[0]):
-						if fnmatch(self.nick(user).lower(), arg[1].lower()):
-							self.mode(arg[0], "-a "+user)
-							if self.chanflag("p", arg[0]):
-								uflag = self.getflag(user, arg[0])
-								if uflag == "a":
-									self.mode(arg[0], "+a "+user)
+						for target in arg[1:]:
+							if fnmatch(self.nick(user).lower(), target.lower()):
+								self.mode(arg[0], "-a "+user)
+								if self.chanflag("p", arg[0]):
+									uflag = self.getflag(user, arg[0])
+									if uflag == "a":
+										self.mode(arg[0], "+a "+user)
 					self.msg(source, "Done.")
 				else: self.msg(source, "Denied.")
 			else: self.msg(source, "Invalid channel")
