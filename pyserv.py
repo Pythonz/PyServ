@@ -164,35 +164,36 @@ class Services:
 							if data.split()[2].startswith("#") and self.chanflag("f", data.split()[2]) and self.chanexist(data.split()[2]):
 								if data.split()[3][1] == ".":
 									iscmd = False
-									fuid = data.split()[0][1:]
-									fchan = data.split()[2]
-									cmd = data.split()[3][2:]
-									if len(data.split()) > 4:
-										args = ' '.join(data.split()[4:]).replace("'", "\\'")
-									if os.access("commands/"+cmd.lower()+".py", os.F_OK):
-										iscmd = True
-										exec("oper = commands.%s.%s().oper" % (cmd.lower(), cmd.lower()))
-										if oper == 0:
-											exec("cmd_auth = commands.%s.%s().nauth" % (cmd.lower(), cmd.lower()))
-											if not cmd_auth:
-												if len(data.split()) == 4:
-													exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', ''))" % (cmd.lower(), cmd.lower(), fuid, fchan))
-												if len(data.split()) > 4:
-													exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', '%s'))" % (cmd.lower(), cmd.lower(), fuid, fchan, args))
-											if cmd_auth:
-												if self.auth(fuid):
+									if len(data.split()[3]) > 2:
+										fuid = data.split()[0][1:]
+										fchan = data.split()[2]
+										cmd = data.split()[3][2:]
+										if len(data.split()) > 4:
+											args = ' '.join(data.split()[4:]).replace("'", "\\'")
+										if os.access("commands/"+cmd.lower()+".py", os.F_OK):
+											iscmd = True
+											exec("oper = commands.%s.%s().oper" % (cmd.lower(), cmd.lower()))
+											if oper == 0:
+												exec("cmd_auth = commands.%s.%s().nauth" % (cmd.lower(), cmd.lower()))
+												if not cmd_auth:
 													if len(data.split()) == 4:
 														exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', ''))" % (cmd.lower(), cmd.lower(), fuid, fchan))
 													if len(data.split()) > 4:
 														exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', '%s'))" % (cmd.lower(), cmd.lower(), fuid, fchan, args))
-												else: self.msg(fuid, "Unknown command {0}. Please try HELP for more information.".format(cmd.upper()))
-										if oper == 1:
-											if self.isoper(fuid):
-												if len(data.split()) == 4:
-													exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', ''))" % (cmd.lower(), cmd.lower(), fuid, fchan))
-												if len(data.split()) > 4:
-													exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', '%s'))" % (cmd.lower(), cmd.lower(), fuid, fchan, args))
-											else: self.msg(fuid, "You do not have sufficient privileges to use '{0}'".format(cmd.upper()))
+												if cmd_auth:
+													if self.auth(fuid):
+														if len(data.split()) == 4:
+															exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', ''))" % (cmd.lower(), cmd.lower(), fuid, fchan))
+														if len(data.split()) > 4:
+															exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', '%s'))" % (cmd.lower(), cmd.lower(), fuid, fchan, args))
+													else: self.msg(fuid, "Unknown command {0}. Please try HELP for more information.".format(cmd.upper()))
+											if oper == 1:
+												if self.isoper(fuid):
+													if len(data.split()) == 4:
+														exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', ''))" % (cmd.lower(), cmd.lower(), fuid, fchan))
+													if len(data.split()) > 4:
+														exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', '%s'))" % (cmd.lower(), cmd.lower(), fuid, fchan, args))
+												else: self.msg(fuid, "You do not have sufficient privileges to use '{0}'".format(cmd.upper()))
 									if not iscmd:
 										if len(data.split()) == 4:
 											self.message(fuid, cmd)
