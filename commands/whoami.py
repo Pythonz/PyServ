@@ -19,3 +19,6 @@ class whoami(Command):
 			for channel in self.query("select channel,flag from channels where user = '{0}'".format(user["name"])):
 				self.msg(source, " {0}{1}{2}".format(channel["channel"], " "*int(20-len(channel["channel"])), channel["flag"]))
 			self.msg(source, "End of list.")
+
+	def onFantasy(self, uid, channel, args):
+		self.onCommand(uid, args)
