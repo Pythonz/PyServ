@@ -26,6 +26,8 @@ class chanflags(Command):
 		desc.append("Spamscan, prevents channel flooding")
 		mode.append("f")
 		desc.append("Fantasy commands")
+		mode.append("k")
+		desc.append("Sign kicks with Q")
 		arg = args.split()
 		if len(arg) == 1:
 			if arg[0].startswith("#"):
