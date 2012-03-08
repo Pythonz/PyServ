@@ -1129,7 +1129,7 @@ class Command:
 
 	def query(self, string):
 		self.db.query(str(string))
-		result = self.db
+		result = self.db.store_result()
 		if result:
 			results = list()
 			for data in result.fetch_row(maxrows=0, how=1):
