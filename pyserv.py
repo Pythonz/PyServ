@@ -106,7 +106,6 @@ class Services:
 			self.send(":%s BURST" % self.services_id)
 			self.send(":%s ENDBURST" % self.services_id)
 			__builtin__.con = self.con
-			__builtin__.db = self.db
 			spamscan = {}
 			_connected = False
 			while 1:
@@ -1101,7 +1100,11 @@ class Command:
 	nauth = 0
 	def __init__(self):
 		self.con = con
-		self.db = db
+		self.mysql_host = config.get("MYSQL", "host")
+		self.mysql_port = config.getint("MYSQL", "port")
+		self.mysql_name = config.get("MYSQL", "name")
+		self.mysql_user = config.get("MYSQL", "user")
+		self.mysql_passwd = config.get("MYSQL", "passwd")
 		self.server_name = config.get("SERVER", "name")
 		self.server_address = config.get("SERVER", "address")
 		self.server_port = config.get("SERVER", "port")
@@ -1128,19 +1131,23 @@ class Command:
 		pass
 
 	def query(self, string):
-		self.db.query(str(string))
-		result = self.db.store_result()
+		Smysql = _mysql.connect(host=self.mysql_host, port=self.mysql_port, db=self.mysql_name, user=self.mysql_user, passwd=self.mysql_passwd)
+		Smysql.query(str(string))
+		result = Smysql.store_result()
 		if result:
 			results = list()
 			for data in result.fetch_row(maxrows=0, how=1):
 				results.append(data)
+			Smysql.close()
 			return results
 
 	def query_row(self, string):
-		self.db.query(str(string))
-		result = self.db.store_result()
+		Smysql = _mysql.connect(host=self.mysql_host, port=self.mysql_port, db=self.mysql_name, user=self.mysql_user, passwd=self.mysql_passwd)
+		Smysql.query(str(string))
+		result = Smysql.store_result()
 		if result:
 			for data in result.fetch_row(maxrows=1, how=1):
+				Smysql.close()
 				return data
 
 	def uid (self, nick):
