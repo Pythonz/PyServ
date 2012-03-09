@@ -603,6 +603,8 @@ class Services:
 				self.debug = config.get("OTHER", "debug")
 				self.email = config.get("OTHER", "email")
 				self.regmail = config.get("OTHER", "regmail")
+				self.fantasy = config.getboolean("FANTASY", "active")
+				self.fantasy_prefix = config.get("FANTASY", "prefix")
 				reload(commands)
 				self.msg(source, "Done.")
 			elif cmd == "update" and self.isoper(source):
