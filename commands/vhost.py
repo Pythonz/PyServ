@@ -33,13 +33,13 @@ class vhost(Command):
 					self.query("insert into vhosts values ('%s','%s','0')" % (self.auth(source), arg[0]))
 					self.msg(source, "Your new vhost %s has been requested" % arg[0])
 					for data in self.query("select host,username from online where uid = '%s'" % source):
-						if not self.isbot(source):
+						if not self.gateway(source):
 							self.send(":%s CHGIDENT %s %s" % (self.bot, source, data["username"]))
 							self.send(":%s CHGHOST %s %s" % (self.bot, source, data["host"]))
 						else:
 							self.send(":%s CHGIDENT %s %s" % (self.bot, source, data["username"]))
 							crypthost = ''.join([char for char in self.encode(source) if char.isalnum()])
-							self.send(":%s CHGHOST %s %s.bots.gateway.%s" % (self.bot, source, crypthost, '.'.join(self.services_name.split(".")[-2:])))
+							self.send(":%s CHGHOST %s %s.gateway.%s" % (self.bot, source, crypthost, '.'.join(self.services_name.split(".")[-2:])))
 					for data in self.query("select uid from opers"):
 						self.msg(data["uid"], "vHost request received from %s" % self.auth(source))
 				else:
@@ -48,13 +48,13 @@ class vhost(Command):
 			self.query("delete from vhosts where user = '%s'" % self.auth(source))
 			self.msg(source, "Done.")
 			for data in self.query("select host,username from online where uid = '%s'" % source):
-				if not self.isbot(source):
+				if not self.gateway(source):
 					self.send(":%s CHGIDENT %s %s" % (self.bot, source, data["username"]))
 					self.send(":%s CHGHOST %s %s" % (self.bot, source, data["host"]))
 				else:
 					self.send(":%s CHGIDENT %s %s" % (self.bot, source, data["username"]))
 					crypthost = ''.join([char for char in self.encode(source) if char.isalnum()])
-					self.send(":%s CHGHOST %s %s.bots.gateway.%s" % (self.bot, source, crypthost, '.'.join(self.services_name.split(".")[-2:])))
+					self.send(":%s CHGHOST %s %s.gateway.%s" % (self.bot, source, crypthost, '.'.join(self.services_name.split(".")[-2:])))
 		else:
 			self.msg(source, "Syntax: VHOST <vhost>")
 

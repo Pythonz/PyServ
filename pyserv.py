@@ -249,7 +249,7 @@ class Services:
 										self.log(qchan["uid"], "quit", qchan["channel"], ' '.join(data.split()[2:])[1:])
 							self.query("delete from chanlist where uid = '{0}'".format(data.split()[0][1:]))
 							self.query("delete from temp_nick where nick = '%s'" % str(data.split()[0])[1:])
-							self.query("delete from bots where uid = '%s'" % str(data.split()[0])[1:])
+							self.query("delete from gateway where uid = '%s'" % str(data.split()[0])[1:])
 							self.query("delete from online where uid = '%s'" % str(data.split()[0])[1:])
 						if data.split()[1] == "TOPIC":
 							if len(data.split()) > 1:
@@ -476,8 +476,8 @@ class Services:
 									smodes = smodes.split("-")[0]
 								if smodes.find("B") != -1:
 									crypthost = ''.join([char for char in self.encode(data.split()[0][1:]) if char.isalnum()])
-									self.send(":%s CHGHOST %s %s.bots.gateway.%s" % (self.services_id, data.split()[0][1:], crypthost, '.'.join(self.services_name.split(".")[-2:])))
-									self.query("insert into bots values ('%s')" % data.split()[0][1:])
+									self.send(":%s CHGHOST %s %s.gateway.%s" % (self.services_id, data.split()[0][1:], crypthost, '.'.join(self.services_name.split(".")[-2:])))
+									self.query("insert into gateway values ('%s')" % data.split()[0][1:])
 							smodes = data.split()[3]
 							if smodes.find("-") != -1:
 								smodes = smodes.split("-")[1]
@@ -485,10 +485,10 @@ class Services:
 									smodes = smodes.split("+")[0]
 								if smodes.find("B") != -1:
 									self.send(":%s CHGHOST %s %s" % (self.bot, data.split()[0][1:], self.gethost(data.split()[0][1:])))
-									self.query("delete from bots where uid = '%s'" % data.split()[0][1:])
+									self.query("delete from gateway where uid = '%s'" % data.split()[0][1:])
 						if data.split()[1] == "UID":
 							self.query("delete from temp_nick where nick = '%s'" % data.split()[2])
-							self.query("delete from bots where uid = '%s'" % data.split()[2])
+							self.query("delete from gateway where uid = '%s'" % data.split()[2])
 							self.query("delete from online where uid = '%s'" % data.split()[2])
 							self.query("delete from online where nick = '%s'" % data.split()[4])
 							self.query("insert into online values ('%s','%s','%s','%s','%s')" % (data.split()[2], data.split()[4], data.split()[8], data.split()[5], data.split()[7]))
@@ -515,8 +515,8 @@ class Services:
 								self.send(":%s SVSJOIN %s %s" % (self.bot, data.split()[2], ip["channel"]))
 							if data.split()[10].find("B") != -1:
 								crypthost = ''.join([char for char in self.encode(data.split()[2]) if char.isalnum()])
-								self.send(":%s CHGHOST %s %s.bots.gateway.%s" % (self.services_id, data.split()[2], crypthost, '.'.join(self.services_name.split(".")[-2:])))
-								self.query("insert into bots values ('%s')" % data.split()[2])
+								self.send(":%s CHGHOST %s %s.gateway.%s" % (self.services_id, data.split()[2], crypthost, '.'.join(self.services_name.split(".")[-2:])))
+								self.query("insert into gateway values ('%s')" % data.split()[2])
 		except Exception:
 			et, ev, tb = sys.exc_info()
 			e = "{0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb))
@@ -707,9 +707,9 @@ class Services:
 			return data["suspended"]
 		return False
 
-	def isbot (self, target):
+	def gateway (self, target):
 		uid = self.uid(target)
-		for data in self.query("select uid from bots where uid = '%s'" % uid):
+		for data in self.query("select uid from gateway where uid = '%s'" % uid):
 			return True
 		return False
 
@@ -737,16 +737,16 @@ class Services:
 					if modes.find("-") != -1:
 						modes = modes.split("-")[0]
 					if modes.find("B") != -1:
-						if not self.isbot(target):
-							self.query("insert into bots values ('%s')" % target)
+						if not self.gateway(target):
+							self.query("insert into gateway values ('%s')" % target)
 							self.vhost(target)
 				if data["modes"].find("-") != -1:
 					modes = data["modes"].split("-")[1]
 					if modes.find("+") != -1:
 						modes.split("+")[0]
 					if modes.find("B") != -1:
-						if self.isbot(target):
-							self.query("delete from bots where uid = '%s'" % target)
+						if self.gateway(target):
+							self.query("delete from gateway where uid = '%s'" % target)
 							self.vhost(target)
 
 	def userflags(self, target):
@@ -812,12 +812,28 @@ class Services:
 			self.send(":%s JOIN %s" % (self.bot, channel))
 			self.mode(channel, "+rqo {0} {0}".format(self.bot))
 
+	def statistics(self):
+		for data in self.query("select * from statistics"):
+			return data
+
+	def killcount(self):
+		kills = self.statistics()["kills"])
+		kills += 1
+		self.query("update statistics set kills = %s" % kills)
+		return kills
+
+	def kickcount(self):
+		kicks = self.statistics()["kicks"]
+		kicks += 1
+		self.query("update statistics set kicks = %s" % kicks)
+		return kicks
+
 	def kill(self, target, reason="You're violating network rules"):
 		if target.lower() != self.bot_nick.lower() and not self.isoper(self.uid(target)):
-			self.send(":%s KILL %s :Killed (%s (%s))" % (self.bot, target, self.services_name, reason))
+			self.send(":%s KILL %s :Killed (%s (%s (#%s)))" % (self.bot, target, self.services_name, reason, self.killcount()))
 
 	def vhost(self, target):
-		if not self.isbot(target):
+		if not self.gateway(target):
 			entry = False
 			for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(target)):
 				entry = True
@@ -835,8 +851,8 @@ class Services:
 			username = self.userhost(target).split("@")[0]
 			self.send(":%s CHGIDENT %s %s" % (self.bot, target, username))
 			crypthost = ''.join([char for char in self.encode(target) if char.isalnum()])
-			self.send(":%s CHGHOST %s %s.bots.gateway.%s" % (self.services_id, target, crypthost, '.'.join(self.services_name.split(".")[-2:])))
-			self.msg(target, "Your vhost %s.bots.gateway.%s has been activated" % (crypthost, '.'.join(self.services_name.split(".")[-2:])))
+			self.send(":%s CHGHOST %s %s.gateway.%s" % (self.services_id, target, crypthost, '.'.join(self.services_name.split(".")[-2:])))
+			self.msg(target, "Your vhost %s.gateway.%s has been activated" % (crypthost, '.'.join(self.services_name.split(".")[-2:])))
 
 	def flag(self, target):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
@@ -971,7 +987,7 @@ class Services:
 	def kick(self, channel, target, reason="Requested."):
 		uid = self.uid(target)
 		if self.onchan(channel, target):
-			self.send(":{uid} KICK {channel} {target} :{reason}".format(uid=self.bot, target=uid, channel=channel, reason=reason))
+			self.send(":{uid} KICK {channel} {target} :{reason} (#{count})".format(uid=self.bot, target=uid, channel=channel, reason=reason, count=self.kickcount()))
 			self.query("delete from chanlist where channel = '{0}' and uid = '{1}'".format(channel, uid))
 
 	def userlist(self, channel):
@@ -1011,8 +1027,8 @@ class Services:
 
 	def enforceban(self, channel, target):
 		for user in self.userlist(channel):
-			if self.isbot(user):
-				crypthost = ''.join([char for char in self.encode(user) if char.isalnum()])+".bots.gateway."+'.'.join(self.services_name.split(".")[-2:])
+			if self.gateway(user):
+				crypthost = ''.join([char for char in self.encode(user) if char.isalnum()])+".gateway."+'.'.join(self.services_name.split(".")[-2:])
 				if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, target):
 					self.mode(channel, "+b "+target)
 					self.kick(channel, user, "Banned.")
@@ -1024,8 +1040,8 @@ class Services:
 	def enforcebans(self, channel):
 		for data in self.query("select ban from banlist where channel = '%s'" % channel):
 			for user in self.userlist(channel):
-				if self.isbot(user):
-					crypthost = ''.join([char for char in self.encode(user) if char.isalnum()])+".bots.gateway."+'.'.join(self.services_name.split(".")[-2:])
+				if self.gateway(user):
+					crypthost = ''.join([char for char in self.encode(user) if char.isalnum()])+".gateway."+'.'.join(self.services_name.split(".")[-2:])
 					if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, data["ban"]):
 						self.mode(channel, "+b "+data["ban"])
 						self.kick(channel, user, "Banned.")
@@ -1039,8 +1055,8 @@ class Services:
 			for ban in bans.split():
 				if fnmatch.fnmatch(ban, "*!*@*"):
 					for user in self.userlist(channel):
-						if self.isbot(user):
-							crypthost = ''.join([char for char in self.encode(user) if char.isalnum()])+".bots.gateway."+'.'.join(self.services_name.split(".")[-2:])
+						if self.gateway(user):
+							crypthost = ''.join([char for char in self.encode(user) if char.isalnum()])+".gateway."+'.'.join(self.services_name.split(".")[-2:])
 							if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, ban):
 								self.kick(channel, user, "Banned.")
 						for hostmask in self.hostmask(user):
@@ -1182,9 +1198,9 @@ class Command:
 			return data["suspended"]
 		return False
 
-	def isbot (self, target):
+	def gateway (self, target):
 		uid = self.uid(target)
-		for data in self.query("select uid from bots where uid = '%s'" % uid):
+		for data in self.query("select uid from gateway where uid = '%s'" % uid):
 			return True
 		return False
 
@@ -1209,16 +1225,16 @@ class Command:
 					if modes.find("-") != -1:
 						modes = modes.split("-")[0]
 					if modes.find("B") != -1:
-						if not self.isbot(target):
-							self.query("insert into bots values ('%s')" % target)
+						if not self.gateway(target):
+							self.query("insert into gateway values ('%s')" % target)
 							self.vhost(target)
 				if data["modes"].find("-") != -1:
 					modes = data["modes"].split("-")[1]
 					if modes.find("+") != -1:
 						modes.split("+")[0]
 					if modes.find("B") != -1:
-						if self.isbot(target):
-							self.query("delete from bots where uid = '%s'" % target)
+						if self.gateway(target):
+							self.query("delete from gateway where uid = '%s'" % target)
 							self.vhost(target)
 
 	def userflags(self, target):
@@ -1284,12 +1300,28 @@ class Command:
 			self.send(":%s JOIN %s" % (self.bot, channel))
 			self.mode(channel, "+rqo {0} {0}".format(self.bot))
 
+	def statistics(self):
+		for data in self.query("select * from statistics"):
+			return data
+
+	def killcount(self):
+		kills = self.statistics()["kills"])
+		kills += 1
+		self.query("update statistics set kills = %s" % kills)
+		return kills
+
+	def kickcount(self):
+		kicks = self.statistics()["kicks"]
+		kicks += 1
+		self.query("update statistics set kicks = %s" % kicks)
+		return kicks
+
 	def kill(self, target, reason="You're violating network rules"):
 		if target.lower() != self.bot_nick.lower() and not self.isoper(self.uid(target)):
-			self.send(":%s KILL %s :Killed (%s (%s))" % (self.bot, target, self.services_name, reason))
+			self.send(":%s KILL %s :Killed (%s (%s (#%s)))" % (self.bot, target, self.services_name, reason, self.killcount()))
 
 	def vhost(self, target):
-		if not self.isbot(target):
+		if not self.gateway(target):
 			entry = False
 			for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % self.auth(target)):
 				entry = True
@@ -1307,8 +1339,8 @@ class Command:
 			username = self.userhost(target).split("@")[0]
 			self.send(":%s CHGIDENT %s %s" % (self.bot, target, username))
 			crypthost = ''.join([char for char in self.encode(target) if char.isalnum()])
-			self.send(":%s CHGHOST %s %s.bots.gateway.%s" % (self.services_id, target, crypthost, '.'.join(self.services_name.split(".")[-2:])))
-			self.msg(target, "Your vhost %s.bots.gateway.%s has been activated" % (crypthost, '.'.join(self.services_name.split(".")[-2:])))
+			self.send(":%s CHGHOST %s %s.gateway.%s" % (self.services_id, target, crypthost, '.'.join(self.services_name.split(".")[-2:])))
+			self.msg(target, "Your vhost %s.gateway.%s has been activated" % (crypthost, '.'.join(self.services_name.split(".")[-2:])))
 
 	def flag(self, target):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
@@ -1440,7 +1472,7 @@ class Command:
 	def kick(self, channel, target, reason="Requested."):
 		uid = self.uid(target)
 		if self.onchan(channel, target):
-			self.send(":{uid} KICK {channel} {target} :{reason}".format(uid=self.bot, target=uid, channel=channel, reason=reason))
+			self.send(":{uid} KICK {channel} {target} :{reason} (#{count})".format(uid=self.bot, target=uid, channel=channel, reason=reason, count=self.kickcount()))
 			self.query("delete from chanlist where channel = '{0}' and uid = '{1}'".format(channel, uid))
 
 	def userlist(self, channel):
@@ -1480,8 +1512,8 @@ class Command:
 
 	def enforceban(self, channel, target):
 		for user in self.userlist(channel):
-			if self.isbot(user):
-				crypthost = ''.join([char for char in self.encode(user) if char.isalnum()])+".bots.gateway."+'.'.join(self.services_name.split(".")[-2:])
+			if self.gateway(user):
+				crypthost = ''.join([char for char in self.encode(user) if char.isalnum()])+".gateway."+'.'.join(self.services_name.split(".")[-2:])
 				if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, target):
 					self.mode(channel, "+b "+target)
 					self.kick(channel, user, "Banned.")
@@ -1493,8 +1525,8 @@ class Command:
 	def enforcebans(self, channel):
 		for data in self.query("select ban from banlist where channel = '%s'" % channel):
 			for user in self.userlist(channel):
-				if self.isbot(user):
-					crypthost = ''.join([char for char in self.encode(user) if char.isalnum()])+".bots.gateway."+'.'.join(self.services_name.split(".")[-2:])
+				if self.gateway(user):
+					crypthost = ''.join([char for char in self.encode(user) if char.isalnum()])+".gateway."+'.'.join(self.services_name.split(".")[-2:])
 					if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, data["ban"]):
 						self.mode(channel, "+b "+data["ban"])
 						self.kick(channel, user, "Banned.")
@@ -1508,8 +1540,8 @@ class Command:
 			for ban in bans.split():
 				if fnmatch.fnmatch(ban, "*!*@*"):
 					for user in self.userlist(channel):
-						if self.isbot(user):
-							crypthost = ''.join([char for char in self.encode(user) if char.isalnum()])+".bots.gateway."+'.'.join(self.services_name.split(".")[-2:])
+						if self.gateway(user):
+							crypthost = ''.join([char for char in self.encode(user) if char.isalnum()])+".gateway."+'.'.join(self.services_name.split(".")[-2:])
 							if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, ban):
 								self.kick(channel, user, "Banned.")
 						for hostmask in self.hostmask(user):

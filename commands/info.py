@@ -24,6 +24,7 @@ class info(Command):
 					self.msg(uid, "User modes    : {0}".format(user["modes"]))
 					self.msg(uid, "Email address : {0}".format(user["email"]))
 					self.msg(uid, "vHost         : {0}".format(self.getvhost(user["name"])))
+					self.msg(uid, "Gateway       : {0}".format(str(self.gateway(data["uid"]))))
 					self.msg(uid, "Known on following channels:")
 					self.msg(uid, "Channel              Flag")
 					for channel in self.query("select channel,flag from channels where user = '{0}'".format(user["name"])):

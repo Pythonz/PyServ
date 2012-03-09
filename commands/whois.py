@@ -18,6 +18,7 @@ class whois(Command):
 					self.msg(source, "User flags    : {0}".format(self.userflags(user["name"])))
 					self.msg(source, "Email address : {0}".format(user["email"]))
 					self.msg(source, "vHost         : {0}".format(self.getvhost(user["name"])))
+					self.msg(source, "Gateway       : {0}".format(str(self.gateway(data["uid"]))))
 					self.msg(source, "Known on following channels:")
 					self.msg(source, "Channel              Flag")
 					for channel in self.query("select channel,flag from channels where user = '{0}'".format(user["name"])):
@@ -43,6 +44,7 @@ class whois(Command):
 								self.msg(source, "User flags    : {0}".format(self.userflags(user)))
 								self.msg(source, "Email address : {0}".format(account["email"]))
 							self.msg(source, "vHost         : {0}".format(self.getvhost(user)))
+							self.msg(source, "Gateway       : {0}".format(str(self.gateway(data["uid"]))))
 							self.msg(source, "Known on following channels:")
 							self.msg(source, "Channel              Flag")
 						for channel in self.query("select channel,flag from channels where user = '{0}'".format(user)):

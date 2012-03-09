@@ -11,6 +11,7 @@ class unbanall(Command):
 				if flag == "n" or flag == "q" or flag == "a":
 					for ban in self.query("select ban from banlist where channel = '%s'" % arg[0]):
 						self.mode(arg[0], "-b "+ban["ban"])
+						self.msg(uid, " - removed '"+ban["ban"]+"'")
 					self.query("delete from banlist where channel = '%s'" % arg[0])
 					self.msg(uid, "Done.")
 				else: self.msg(uid, "Denied.")
