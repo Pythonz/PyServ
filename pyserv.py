@@ -283,7 +283,7 @@ class Services:
 														self.query("insert into banlist values ('%s','%s')" % (data.split()[2], ban))
 														self.msg(data.split()[0][1:], "Done.")
 													elif ban == "*!*@*":
-														self.msg(data.split()[2], "\001ACTION is angry about %s, because he tried to set a *!*@* ban.\001" % self.nick(data.split()[0][1:]))
+														self.msg(data.split()[2], "ACTION is angry about %s, because he tried to set a *!*@* ban." % self.nick(data.split()[0][1:]), True)
 									else: self.mode(data.split()[2], "-{0} {1}".format("b"*len(data.split()[5:]), ' '.join(data.split()[5:])))
 									splitted = data.split()[4]
 									if splitted.find("-") != -1:
@@ -767,11 +767,13 @@ class Services:
 				return True
 		return False
 
-	def msg(self, target, text=" "):
-		if self.userflag(target, "n"):
+	def msg(self, target, text=" ", action=False):
+		if self.userflag(target, "n") and not action:
 			self.send(":%s NOTICE %s :%s" % (self.bot, target, text))
-		else:
+		elif not self.userflag(target, "n") and not action:
 			self.send(":%s PRIVMSG %s :%s" % (self.bot, target, text))
+		else:
+			self.send(":%s PRIVMSG %s :\001ACTION %s\001" % (self.bot, target, text))
 
 	def mode(self, target, mode):
 		self.send(":%s SVSMODE %s %s" % (self.bot, target, mode))
@@ -1267,11 +1269,13 @@ class Command:
 				return True
 		return False
 
-	def msg(self, target, text=" "):
-		if self.userflag(target, "n"):
+	def msg(self, target, text=" ", action=False):
+		if self.userflag(target, "n") and not action:
 			self.send(":%s NOTICE %s :%s" % (self.bot, target, text))
-		else:
+		elif not self.userflag(target, "n") and not action:
 			self.send(":%s PRIVMSG %s :%s" % (self.bot, target, text))
+		else:
+			self.send(":%s PRIVMSG %s :\001ACTION %s\001" % (self.bot, target, text))
 
 	def mode(self, target, mode):
 		self.send(":%s SVSMODE %s %s" % (self.bot, target, mode))
