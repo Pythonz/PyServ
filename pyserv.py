@@ -279,9 +279,11 @@ class Services:
 													entry = False
 													for sql in self.query("select ban from banlist where ban = '%s' and channel = '%s'" % (ban, data.split()[2])):
 														entry = True
-													if not entry:
+													if not entry and ban != "*!*@*":
 														self.query("insert into banlist values ('%s','%s')" % (data.split()[2], ban))
 														self.msg(data.split()[0][1:], "Done.")
+													elif ban == "*!*@*":
+														self.msg(data.split()[2], "\001ACTION is angry about %s, because he tried to set a *!*@* ban.\001" % self.nick(data.split()[0][1:]))
 									else: self.mode(data.split()[2], "-{0} {1}".format("b"*len(data.split()[5:]), ' '.join(data.split()[5:])))
 									splitted = data.split()[4]
 									if splitted.find("-") != -1:
@@ -1028,34 +1030,36 @@ class Services:
 		return masks
 
 	def enforceban(self, channel, target):
-		for user in self.userlist(channel):
-			if self.gateway(user):
-				crypthost = ''.join([char for char in self.encode(user) if char.isalnum()])+".gateway."+'.'.join(self.services_name.split(".")[-2:])
-				if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, target):
-					self.mode(channel, "+b "+target)
-					self.kick(channel, user, "Banned.")
-			for hostmask in self.hostmask(user):
-				if fnmatch.fnmatch(hostmask, target):
-					self.mode(channel, "+b "+target)
-					self.kick(channel, user, "Banned.")
-
-	def enforcebans(self, channel):
-		for data in self.query("select ban from banlist where channel = '%s'" % channel):
+		if target != "*!*@*":
 			for user in self.userlist(channel):
 				if self.gateway(user):
 					crypthost = ''.join([char for char in self.encode(user) if char.isalnum()])+".gateway."+'.'.join(self.services_name.split(".")[-2:])
-					if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, data["ban"]):
-						self.mode(channel, "+b "+data["ban"])
+					if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, target):
+						self.mode(channel, "+b "+target)
 						self.kick(channel, user, "Banned.")
 				for hostmask in self.hostmask(user):
-					if fnmatch.fnmatch(hostmask, data["ban"]):
-						self.mode(channel, "+b "+data["ban"])
+					if fnmatch.fnmatch(hostmask, target):
+						self.mode(channel, "+b "+target)
 						self.kick(channel, user, "Banned.")
+
+	def enforcebans(self, channel):
+		for data in self.query("select ban from banlist where channel = '%s'" % channel):
+			if data["ban"] != "*!*@*":
+				for user in self.userlist(channel):
+					if self.gateway(user):
+						crypthost = ''.join([char for char in self.encode(user) if char.isalnum()])+".gateway."+'.'.join(self.services_name.split(".")[-2:])
+						if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, data["ban"]):
+							self.mode(channel, "+b "+data["ban"])
+							self.kick(channel, user, "Banned.")
+					for hostmask in self.hostmask(user):
+						if fnmatch.fnmatch(hostmask, data["ban"]):
+							self.mode(channel, "+b "+data["ban"])
+							self.kick(channel, user, "Banned.")
 
 	def checkbans(self, channel, bans):
 		if self.chanflag("e", channel):
 			for ban in bans.split():
-				if fnmatch.fnmatch(ban, "*!*@*"):
+				if fnmatch.fnmatch(ban, "*!*@*") and ban != "*!*@*":
 					for user in self.userlist(channel):
 						if self.gateway(user):
 							crypthost = ''.join([char for char in self.encode(user) if char.isalnum()])+".gateway."+'.'.join(self.services_name.split(".")[-2:])
@@ -1067,6 +1071,8 @@ class Services:
 						for ip in self.getip(user):
 							if fnmatch.fnmatch("*!*@"+ip, ban):
 								self.kick(channel, user, "Banned.")
+				elif ban == "*!*@*":
+					self.mode(channel, "-b *!*@*")
 
 	def getip(self, target):
 		uid = self.uid(target)
@@ -1521,34 +1527,35 @@ class Command:
 		return masks
 
 	def enforceban(self, channel, target):
-		for user in self.userlist(channel):
-			if self.gateway(user):
-				crypthost = ''.join([char for char in self.encode(user) if char.isalnum()])+".gateway."+'.'.join(self.services_name.split(".")[-2:])
-				if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, target):
-					self.mode(channel, "+b "+target)
-					self.kick(channel, user, "Banned.")
-			for hostmask in self.hostmask(user):
-				if fnmatch.fnmatch(hostmask, target):
-					self.mode(channel, "+b "+target)
-					self.kick(channel, user, "Banned.")
-
-	def enforcebans(self, channel):
-		for data in self.query("select ban from banlist where channel = '%s'" % channel):
+		if target != "*!*@*":
 			for user in self.userlist(channel):
 				if self.gateway(user):
 					crypthost = ''.join([char for char in self.encode(user) if char.isalnum()])+".gateway."+'.'.join(self.services_name.split(".")[-2:])
-					if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, data["ban"]):
-						self.mode(channel, "+b "+data["ban"])
+					if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, target):
+						self.mode(channel, "+b "+target)
 						self.kick(channel, user, "Banned.")
 				for hostmask in self.hostmask(user):
-					if fnmatch.fnmatch(hostmask, data["ban"]):
-						self.mode(channel, "+b "+data["ban"])
+					if fnmatch.fnmatch(hostmask, target):
+						self.mode(channel, "+b "+target)
 						self.kick(channel, user, "Banned.")
 
+	def enforcebans(self, channel):
+		for data in self.query("select ban from banlist where channel = '%s'" % channel):
+			if data["ban"] != "*!*@*":
+				for user in self.userlist(channel):
+					if self.gateway(user):
+						crypthost = ''.join([char for char in self.encode(user) if char.isalnum()])+".gateway."+'.'.join(self.services_name.split(".")[-2:])
+						if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, data["ban"]):
+							self.mode(channel, "+b "+data["ban"])
+							self.kick(channel, user, "Banned.")
+					for hostmask in self.hostmask(user):
+						if fnmatch.fnmatch(hostmask, data["ban"]):
+							self.mode(channel, "+b "+data["ban"])
+							self.kick(channel, user, "Banned.")
 	def checkbans(self, channel, bans):
 		if self.chanflag("e", channel):
 			for ban in bans.split():
-				if fnmatch.fnmatch(ban, "*!*@*"):
+				if fnmatch.fnmatch(ban, "*!*@*") and ban != "*!*@*":
 					for user in self.userlist(channel):
 						if self.gateway(user):
 							crypthost = ''.join([char for char in self.encode(user) if char.isalnum()])+".gateway."+'.'.join(self.services_name.split(".")[-2:])
@@ -1560,6 +1567,9 @@ class Command:
 						for ip in self.getip(user):
 							if fnmatch.fnmatch("*!*@"+ip, ban):
 								self.kick(channel, user, "Banned.")
+				elif ban == "*!*@*":
+					self.mode(channel, "-b *!*@*")
+
 	def unknown(self, target):
 		self.msg(target, "Unknown command "+__name__.split(".")[-1].upper()+". Please try HELP for more information.")
 

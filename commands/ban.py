@@ -11,7 +11,7 @@ class ban(Command):
 				if self.chanexist(arg[0]):
 					flag = self.getflag(uid, arg[0])
 					if flag == "n" or flag == "q" or flag == "a" or flag == "o" or flag == "h":
-						if fnmatch(arg[1], "*!*@*"):
+						if fnmatch(arg[1], "*!*@*") and arg[1] != "*!*@*":
 							entry = False
 							for data in self.query("select * from banlist where ban = '%s' and channel='%s'" % (arg[1], arg[0])):
 								entry = True
