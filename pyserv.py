@@ -167,10 +167,10 @@ class Services:
 								if self.fantasy and data.split()[3].startswith(self.fantasy_prefix):
 									iscmd = False
 									fuid = data.split()[0][1:]
-									cmd = "."
-									if len(data.split()[3]) > 2:
+									cmd = self.fantasy_prefix
+									if len(data.split()[3]) > int(1+len(self.fantasy_prefix))):
 										fchan = data.split()[2]
-										cmd = data.split()[3][2:]
+										cmd = data.split()[3][int(1+len(self.fantasy_prefix))):]
 										if len(data.split()) > 4:
 											args = ' '.join(data.split()[4:]).replace("'", "\\'")
 										if os.access("commands/"+cmd.lower()+".py", os.F_OK):
