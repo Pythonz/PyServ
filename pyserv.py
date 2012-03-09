@@ -817,7 +817,7 @@ class Services:
 			return data
 
 	def killcount(self):
-		kills = self.statistics()["kills"])
+		kills = self.statistics()["kills"]
 		kills += 1
 		self.query("update statistics set kills = %s" % kills)
 		return kills
@@ -1305,7 +1305,7 @@ class Command:
 			return data
 
 	def killcount(self):
-		kills = self.statistics()["kills"])
+		kills = self.statistics()["kills"]
 		kills += 1
 		self.query("update statistics set kills = %s" % kills)
 		return kills
