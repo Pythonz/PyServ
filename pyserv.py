@@ -164,7 +164,7 @@ class Services:
 								if not iscmd:
 									self.message(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
 							if data.split()[2].startswith("#") and self.chanflag("f", data.split()[2]) and self.chanexist(data.split()[2]):
-								if self.fantasy and data.lower().split()[3].startswith(self.fantasy_prefix.lower()):
+								if self.fantasy and data.lower().split()[3][1:].startswith(self.fantasy_prefix.lower()):
 									iscmd = False
 									fuid = data.split()[0][1:]
 									cmd = self.fantasy_prefix.lower()
