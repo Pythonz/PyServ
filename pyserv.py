@@ -1320,7 +1320,7 @@ class Command:
 
 	def kill(self, target, reason="You're violating network rules"):
 		if target.lower() != self.bot_nick.lower() and not self.isoper(self.uid(target)):
-			self.send(":%s KILL %s :Killed (%s (*.%s (#%s)))" % (self.bot, target, '.'.join(self.services_name.split(".")[-2:]), reason, str(self.killcount())))
+			self.send(":%s KILL %s :Killed (*.%s (%s (#%s)))" % (self.bot, target, '.'.join(self.services_name.split(".")[-2:]), reason, str(self.killcount())))
 
 	def vhost(self, target):
 		if not self.gateway(target):
