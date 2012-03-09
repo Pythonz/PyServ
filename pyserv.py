@@ -162,13 +162,13 @@ class Services:
 								if not iscmd:
 									self.message(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
 							if data.split()[2].startswith("#") and self.chanflag("f", data.split()[2]) and self.chanexist(data.split()[2]):
-								if data.split()[3][1:].startswith(self.fantasy()):
+								if data.split()[3][1:].startswith(self.fantasy(data.split()[2])):
 									iscmd = False
 									fuid = data.split()[0][1:]
-									cmd = self.fantasy()
-									if len(data.split()[3]) > int(1+len(self.fantasy())):
+									cmd = self.fantasy(data.split()[2])
+									if len(data.split()[3]) > int(1+len(self.fantasy(data.split()[2]))):
 										fchan = data.split()[2]
-										cmd = data.split()[3][int(1+len(self.fantasy())):]
+										cmd = data.split()[3][int(1+len(self.fantasy(fchan))):]
 										if len(data.split()) > 4:
 											args = ' '.join(data.split()[4:]).replace("'", "\\'")
 										if os.access("commands/"+cmd.lower()+".py", os.F_OK):
@@ -828,7 +828,7 @@ class Services:
 
 	def kill(self, target, reason="You're violating network rules"):
 		if target.lower() != self.bot_nick.lower() and not self.isoper(self.uid(target)):
-			self.send(":%s KILL %s :Killed (%s (%s (#%s)))" % (self.bot, target, self.services_name, reason, str(self.killcount())))
+			self.send(":%s KILL %s :Killed (*.%s (%s (#%s)))" % (self.bot, target, '.'.join(self.services_name.split(".")[-2:]), reason, str(self.killcount())))
 
 	def vhost(self, target):
 		if not self.gateway(target):
@@ -1320,7 +1320,7 @@ class Command:
 
 	def kill(self, target, reason="You're violating network rules"):
 		if target.lower() != self.bot_nick.lower() and not self.isoper(self.uid(target)):
-			self.send(":%s KILL %s :Killed (%s (%s (#%s)))" % (self.bot, target, self.services_name, reason, str(self.killcount())))
+			self.send(":%s KILL %s :Killed (%s (*.%s (#%s)))" % (self.bot, target, '.'.join(self.services_name.split(".")[-2:]), reason, str(self.killcount())))
 
 	def vhost(self, target):
 		if not self.gateway(target):
