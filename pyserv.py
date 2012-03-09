@@ -988,7 +988,7 @@ class Services:
 			if self.chanflag("c", channel):
 				self.send(":{uid} KICK {channel} {target} :{reason} (#{count})".format(uid=self.bot, target=uid, channel=channel, reason=reason, count=str(self.kickcount())))
 			else:
-				self.send(":{uid} KICK {channel} {target} :{reason})".format(uid=self.bot, target=uid, channel=channel, reason=reason))
+				self.send(":{uid} KICK {channel} {target} :{reason}".format(uid=self.bot, target=uid, channel=channel, reason=reason))
 				self.kickcount()
 			self.query("delete from chanlist where channel = '{0}' and uid = '{1}'".format(channel, uid))
 
@@ -1481,7 +1481,7 @@ class Command:
 			if self.chanflag("c", channel):
 				self.send(":{uid} KICK {channel} {target} :{reason} (#{count})".format(uid=self.bot, target=uid, channel=channel, reason=reason, count=str(self.kickcount())))
 			else:
-				self.send(":{uid} KICK {channel} {target} :{reason})".format(uid=self.bot, target=uid, channel=channel, reason=reason))
+				self.send(":{uid} KICK {channel} {target} :{reason}".format(uid=self.bot, target=uid, channel=channel, reason=reason))
 				self.kickcount()
 			self.query("delete from chanlist where channel = '{0}' and uid = '{1}'".format(channel, uid))
 
