@@ -79,8 +79,6 @@ class Services:
 		self.bot_nick = config.get("BOT", "nick").split()[0]
 		self.bot_user = config.get("BOT", "user").split()[0]
 		self.bot_real = config.get("BOT", "real")
-		self.fantasy = config.getboolean("FANTASY", "active")
-		self.fantasy_prefix = config.get("FANTASY", "prefix")
 		self.db = _mysql.connect(host=self.mysql_host, port=self.mysql_port, db=self.mysql_name, user=self.mysql_user, passwd=self.mysql_passwd)
 
 	def run(self):
@@ -164,13 +162,13 @@ class Services:
 								if not iscmd:
 									self.message(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
 							if data.split()[2].startswith("#") and self.chanflag("f", data.split()[2]) and self.chanexist(data.split()[2]):
-								if self.fantasy and data.lower().split()[3][1:].startswith(self.fantasy_prefix.lower()):
+								if data.split()[3][1:].startswith(self.fantasy()):
 									iscmd = False
 									fuid = data.split()[0][1:]
-									cmd = self.fantasy_prefix.lower()
-									if len(data.split()[3]) > int(1+len(self.fantasy_prefix)):
+									cmd = self.fantasy()
+									if len(data.split()[3]) > int(1+len(self.fantasy())):
 										fchan = data.split()[2]
-										cmd = data.split()[3][int(1+len(self.fantasy_prefix)):]
+										cmd = data.split()[3][int(1+len(self.fantasy())):]
 										if len(data.split()) > 4:
 											args = ' '.join(data.split()[4:]).replace("'", "\\'")
 										if os.access("commands/"+cmd.lower()+".py", os.F_OK):
@@ -1105,6 +1103,12 @@ class Services:
 		except socket.error:
 			return False
 
+	def fantasy(self, channel):
+		if self.chanexist(channel):
+			for data in self.query("select fantasy from channelinfo where channel = '%s'" % channel):
+				return data["fantasy"]
+		return False
+
 class Command:
 	import sys
 	import os
@@ -1143,8 +1147,6 @@ class Command:
 		self.bot_nick = config.get("BOT", "nick").split()[0]
 		self.bot_user = config.get("BOT", "user").split()[0]
 		self.bot_real = config.get("BOT", "real")
-		self.fantasy = config.getboolean("FANTASY", "active")
-		self.fantasy_prefix = config.get("FANTASY", "prefix")
 
 	def onCommand(self, uid, arguments):
 		pass
@@ -1591,6 +1593,12 @@ class Command:
 			return True
 		except socket.error:
 			return False
+
+	def fantasy(self, channel):
+		if self.chanexist(channel):
+			for data in self.query("select fantasy from channelinfo where channel = '%s'" % channel):
+				return data["fantasy"]
+		return False
 
 class error(Exception):
 	def __init__(self, value):

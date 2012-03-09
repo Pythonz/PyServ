@@ -12,7 +12,7 @@ class request(Command):
 						exists = True
 				if not exists:
 					if not self.suspended(arg[0]):
-						self.query("insert into channelinfo values ('%s', '', '', '', '', '10:5')" % arg[0])
+						self.query("insert into channelinfo values ('%s', '', '', '', '', '10:5', '!')" % arg[0])
 						self.query("insert into channels values ('%s','%s','n')" % (arg[0], self.auth(source)))
 						self.join(arg[0])
 						self.mode(arg[0], "+q {0}".format(source))
