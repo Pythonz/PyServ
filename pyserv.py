@@ -1127,6 +1127,8 @@ class Command:
 		self.bot_nick = config.get("BOT", "nick").split()[0]
 		self.bot_user = config.get("BOT", "user").split()[0]
 		self.bot_real = config.get("BOT", "real")
+		self.fantasy = config.getboolean("FANTASY", "active")
+		self.fantasy_prefix = config.get("FANTASY", "prefix")
 
 	def onCommand(self, uid, arguments):
 		pass

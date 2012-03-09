@@ -14,6 +14,8 @@ class version(Command):
 			options.append("IPv6")
 		if self.status:
 			options.append("Status")
+		if self.fantasy:
+			options.append("Fantasy")
 		self.msg(source, "PyServ {0}".format(version))
 		self.msg(source, "Hash: {0}".format(md5(open("pyserv.py","r").read()).hexdigest()))
 		if len(options) != 0:
