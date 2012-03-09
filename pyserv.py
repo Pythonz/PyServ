@@ -830,7 +830,7 @@ class Services:
 
 	def kill(self, target, reason="You're violating network rules"):
 		if target.lower() != self.bot_nick.lower() and not self.isoper(self.uid(target)):
-			self.send(":%s KILL %s :Killed (%s (%s (#%s)))" % (self.bot, target, self.services_name, reason, self.killcount()))
+			self.send(":%s KILL %s :Killed (%s (%s (#%s)))" % (self.bot, target, self.services_name, reason, str(self.killcount())))
 
 	def vhost(self, target):
 		if not self.gateway(target):
@@ -987,7 +987,7 @@ class Services:
 	def kick(self, channel, target, reason="Requested."):
 		uid = self.uid(target)
 		if self.onchan(channel, target):
-			self.send(":{uid} KICK {channel} {target} :{reason} (#{count})".format(uid=self.bot, target=uid, channel=channel, reason=reason, count=self.kickcount()))
+			self.send(":{uid} KICK {channel} {target} :{reason} (#{count})".format(uid=self.bot, target=uid, channel=channel, reason=reason, count=str(self.kickcount())))
 			self.query("delete from chanlist where channel = '{0}' and uid = '{1}'".format(channel, uid))
 
 	def userlist(self, channel):
@@ -1318,7 +1318,7 @@ class Command:
 
 	def kill(self, target, reason="You're violating network rules"):
 		if target.lower() != self.bot_nick.lower() and not self.isoper(self.uid(target)):
-			self.send(":%s KILL %s :Killed (%s (%s (#%s)))" % (self.bot, target, self.services_name, reason, self.killcount()))
+			self.send(":%s KILL %s :Killed (%s (%s (#%s)))" % (self.bot, target, self.services_name, reason, str(self.killcount())))
 
 	def vhost(self, target):
 		if not self.gateway(target):
@@ -1472,7 +1472,7 @@ class Command:
 	def kick(self, channel, target, reason="Requested."):
 		uid = self.uid(target)
 		if self.onchan(channel, target):
-			self.send(":{uid} KICK {channel} {target} :{reason} (#{count})".format(uid=self.bot, target=uid, channel=channel, reason=reason, count=self.kickcount()))
+			self.send(":{uid} KICK {channel} {target} :{reason} (#{count})".format(uid=self.bot, target=uid, channel=channel, reason=reason, count=str(self.kickcount())))
 			self.query("delete from chanlist where channel = '{0}' and uid = '{1}'".format(channel, uid))
 
 	def userlist(self, channel):
