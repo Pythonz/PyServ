@@ -1105,7 +1105,7 @@ class Services:
 
 	def fantasy(self, channel):
 		if self.chanexist(channel):
-			for data in self.query("select fantasy from channelinfo where channel = '%s'" % channel):
+			for data in self.query("select fantasy from channelinfo where name = '%s'" % channel):
 				return data["fantasy"]
 		return False
 
@@ -1596,7 +1596,7 @@ class Command:
 
 	def fantasy(self, channel):
 		if self.chanexist(channel):
-			for data in self.query("select fantasy from channelinfo where channel = '%s'" % channel):
+			for data in self.query("select fantasy from channelinfo where name = '%s'" % channel):
 				return data["fantasy"]
 		return False
 
