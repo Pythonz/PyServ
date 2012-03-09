@@ -817,13 +817,13 @@ class Services:
 			return data
 
 	def killcount(self):
-		kills = self.statistics()["kills"]
+		kills = int(self.statistics()["kills"])
 		kills += 1
 		self.query("update statistics set kills = %s" % kills)
 		return kills
 
 	def kickcount(self):
-		kicks = self.statistics()["kicks"]
+		kicks = int(self.statistics()["kicks"])
 		kicks += 1
 		self.query("update statistics set kicks = %s" % kicks)
 		return kicks
@@ -1305,13 +1305,13 @@ class Command:
 			return data
 
 	def killcount(self):
-		kills = self.statistics()["kills"]
+		kills = int(self.statistics()["kills"])
 		kills += 1
 		self.query("update statistics set kills = %s" % kills)
 		return kills
 
 	def kickcount(self):
-		kicks = self.statistics()["kicks"]
+		kicks = int(self.statistics()["kicks"])
 		kicks += 1
 		self.query("update statistics set kicks = %s" % kicks)
 		return kicks
