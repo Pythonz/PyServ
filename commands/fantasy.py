@@ -10,7 +10,7 @@ class fantasy(Command):
 				flag = self.getflag(uid, arg[0])
 				if flag == "n" or flag == "q" or flag == "a":
 					if self.chanflag("f", arg[0]):
-						self.msg(uid, "Current fantasy prefix for " + arg[0] + ":" + self.fantasy(arg[0]))
+						self.msg(uid, "Current fantasy prefix for " + arg[0] + ": " + self.fantasy(arg[0]))
 					else:
 						self.msg(uid, "Fantasy commands are disabled for " + arg[0])
 				else:
