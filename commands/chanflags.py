@@ -28,6 +28,8 @@ class chanflags(Command):
 		desc.append("Fantasy commands")
 		mode.append("k")
 		desc.append("Sign kicks with Q")
+		mode.append("c")
+		desc.append("Display count at Q-kicks")
 		arg = args.split()
 		if len(arg) == 1:
 			if arg[0].startswith("#"):

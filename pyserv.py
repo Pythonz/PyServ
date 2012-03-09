@@ -985,7 +985,11 @@ class Services:
 	def kick(self, channel, target, reason="Requested."):
 		uid = self.uid(target)
 		if self.onchan(channel, target):
-			self.send(":{uid} KICK {channel} {target} :{reason} (#{count})".format(uid=self.bot, target=uid, channel=channel, reason=reason, count=str(self.kickcount())))
+			if self.chanflag("c", channel):
+				self.send(":{uid} KICK {channel} {target} :{reason} (#{count})".format(uid=self.bot, target=uid, channel=channel, reason=reason, count=str(self.kickcount())))
+			else:
+				self.send(":{uid} KICK {channel} {target} :{reason})".format(uid=self.bot, target=uid, channel=channel, reason=reason))
+				self.kickcount()
 			self.query("delete from chanlist where channel = '{0}' and uid = '{1}'".format(channel, uid))
 
 	def userlist(self, channel):
@@ -1474,7 +1478,11 @@ class Command:
 	def kick(self, channel, target, reason="Requested."):
 		uid = self.uid(target)
 		if self.onchan(channel, target):
-			self.send(":{uid} KICK {channel} {target} :{reason} (#{count})".format(uid=self.bot, target=uid, channel=channel, reason=reason, count=str(self.kickcount())))
+			if self.chanflag("c", channel):
+				self.send(":{uid} KICK {channel} {target} :{reason} (#{count})".format(uid=self.bot, target=uid, channel=channel, reason=reason, count=str(self.kickcount())))
+			else:
+				self.send(":{uid} KICK {channel} {target} :{reason})".format(uid=self.bot, target=uid, channel=channel, reason=reason))
+				self.kickcount()
 			self.query("delete from chanlist where channel = '{0}' and uid = '{1}'".format(channel, uid))
 
 	def userlist(self, channel):
