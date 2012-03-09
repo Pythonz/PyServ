@@ -164,13 +164,13 @@ class Services:
 								if not iscmd:
 									self.message(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
 							if data.split()[2].startswith("#") and self.chanflag("f", data.split()[2]) and self.chanexist(data.split()[2]):
-								if self.fantasy and data.split()[3].startswith(self.fantasy_prefix):
+								if self.fantasy and data.lower().split()[3].startswith(self.fantasy_prefix.lower()):
 									iscmd = False
 									fuid = data.split()[0][1:]
-									cmd = self.fantasy_prefix
-									if len(data.split()[3]) > int(1+len(self.fantasy_prefix))):
+									cmd = self.fantasy_prefix.lower()
+									if len(data.split()[3]) > int(1+len(self.fantasy_prefix)):
 										fchan = data.split()[2]
-										cmd = data.split()[3][int(1+len(self.fantasy_prefix))):]
+										cmd = data.split()[3][int(1+len(self.fantasy_prefix)):]
 										if len(data.split()) > 4:
 											args = ' '.join(data.split()[4:]).replace("'", "\\'")
 										if os.access("commands/"+cmd.lower()+".py", os.F_OK):
