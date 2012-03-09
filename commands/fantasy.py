@@ -32,3 +32,6 @@ class fantasy(Command):
 				self.msg(uid, "Invalid channel: " + arg[0])
 		else:
 			self.msg(uid, "Syntax: FANTASY <#channel> [<prefix>]")
+
+	def onFantasy(self, uid, chan, args):
+		self.onCommand(uid, chan + " " + args)
