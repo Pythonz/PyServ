@@ -79,6 +79,8 @@ class Services:
 		self.bot_nick = config.get("BOT", "nick").split()[0]
 		self.bot_user = config.get("BOT", "user").split()[0]
 		self.bot_real = config.get("BOT", "real")
+		self.fantasy = config.getboolean("FANTASY", "active")
+		self.fantasy_prefix = config.get("FANTASY", "prefix")
 		self.db = _mysql.connect(host=self.mysql_host, port=self.mysql_port, db=self.mysql_name, user=self.mysql_user, passwd=self.mysql_passwd)
 
 	def run(self):
@@ -162,7 +164,7 @@ class Services:
 								if not iscmd:
 									self.message(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
 							if data.split()[2].startswith("#") and self.chanflag("f", data.split()[2]) and self.chanexist(data.split()[2]):
-								if data.split()[3][1] == ".":
+								if self.fantasy and data.split()[3].startswith(self.fantasy_prefix):
 									iscmd = False
 									fuid = data.split()[0][1:]
 									cmd = "."

@@ -22,6 +22,10 @@ nick =
 user = 
 real = 
 
+[FANTASY]
+active = True
+prefix = !
+
 [OTHER]
 debug = 0
 email = 
