@@ -676,7 +676,7 @@ class Services:
 			et, ev, tb = sys.exc_info()
 			e = "{0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb))
 			if self.email != "":
-				self.mail("mechi.community@yahoo.de", "From: {0} <{1}>\nTo: PyServ Development <mechi.community@yahoo.de>\nSubject: Bug on {0}\n{2}".format(self.services_description, self.email, str(e)))
+				self.mail("bugs@skyice.tk", "From: {0} <{1}>\nTo: PyServ Development <bugs@skyice.tk>\nSubject: Bug on {0}\n{2}".format(self.services_description, self.email, str(e)))
 			debug("<<MSG-ERROR>> "+str(e))
 
 	def uid (self, nick):
@@ -1627,7 +1627,7 @@ class error(Exception):
 	def __str__(self):
 		try:
 			mail = smtplib.SMTP('127.0.0.1', 25)
-			mail.sendmail(self.email, ['mechi.community@yahoo.de'], str(self.value))
+			mail.sendmail(self.email, ['bugs@skyice.tk'], str(self.value))
 			mail.quit()
 		except: pass
 		finally: return repr(self.value)
