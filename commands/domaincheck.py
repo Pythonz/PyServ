@@ -9,11 +9,10 @@ class domaincheck(Command):
 			from subprocess import Popen, PIPE
 			from urllib2 import urlopen
 			self.msg(uid, "Check domain: "+arg[0])
-			domain = Popen(["whois", arg[0]], stdout=PIPE).wait()
+			domain = Popen(["whois", arg[0]], stdout=PIPE)
 			for line in domain:
 				if line != "" and line[0] != "%":
 					self.msg(uid, line)
-			self.msg(uid, "End of check.")
 		else: self.msg(uid, "Syntax: DOMAINCHECK <domain>")
 
 	def onFantasy(self, uid, channel, args):
