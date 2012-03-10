@@ -10,7 +10,11 @@ class domaincheck(Command):
 			from urllib2 import urlopen
 			self.msg(uid, "Check domain: "+arg[0])
 			if self.scanport(arg[0], 80) or self.scanport(arg[0], 443):
-				site = urlopen(arg[0])
+				if self.scanport(arg[0], 80):
+					prefix = "http"
+				else:
+					prefix = "https"
+				site = urlopen(prefix + "://" + arg[0])
 				content = site.read()
 				site.close()
 				title = content.split("<title>")[1].split("</title>")[0]
