@@ -10,7 +10,7 @@ class domaincheck(Command):
 			from urllib2 import urlopen
 			self.msg(uid, "Check domain: "+arg[0])
 			domain = Popen(["whois", arg[0]], stdout=PIPE)
-			for line in domain:
+			for line in domain.splitlines():
 				if line != "" and line[0] != "%":
 					self.msg(uid, line)
 		else: self.msg(uid, "Syntax: DOMAINCHECK <domain>")
