@@ -7,8 +7,6 @@ class domaincheck(Command):
 		arg = args.split()
 		if len(arg) == 1:
 			from subprocess import Popen, PIPE
-			from urllib2 import urlopen
-			self.msg(uid, "Check domain: "+arg[0])
 			domain = Popen(["whois", arg[0]], stdout=PIPE).stdout.read().splitlines()
 			for line in domain:
 				if line != "" and line[0] != "%":
