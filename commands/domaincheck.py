@@ -11,9 +11,11 @@ class domaincheck(Command):
 			self.msg(uid)
 			domain = Popen(["whois", arg[0]], stdout=PIPE).stdout.read().splitlines()
 			for line in domain:
-				if line != "" and line[0] != "%" and line[0] != "#" or line[0:6] == "% Error":
+				if line != "" and line[0] != "%" and line[0] != "#":
 					if line[0] == "[" and line[-1] == "]":
 						self.msg(uid)
+					self.msg(uid, line)
+				elif line.lower().find("error") != -1:
 					self.msg(uid, line)
 			self.msg(uid)
 			self.msg(uid, ".-: End of Domain-Check :-.")
