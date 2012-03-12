@@ -24,6 +24,7 @@ user =
 real = 
 
 [FAILOVER]
+active = False
 address = 
 
 [OTHER]
@@ -32,4 +33,3 @@ email =
 regmail = 1
 ipv6 = False
 ssl = False
-status = False
