@@ -1,4 +1,4 @@
-from pyserv import Command
+from pyserv import Command, config
 
 class version(Command):
 	help = "Shows version of services"
