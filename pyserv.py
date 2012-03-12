@@ -1661,5 +1661,6 @@ if __name__ == "__main__":
 					print("PyServ (" + __version__ + ") started (config: " + __config__ + ")")
 					Services().run()
 					print("PyServ (" + __version__ + ") stopped (config: " + __config__ + ")")
+			time.sleep(1)
 	except Exception,e: print(e)
 	except KeyboardInterrupt: print("Aborting ... STRG +C")
