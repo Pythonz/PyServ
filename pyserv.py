@@ -1637,7 +1637,7 @@ class error(Exception):
 		
 def failover(timeout=1, inet=socket.AF_INET, stream=socket.SOCK_STREAM):
 	try:
-		if config.get("FAILOVER", "address") != "":
+		if config.getboolean("FAILOVER", "active") and config.get("FAILOVER", "address") != "":
 			sock = socket.socket(inet, stream)
 			sock.settimeout(timeout)
 			sock.connect((config.get("FAILOVER", "address"), 5556))
