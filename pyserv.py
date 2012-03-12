@@ -1635,11 +1635,11 @@ class error(Exception):
 		except: pass
 		finally: return repr(self.value)
 		
-def failover(inet=socket.AF_INET, stream=socket.SOCK_STREAM):
+def failover(timeout=1, inet=socket.AF_INET, stream=socket.SOCK_STREAM):
 	try:
 		if config.get("FAILOVER", "address") != "":
 			sock = socket.socket(inet, stream)
-			sock.settimeout(1)
+			sock.settimeout(timeout)
 			sock.connect((config.get("FAILOVER", "address"), 5556))
 			sock.close()
 			return True
@@ -1657,9 +1657,10 @@ if __name__ == "__main__":
 			else:
 				__config__ = sys.argv[1]
 			if not failover():
-				print("PyServ (" + __version__ + ") started (config: " + __config__ + ")")
-				Services().run()
-				print("PyServ (" + __version__ + ") stopped (config: " + __config__ + ")")
+				if not failover(5):
+					print("PyServ (" + __version__ + ") started (config: " + __config__ + ")")
+					Services().run()
+					print("PyServ (" + __version__ + ") stopped (config: " + __config__ + ")")
 			time.sleep(1)
 	except Exception,e: print(e)
 	except KeyboardInterrupt: print("Aborting ... STRG +C")
