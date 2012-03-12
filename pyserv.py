@@ -48,7 +48,7 @@ def status():
 	try:
 		sock = socket.socket()
 		sock.bind((config.get("SERVICES", "address"), 5556))
-		sock.listen(1024)
+		sock.listen(1)
 		while 1:
 			client, address = sock.accept()
 		sock.close()
