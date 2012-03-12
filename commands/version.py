@@ -32,7 +32,7 @@ class version(Command):
 			self.msg(source, "  Free: {0} mb".format(psutil.phymem_usage()[1] / 1024 / 1024))
 			self.msg(source, "  Used: {0} mb".format(psutil.phymem_usage()[2] / 1024 / 1024))
 			
-		self.msg(source, "Developed by Pythonz (https://github.com/Pythonz). Suggestions to pythonz@skyice.tk.")
+		self.msg(source, "Developed by Pythonz (https://github.com/Pythonz). Suggestions to pythonz@chiruclan.de or mechi.community@yahoo.de.")
 
 	def onFantasy(self, uid, channel, args):
 		self.onCommand(uid, args)
