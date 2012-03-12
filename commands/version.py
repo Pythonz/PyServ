@@ -16,7 +16,8 @@ class version(Command):
 			options.append("IPv6")
 		if self.status:
 			options.append("Failover-Cluster")
-			self.msg(source, "Failover-IP: " + config.get("SERVICES", "address"))
+			if self.isoper(source):
+				self.msg(source, "Failover-IP: " + config.get("SERVICES", "address"))
 		if len(options) != 0:
 			self.msg(source, "Options: {0}".format(', '.join(options)))
 		if self.isoper(source):
