@@ -7,6 +7,8 @@ class version(Command):
 		file = open("version", "r")
 		version = file.read()
 		file.close()
+		self.msg(source, "PyServ {0}".format(version))
+		self.msg(source, "Hash: {0}".format(md5(open("pyserv.py","r").read()).hexdigest()))
 		options = list()
 		if self.ssl:
 			options.append("SSL")
@@ -15,8 +17,6 @@ class version(Command):
 		if self.status:
 			options.append("Failover-Cluster")
 			self.msg(source, "Failover-IP: " + config.get("SERVICES", "address"))
-		self.msg(source, "PyServ {0}".format(version))
-		self.msg(source, "Hash: {0}".format(md5(open("pyserv.py","r").read()).hexdigest()))
 		if len(options) != 0:
 			self.msg(source, "Options: {0}".format(', '.join(options)))
 		if self.isoper(source):
