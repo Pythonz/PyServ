@@ -17,8 +17,6 @@ import ssl
 import commands
 import __builtin__
 
-__builtin__._failover = False
-
 try:
 	if not os.access("logs", os.F_OK):
 		os.mkdir("logs")
@@ -125,9 +123,9 @@ class Services:
 							_connected = True
 							self.send(":%s OPERTYPE Service" % self.bot)
 							self.meta(self.bot, "accountname", self.bot_nick)
-							if _failover:
-								self.msg("$*", "I'm sorry, but the other server seems to be crashed. I'm the other Services Server from the Failover-Cluster.")
 							self.msg("$*", "Services are now back online. Have a nice day :)")
+							if self.status:
+								self.msg("$*", "I'm in a Failover-Cluster, if i crash another Server will come online.")
 							for channel in self.query("select name,modes,topic from channelinfo"):
 								self.join(str(channel["name"]))
 								if self.chanflag("m", channel["name"]):
