@@ -124,8 +124,6 @@ class Services:
 							self.send(":%s OPERTYPE Service" % self.bot)
 							self.meta(self.bot, "accountname", self.bot_nick)
 							self.msg("$*", "Services are now back online. Have a nice day :)")
-							if self.status:
-								self.msg("$*", "I'm in a Failover-Cluster, if i crash another Server will come online.")
 							for channel in self.query("select name,modes,topic from channelinfo"):
 								self.join(str(channel["name"]))
 								if self.chanflag("m", channel["name"]):
