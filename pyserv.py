@@ -1657,7 +1657,7 @@ if __name__ == "__main__":
 			else:
 				__config__ = sys.argv[1]
 			if not failover():
-				if not failover(5):
+				if not failover(10):
 					print("PyServ (" + __version__ + ") started (config: " + __config__ + ")")
 					Services().run()
 					print("PyServ (" + __version__ + ") stopped (config: " + __config__ + ")")
