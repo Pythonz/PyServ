@@ -50,7 +50,7 @@ def status():
 		sock.bind((config.get("SERVICES", "address"), 5556))
 		sock.listen(1024)
 		while 1:
-			time.sleep(1)
+			client, address = sock.accept()
 		sock.close()
 	except: pass
 
@@ -1641,6 +1641,11 @@ def failover(timeout=1, inet=socket.AF_INET, stream=socket.SOCK_STREAM):
 			sock = socket.socket(inet, stream)
 			sock.settimeout(timeout)
 			sock.connect((config.get("FAILOVER", "address"), 5556))
+			while True:
+				recv = sock.recv(1)
+				if not recv:
+					sock.close()
+					return False
 			sock.close()
 			return True
 		else:
