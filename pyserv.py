@@ -642,6 +642,7 @@ class Services:
 						self.msg(source, "Restart ...")
 						msg = "We are restarting for an update, please be patient. We are back as soon as possible."
 						self.send(":%s QUIT :%s" % (self.bot, msg))
+						self.send(":%s SQUIT %s" % (self.services_id, self.services_name))
 						self.con.close()
 						if os.access("pyserv.pid", os.F_OK): shell("sh pyserv restart")
 						else: sys.exit(0)
@@ -660,6 +661,7 @@ class Services:
 					self.send(":%s QUIT :%s" % (self.bot, msg))
 				else:
 					self.send(":%s QUIT :%s" % (self.bot, args))
+				self.send(":%s SQUIT %s" % (self.services_id, self.services_name))
 				self.con.close()
 				if os.access("pyserv.pid", os.F_OK): shell("sh pyserv restart")
 				else: sys.exit(0)
@@ -670,6 +672,7 @@ class Services:
 						self.send(":%s QUIT :%s" % (self.bot, msg))
 					else:
 						self.send(":%s QUIT :%s" % (self.bot, args))
+					self.send(":%s SQUIT %s" % (self.services_id, self.services_name))
 					self.con.close()
 					shell("sh pyserv stop")
 				else: self.msg(source, "You are running in debug mode, only restart is possible!")
