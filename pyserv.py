@@ -17,6 +17,8 @@ import ssl
 import commands
 import __builtin__
 
+__builtin__._failover = False
+
 try:
 	if not os.access("logs", os.F_OK):
 		os.mkdir("logs")
@@ -47,7 +49,7 @@ def perror(text):
 def status():
 	try:
 		sock = socket.socket()
-		sock.bind(("0.0.0.0", 5556))
+		sock.bind((config.get("SERVICES", "address"), 5556))
 		sock.listen(1024)
 		while 1:
 			time.sleep(1)
@@ -123,6 +125,8 @@ class Services:
 							_connected = True
 							self.send(":%s OPERTYPE Service" % self.bot)
 							self.meta(self.bot, "accountname", self.bot_nick)
+							if _failover:
+								self.msg("$*", "I'm sorry, but the other server seems to be crashed. I'm the other Services Server from the Failover-Cluster.")
 							self.msg("$*", "Services are now back online. Have a nice day :)")
 							for channel in self.query("select name,modes,topic from channelinfo"):
 								self.join(str(channel["name"]))
@@ -1631,6 +1635,19 @@ class error(Exception):
 			mail.quit()
 		except: pass
 		finally: return repr(self.value)
+		
+def failover(inet=socket.AF_INET, stream=socket.SOCK_STREAM):
+	try:
+		if config.get("FAILOVER", "address") != "":
+			sock = socket.socket(inet, stream)
+			sock.settimeout(1)
+			sock.connect((config.get("FAILOVER", "address"), 5556))
+			sock.close()
+			return True
+		else:
+			return False
+	except:
+		return False
 
 if __name__ == "__main__":
 	try:
@@ -1640,9 +1657,10 @@ if __name__ == "__main__":
 				__config__ = "config.cfg"
 			else:
 				__config__ = sys.argv[1]
-			print("PyServ (" + __version__ + ") started (config: " + __config__ + ")")
-			Services().run()
-			print("PyServ (" + __version__ + ") stopped (config: " + __config__ + ")")
-			time.sleep(5)
+			if not failover():
+				print("PyServ (" + __version__ + ") started (config: " + __config__ + ")")
+				Services().run()
+				print("PyServ (" + __version__ + ") stopped (config: " + __config__ + ")")
+			time.sleep(1)
 	except Exception,e: print(e)
 	except KeyboardInterrupt: print("Aborting ... STRG +C")
