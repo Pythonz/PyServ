@@ -599,7 +599,7 @@ class Services:
 					self.msg(source)
 				self.msg(source, "End of list.")
 			elif cmd == "reload" and self.isoper(source):
-				config.read("pyserv.conf")
+				config.read("config.cfg")
 				self.debug = config.get("OTHER", "debug")
 				self.email = config.get("OTHER", "email")
 				self.regmail = config.get("OTHER", "regmail")
