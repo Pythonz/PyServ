@@ -51,7 +51,7 @@ class challengeauth(Command):
 								self.msg(temp["nick"], "Warning: %s (%s) authed with your password." % (self.nick(uid), self.userhost(uid)))
 							self.query("insert into temp_nick values ('%s','%s')" % (uid, user))
 							self.msg(uid, "You are now logged in as %s" % user)
-							self.msg(uid, "Remember: NO-ONE from %s will ever ask for your password.  NEVER send your password to ANYONE except Q@%s." % (self.services_description, self.services_name))
+							self.msg(uid, "Remember: NO-ONE from %s will ever ask for your password. NEVER send your password to ANYONE except Q@%s." % (self.services_description, self.services_name))
 							self.meta(uid, "accountname", user)
 							self.usermodes(uid)
 							self.vhost(uid)

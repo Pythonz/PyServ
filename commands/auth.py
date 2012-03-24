@@ -17,7 +17,7 @@ class auth(Command):
 							self.msg(str(user["nick"]), "Warning: %s (%s) authed with your password." % (self.nick(source), self.userhost(source)))
 						self.query("insert into temp_nick values ('%s','%s')" % (source, str(data["name"])))
 						self.msg(source, "You are now logged in as %s" % str(data["name"]))
-						self.msg(source, "Remember: NO-ONE from %s will ever ask for your password.  NEVER send your password to ANYONE except Q@%s." % (self.services_description, self.services_name))
+						self.msg(source, "Remember: NO-ONE from %s will ever ask for your password. NEVER send your password to ANYONE except Q@%s." % (self.services_description, self.services_name))
 						self.meta(source, "accountname", str(data["name"]))
 						self.usermodes(source)
 						self.vhost(source)
