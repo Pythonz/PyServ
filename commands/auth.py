@@ -25,7 +25,7 @@ class auth(Command):
 						self.autojoin(source)
 						self.memo(str(data["name"]))
 					else:
-						self.msg(source, "Your account have been banned from " + self.services_description + ". Reason: " + data["suspended"])
+						self.msg(source, "Your account has been banned from " + self.services_description + ". Reason: " + data["suspended"])
 			if not exists:
 				self.msg(source, "Username or password incorrect.")
 		else:
