@@ -68,6 +68,6 @@ class Cache:
 	def close(self):
 		self.socket.close()
 
-	def reconnectself, ip="127.0.0.1", port=1270):
+	def reconnect(self, ip="127.0.0.1", port=1270):
 		self.socket.close()
 		self.socket.connect((ip, port))
