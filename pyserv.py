@@ -937,7 +937,10 @@ class Services:
 				for nick in text.split()[1:]:
 					nicks.append(self.nick(nick))
 				text = "{text} {nicks}".format(text=text.split()[0], nicks=' '.join(nicks))
-			sender = self.nick(source)+"!Log@PyServ"
+			if source == self.bot_nick:
+				sender = self.bot_nick+"!"+self.bot_user+"@"+self.services_name
+			else:
+				sender = self.nick(source)+"!"+self.userhost(source)
 			file = open("logs/"+channel, "ab+")
 			lines = file.readlines()
 			if len(lines) > 100:
@@ -1423,7 +1426,10 @@ class Command:
 				for nick in text.split()[1:]:
 					nicks.append(self.nick(nick))
 				text = "{text} {nicks}".format(text=text.split()[0], nicks=' '.join(nicks))
-			sender = self.nick(source)+"!Log@PyServ"
+			if source == self.bot_nick:
+				sender = self.bot_nick+"!"+self.bot_user+"@"+self.services_name
+			else:
+				sender = self.nick(source)+"!"+self.userhost(source)
 			file = open("logs/"+channel, "ab+")
 			lines = file.readlines()
 			if len(lines) > 100:
