@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #
 # $Id: setup.py 1240 2011-12-14 22:18:25Z g.rodola $
 #
