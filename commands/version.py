@@ -8,7 +8,7 @@ class version(Command):
 		version = file.read()
 		file.close()
 		self.msg(source, "PyServ {0}".format(version))
-		self.msg(source, "Hash: {0}".format(md5(open("pyserv.py","r").read()).hexdigest()))
+		self.msg(source, "Hash: {0}".format(md5(open("list","r").read()).hexdigest()))
 		options = list()
 		if self.ssl:
 			options.append("SSL")
