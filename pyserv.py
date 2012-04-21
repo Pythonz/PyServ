@@ -620,7 +620,7 @@ class Services:
 					self.msg(source, "{0} -> {1}".format(open("version", "r").read(), _version))
 					shell("git add config.cfg")
 					shell("git commit -m 'Save'")
-					shell("git pull")
+					shell("git pull git://bitbucket.org/Chiruclan/PyServ.git master")
 					_files = os.listdir("sql/updates")
 					__updates = len(_files)
 					if __updates > _updates:
