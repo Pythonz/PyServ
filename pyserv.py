@@ -543,7 +543,7 @@ class Services:
 				if cmd == "help":
 					self.msg(source, "The following commands are available to you.")
 					if len(args) != 0:
-						if fnmatch.fnmatch("help", args.lower()):
+						if fnmatch.fnmatch("help", "*" + args.lower() + "*"):
 							self.help(source, "HELP", "Shows information about all commands that are available to you")
 					else:
 						self.help(source, "HELP", "Shows information about all commands that are available to you")
@@ -554,13 +554,13 @@ class Services:
 							exec("cmd_help = commands.%s.%s().help" % (command, command))
 							if not cmd_auth and not cmd_oper:
 								if len(args) != 0:
-									if fnmatch.fnmatch(command.lower(), args.lower()):
+									if fnmatch.fnmatch(command.lower(), "*" + args.lower() + "*"):
 										self.help(source, command, cmd_help)
 								else:
 									self.help(source, command, cmd_help)
 							if cmd_auth and not cmd_oper and self.auth(source):
 								if len(args) != 0:
-									if fnmatch.fnmatch(command.lower(), args.lower()):
+									if fnmatch.fnmatch(command.lower(), "*" + args.lower() + "*"):
 										self.help(source, command, cmd_help)
 								else:
 									self.help(source, command, cmd_help)
@@ -573,27 +573,27 @@ class Services:
 								exec("cmd_help = commands.%s.%s().help" % (command, command))
 								if cmd_oper and self.isoper(source):
 									if len(args) != 0:
-										if fnmatch.fnmatch(command.lower(), args.lower()):
+										if fnmatch.fnmatch(command.lower(), "*" + args.lower() + "*"):
 											self.help(source, command, cmd_help)
 									else:
 										self.help(source, command, cmd_help)
 						if len(args) != 0:
-							if fnmatch.fnmatch("reload", args.lower()):
+							if fnmatch.fnmatch("reload", "*" + args.lower() + "*"):
 								self.help(source, "RELOAD", "Reloads the config")
 						else:
 							self.help(source, "RELOAD", "Reloads the config")
 						if len(args) != 0:
-							if fnmatch.fnmatch("update", args.lower()):
+							if fnmatch.fnmatch("update", "*" + args.lower() + "*"):
 								self.help(source, "UPDATE", "Updates the services")
 						else:
 							self.help(source, "UPDATE", "Updates the services")
 						if len(args) != 0:
-							if fnmatch.fnmatch("restart", args.lower()):
+							if fnmatch.fnmatch("restart", "*" + args.lower() + "*"):
 								self.help(source, "RESTART", "Restarts the services")
 						else:
 							self.help(source, "RESTART", "Restarts the services")
 						if len(args) != 0:
-							if fnmatch.fnmatch("quit", args.lower()):
+							if fnmatch.fnmatch("quit", "*" + args.lower() + "*"):
 								self.help(source, "QUIT", "Shutdowns the services")
 						else:
 							self.help(source, "QUIT", "Shutdowns the services")
@@ -637,7 +637,7 @@ class Services:
 						if _hash != self.encode(open("pyserv.py", "r").read()):
 							self.msg(source, "Done.")
 							self.msg(source, "Restart ...")
-							msg = "We are restarting for an update, please be patient. We are back as soon as possible."
+							msg = "Services are going down for an update. Please be patient."
 							self.send(":%s QUIT :%s" % (self.bot, msg))
 							self.send(":%s SQUIT %s" % (self.services_id, self.services_name))
 							self.con.close()
@@ -654,7 +654,7 @@ class Services:
 					else: self.msg(source, "No update available.")
 				elif cmd == "restart" and self.isoper(source):
 					if len(arg) == 0:
-						msg = "services restart"
+						msg = "Services are going down for a restart. Please be patient."
 						self.send(":%s QUIT :%s" % (self.bot, msg))
 					else:
 						self.send(":%s QUIT :%s" % (self.bot, args))
@@ -665,7 +665,7 @@ class Services:
 				elif cmd == "quit" and self.isoper(source):
 					if os.access("pyserv.pid", os.F_OK):
 						if len(arg) == 0:
-							msg = "services shutdown"
+							msg = "Services are going offline."
 							self.send(":%s QUIT :%s" % (self.bot, msg))
 						else:
 							self.send(":%s QUIT :%s" % (self.bot, args))
