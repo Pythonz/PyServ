@@ -533,7 +533,7 @@ class Services:
 
 	def message(self, source, text):
 		try:
-			if text.split() > 0:
+			if len(text.split()) > 0:
 				cmd = text.lower().split()[0]
 				arg = list()
 				args = ""
