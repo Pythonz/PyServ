@@ -533,147 +533,150 @@ class Services:
 
 	def message(self, source, text):
 		try:
-			cmd = text.lower().split()[0]
-			arg = list()
-			args = ""
-			if len(text.split()) > 1:
-				arg = text.split()[1:]
-				args = ' '.join(text.split()[1:])
-			if cmd == "help":
-				self.msg(source, "The following commands are available to you.")
-				if len(args) != 0:
-					if fnmatch.fnmatch("help", args.lower()):
+			if text.split() > 0:
+				cmd = text.lower().split()[0]
+				arg = list()
+				args = ""
+				if len(text.split()) > 1:
+					arg = text.split()[1:]
+					args = ' '.join(text.split()[1:])
+				if cmd == "help":
+					self.msg(source, "The following commands are available to you.")
+					if len(args) != 0:
+						if fnmatch.fnmatch("help", args.lower()):
+							self.help(source, "HELP", "Shows information about all commands that are available to you")
+					else:
 						self.help(source, "HELP", "Shows information about all commands that are available to you")
-				else:
-					self.help(source, "HELP", "Shows information about all commands that are available to you")
-				for command in dir(commands):
-					if command != "__init__" and os.access("commands/"+command+".py", os.F_OK):
-						exec("cmd_auth = commands.%s.%s().nauth" % (command, command))
-						exec("cmd_oper = commands.%s.%s().oper" % (command, command))
-						exec("cmd_help = commands.%s.%s().help" % (command, command))
-						if not cmd_auth and not cmd_oper:
-							if len(args) != 0:
-								if fnmatch.fnmatch(command.lower(), args.lower()):
-									self.help(source, command, cmd_help)
-							else:
-								self.help(source, command, cmd_help)
-						if cmd_auth and not cmd_oper and self.auth(source):
-							if len(args) != 0:
-								if fnmatch.fnmatch(command.lower(), args.lower()):
-									self.help(source, command, cmd_help)
-							else:
-								self.help(source, command, cmd_help)
-				if self.isoper(source):
-					self.msg(source)
-					self.msg(source, "For operators:")
 					for command in dir(commands):
 						if command != "__init__" and os.access("commands/"+command+".py", os.F_OK):
+							exec("cmd_auth = commands.%s.%s().nauth" % (command, command))
 							exec("cmd_oper = commands.%s.%s().oper" % (command, command))
 							exec("cmd_help = commands.%s.%s().help" % (command, command))
-							if cmd_oper and self.isoper(source):
+							if not cmd_auth and not cmd_oper:
 								if len(args) != 0:
 									if fnmatch.fnmatch(command.lower(), args.lower()):
 										self.help(source, command, cmd_help)
 								else:
 									self.help(source, command, cmd_help)
-					if len(args) != 0:
-						if fnmatch.fnmatch("reload", args.lower()):
+							if cmd_auth and not cmd_oper and self.auth(source):
+								if len(args) != 0:
+									if fnmatch.fnmatch(command.lower(), args.lower()):
+										self.help(source, command, cmd_help)
+								else:
+									self.help(source, command, cmd_help)
+					if self.isoper(source):
+						self.msg(source)
+						self.msg(source, "For operators:")
+						for command in dir(commands):
+							if command != "__init__" and os.access("commands/"+command+".py", os.F_OK):
+								exec("cmd_oper = commands.%s.%s().oper" % (command, command))
+								exec("cmd_help = commands.%s.%s().help" % (command, command))
+								if cmd_oper and self.isoper(source):
+									if len(args) != 0:
+										if fnmatch.fnmatch(command.lower(), args.lower()):
+											self.help(source, command, cmd_help)
+									else:
+										self.help(source, command, cmd_help)
+						if len(args) != 0:
+							if fnmatch.fnmatch("reload", args.lower()):
+								self.help(source, "RELOAD", "Reloads the config")
+						else:
 							self.help(source, "RELOAD", "Reloads the config")
-					else:
-						self.help(source, "RELOAD", "Reloads the config")
-					if len(args) != 0:
-						if fnmatch.fnmatch("update", args.lower()):
+						if len(args) != 0:
+							if fnmatch.fnmatch("update", args.lower()):
+								self.help(source, "UPDATE", "Updates the services")
+						else:
 							self.help(source, "UPDATE", "Updates the services")
-					else:
-						self.help(source, "UPDATE", "Updates the services")
-					if len(args) != 0:
-						if fnmatch.fnmatch("restart", args.lower()):
+						if len(args) != 0:
+							if fnmatch.fnmatch("restart", args.lower()):
+								self.help(source, "RESTART", "Restarts the services")
+						else:
 							self.help(source, "RESTART", "Restarts the services")
-					else:
-						self.help(source, "RESTART", "Restarts the services")
-					if len(args) != 0:
-						if fnmatch.fnmatch("quit", args.lower()):
+						if len(args) != 0:
+							if fnmatch.fnmatch("quit", args.lower()):
+								self.help(source, "QUIT", "Shutdowns the services")
+						else:
 							self.help(source, "QUIT", "Shutdowns the services")
-					else:
-						self.help(source, "QUIT", "Shutdowns the services")
-					self.msg(source)
-				self.msg(source, "End of list.")
-			elif cmd == "reload" and self.isoper(source):
-				config.read("config.cfg")
-				self.debug = config.get("OTHER", "debug")
-				self.email = config.get("OTHER", "email")
-				self.regmail = config.get("OTHER", "regmail")
-				reload(commands)
-				self.msg(source, "Done.")
-			elif cmd == "update" and self.isoper(source):
-				_web = urllib2.urlopen("https://raw.github.com/Pythonz/PyServ/master/version")
-				_version = _web.read()
-				_web.close()
-				if open("version", "r").read() != _version:
+						self.msg(source)
+					self.msg(source, "End of list.")
+				elif cmd == "reload" and self.isoper(source):
+					config.read("config.cfg")
+					self.debug = config.get("OTHER", "debug")
+					self.email = config.get("OTHER", "email")
+					self.regmail = config.get("OTHER", "regmail")
+					reload(commands)
+					self.msg(source, "Done.")
+				elif cmd == "update" and self.isoper(source):
+					_web = urllib2.urlopen("https://raw.github.com/Pythonz/PyServ/master/version")
+					_version = _web.read()
+					_web.close()
+					if open("version", "r").read() != _version:
 					
-					_updates = len(os.listdir("sql/updates"))
-					_hash = self.encode(open("pyserv.py", "r").read())
-					_modules = list()
-					for module in dir(commands):
-						if os.access("commands/"+module+".py", os.F_OK):
-							_modules.append(module)
-					self.msg(source, "{0} -> {1}".format(open("version", "r").read(), _version))
-					shell("git add config.cfg")
-					shell("git commit -m 'Save'")
-					shell("git pull")
-					_files = os.listdir("sql/updates")
-					__updates = len(_files)
-					if __updates > _updates:
-						while _updates != __updates:
-							_updates += 1
-							for sql in _files:
-								if sql.startswith(str(_updates)+"_"):
-									self.msg(source, " - Insert '{0}'".format(sql))
-									file = open("sql/updates/"+sql, "r")
-									for line in file.readlines():
-										self.query(line)
-									file.close()
-					if _hash != self.encode(open("pyserv.py", "r").read()):
-						self.msg(source, "Done.")
-						self.msg(source, "Restart ...")
-						msg = "We are restarting for an update, please be patient. We are back as soon as possible."
-						self.send(":%s QUIT :%s" % (self.bot, msg))
-						self.send(":%s SQUIT %s" % (self.services_id, self.services_name))
-						self.con.close()
-						if os.access("pyserv.pid", os.F_OK): shell("sh pyserv restart")
-						else: sys.exit(0)
-					else:
-						self.msg(source, "Reload ...")
-						reload(commands)
-						for module in _modules:
-							if not os.access("commands/"+module+".py", os.F_OK):
-								exec("del commands."+module)
-								exec("""del sys.modules["commands.%s"]""" % module)
-						self.msg(source, "Done.")
-				else: self.msg(source, "No update available.")
-			elif cmd == "restart" and self.isoper(source):
-				if len(arg) == 0:
-					msg = "services restart"
-					self.send(":%s QUIT :%s" % (self.bot, msg))
-				else:
-					self.send(":%s QUIT :%s" % (self.bot, args))
-				self.send(":%s SQUIT %s" % (self.services_id, self.services_name))
-				self.con.close()
-				if os.access("pyserv.pid", os.F_OK): shell("sh pyserv restart")
-				else: sys.exit(0)
-			elif cmd == "quit" and self.isoper(source):
-				if os.access("pyserv.pid", os.F_OK):
+						_updates = len(os.listdir("sql/updates"))
+						_hash = self.encode(open("pyserv.py", "r").read())
+						_modules = list()
+						for module in dir(commands):
+							if os.access("commands/"+module+".py", os.F_OK):
+								_modules.append(module)
+						self.msg(source, "{0} -> {1}".format(open("version", "r").read(), _version))
+						shell("git add config.cfg")
+						shell("git commit -m 'Save'")
+						shell("git pull")
+						_files = os.listdir("sql/updates")
+						__updates = len(_files)
+						if __updates > _updates:
+							while _updates != __updates:
+								_updates += 1
+								for sql in _files:
+									if sql.startswith(str(_updates)+"_"):
+										self.msg(source, " - Insert '{0}'".format(sql))
+										file = open("sql/updates/"+sql, "r")
+										for line in file.readlines():
+											self.query(line)
+										file.close()
+						if _hash != self.encode(open("pyserv.py", "r").read()):
+							self.msg(source, "Done.")
+							self.msg(source, "Restart ...")
+							msg = "We are restarting for an update, please be patient. We are back as soon as possible."
+							self.send(":%s QUIT :%s" % (self.bot, msg))
+							self.send(":%s SQUIT %s" % (self.services_id, self.services_name))
+							self.con.close()
+							if os.access("pyserv.pid", os.F_OK): shell("sh pyserv restart")
+							else: sys.exit(0)
+						else:
+							self.msg(source, "Reload ...")
+							reload(commands)
+							for module in _modules:
+								if not os.access("commands/"+module+".py", os.F_OK):
+									exec("del commands."+module)
+									exec("""del sys.modules["commands.%s"]""" % module)
+							self.msg(source, "Done.")
+					else: self.msg(source, "No update available.")
+				elif cmd == "restart" and self.isoper(source):
 					if len(arg) == 0:
-						msg = "services shutdown"
+						msg = "services restart"
 						self.send(":%s QUIT :%s" % (self.bot, msg))
 					else:
 						self.send(":%s QUIT :%s" % (self.bot, args))
 					self.send(":%s SQUIT %s" % (self.services_id, self.services_name))
 					self.con.close()
-					shell("sh pyserv stop")
-				else: self.msg(source, "You are running in debug mode, only restart is possible!")
+					if os.access("pyserv.pid", os.F_OK): shell("sh pyserv restart")
+					else: sys.exit(0)
+				elif cmd == "quit" and self.isoper(source):
+					if os.access("pyserv.pid", os.F_OK):
+						if len(arg) == 0:
+							msg = "services shutdown"
+							self.send(":%s QUIT :%s" % (self.bot, msg))
+						else:
+							self.send(":%s QUIT :%s" % (self.bot, args))
+						self.send(":%s SQUIT %s" % (self.services_id, self.services_name))
+						self.con.close()
+						shell("sh pyserv stop")
+					else: self.msg(source, "You are running in debug mode, only restart is possible!")
+				else:
+					self.msg(source, "Unknown command {0}. Please try HELP for more information.".format(text.split()[0].upper()))
 			else:
-				self.msg(source, "Unknown command {0}. Please try HELP for more information.".format(text.split()[0].upper()))
+				self.msg(source, "Unknown command NULL. Please try HELP for more information.")
 		except Exception:
 			self.msg(source, "An error has occured. The Development-Team has been notified about this problem.")
 			et, ev, tb = sys.exc_info()
