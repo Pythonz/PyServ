@@ -29,7 +29,7 @@ class voice(Command):
 					self.msg(source, "Done.")
 				else: self.msg(source, "Denied.")
 			else: self.msg(source, "Invalid channel")
-		else: self.msg(source, "Syntax: DEVOICE <#channel> [<nick> [<nick>]]")
+		else: self.msg(source, "Syntax: VOICE <#channel> [<nick> [<nick>]]")
 
 	def onFantasy(self, uid, chan, args):
 		self.onCommand(uid, chan + " " + args)

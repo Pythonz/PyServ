@@ -167,7 +167,7 @@ commands/samode.py 4071334bbec64a0337e71c754ebb65a5
 commands/memo.py 69ba79a15daa3d8b7d33b5bfa710a3d7
 commands/unbanme.py afd33fac43f4e059af71cff29263939e
 commands/vhost.py 370f0f84c946cab6976e5d259a26df01
-commands/voice.py 91c8c154390519a57aa5735acddecd25
+commands/voice.py 74c9e92ff19684fb6447b9eac085a7fb
 commands/setwhois.py 9c580ac27a65d28377adc56c660ac5fc
 commands/newpass.py 048d1a773f006716d547163928976ec8
 commands/unbanall.py ce7f77df106ca27ca75aa23e88cf8090
