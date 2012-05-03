@@ -1,4 +1,5 @@
 from pyserv import Command
+from _mysql import escape_string
 
 class remove(Command):
 	help = "Removes Q from your channel"

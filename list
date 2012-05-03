@@ -181,7 +181,7 @@ commands/deprotect.py 66a9ee29dd1dc56cd95d63ed9e47ae04
 commands/version.py beb06acba1ffabfdb8108ad520f4e3ba
 commands/usermodes.py 2c7be9affc0a39657c61fd5c6630c291
 commands/notify.py 6e721232bd92e9d161f714bcd1ecd9e3
-commands/remove.py 195f09b8b97003d877b0f81b256330c1
+commands/remove.py e38d7d3662222a7ee6baadd46e0d4f8a
 commands/auth.py 139f49b9ae196bad1be776882a82081a
 commands/info.py 92ecb3da3c887728abf6acd385199fc5
 commands/scanport.py 755d4ce030062f8c511a359de2433d98
