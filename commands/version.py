@@ -31,6 +31,7 @@ class version(Command):
 			self.msg(source, "  Total: {0} mb".format(psutil.phymem_usage()[0] / 1024 / 1024))
 			self.msg(source, "  Free: {0} mb".format(psutil.phymem_usage()[1] / 1024 / 1024))
 			self.msg(source, "  Used: {0} mb".format(psutil.phymem_usage()[2] / 1024 / 1024))
+			self.msg(source, "If you're looking for more commands, check out https://github.com/Pythonz/PyServ-Commands!")
 			
 		self.msg(source, "Developed by Pythonz (https://github.com/Pythonz). Suggestions to pythonz@chiruclan.de or mechi.community@yahoo.de.")
 
