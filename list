@@ -178,7 +178,7 @@ commands/banlist.py d257f8e9b40764f435023727c59d84ea
 commands/welcome.py 6a991a65690f4e108ede1c9ff94ee130
 commands/challenge.py e5da94da512aadb4f5794d1671ee0c5d
 commands/deprotect.py 66a9ee29dd1dc56cd95d63ed9e47ae04
-commands/version.py 0290aa1c815f412c8720ff9e7c35a845
+commands/version.py 4a40f6c97c469c9c5e9abe57d10f0bef
 commands/usermodes.py 2c7be9affc0a39657c61fd5c6630c291
 commands/notify.py 6e721232bd92e9d161f714bcd1ecd9e3
 commands/remove.py e38d7d3662222a7ee6baadd46e0d4f8a
