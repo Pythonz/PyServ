@@ -1,4 +1,4 @@
-ALTER TABLE `users` ADD COLUMN (id bigint not null auto_increment) FIRST;
+ALTER TABLE `users` ADD COLUMN (id bigint not null auto_increment) FIRST name;
 ALTER TABLE `users` ADD PRIMARY KEY (id);
 DROP TABLE IF EXISTS `statistics`;
 CREATE TABLE IF NOT EXISTS `statistics` (`attribute` text not null, `value` text, primary key (`attribute`));
