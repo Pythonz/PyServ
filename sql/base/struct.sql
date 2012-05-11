@@ -1,5 +1,5 @@
 DROP TABLE IF EXISTS `users`;
-CREATE TABLE IF NOT EXISTS `users`(id bigint(20) not null auto_increment, name text, pass text, email text, flags text, modes text, suspended text, primary key (id));
+CREATE TABLE IF NOT EXISTS `users`(id bigint(20) not null auto_increment key, name text, pass text, email text, flags text, modes text, suspended text, primary key (id));
 DROP TABLE IF EXISTS `channels`;
 CREATE TABLE IF NOT EXISTS `channels`(channel text, user text, flag text);
 DROP TABLE IF EXISTS `channelinfo`;
@@ -31,5 +31,5 @@ CREATE TABLE IF NOT EXISTS `challenges` (hostmask text, challenge text);
 DROP TABLE IF EXISTS `gateway`;
 CREATE TABLE IF NOT EXISTS `gateway` (uid text);
 DROP TABLE IF EXISTS `statistics`;
-CREATE TABLE IF NOT EXISTS `statistics` (`attribute` text not null, `value` text, primary key (`attribute`));
+CREATE TABLE IF NOT EXISTS `statistics` (`attribute` varchar(256) not null key, `value` text, primary key (`attribute`));
 INSERT INTO `statistics` (attribute, `value`) VALUES ('kicks', '0'),('kills', '0');
