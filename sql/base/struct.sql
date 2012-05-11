@@ -1,5 +1,5 @@
 DROP TABLE IF EXISTS `users`;
-CREATE TABLE IF NOT EXISTS `users`(id bigint not null auto_increment, name text, pass text, email text, flags text, modes text, suspended text, primary key (id));
+CREATE TABLE IF NOT EXISTS `users`(id bigint(20) not null auto_increment, name text, pass text, email text, flags text, modes text, suspended text, primary key (id));
 DROP TABLE IF EXISTS `channels`;
 CREATE TABLE IF NOT EXISTS `channels`(channel text, user text, flag text);
 DROP TABLE IF EXISTS `channelinfo`;
