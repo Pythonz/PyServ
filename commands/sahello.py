@@ -11,7 +11,7 @@ class sahello(Command):
 				entry = True
 			if not entry:
 				self.msg(uid, "Create account (%s, %s) ..." % (arg[0], arg[1]))
-				self.query("insert into users values ('%s', '%s', '%s@%s', 'n', '+i', '0')" % (arg[0], self.encode(arg[1]), self.bot_nick, self.services_name))
+				self.query("insert into users (name,pass,email,flags,modes,suspended) values ('%s', '%s', '%s@%s', 'n', '+i', '0')" % (arg[0], self.encode(arg[1]), self.bot_nick, self.services_name))
 				self.msg(uid, "Done.")
 			else:
 				self.msg(uid, "%s is already in use." % arg[0])

@@ -1,0 +1,5 @@
+ALTER TABLE `users` ADD COLUMN (id bigint not null auto_increment) FIRST;
+ALTER TABLE `users` ADD PRIMARY KEY (id);
+DROP TABLE IF EXISTS `statistics`;
+CREATE TABLE IF NOT EXISTS `statistics` (`attribute` text not null, `value` text, primary key (`attribute`));
+INSERT INTO `statistics` (attribute, `value`) VALUES ('kicks', '0'),('kills', '0');

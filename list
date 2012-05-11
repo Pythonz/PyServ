@@ -1,4 +1,4 @@
-pyserv.py fae87f2476d9d12847d1d866032b3c3c
+pyserv.py b19b4a4aea3bd7b3b239f2b6eb2f3d74
 README.md ff30f05bd646c192e7c4798066290502
 pyserv 7a48baa70d9bcff4810ff6d23e4d3d5f
 HOWTO 009ba50ed7d5c91a176e17ea8a9a2958
@@ -112,7 +112,7 @@ deps/mysql/tests/test_MySQLdb_nonstandard.py 2ca2514a6151720674f69131133d980f
 deps/mysql/tests/test_MySQLdb_dbapi20.py 53a9b417b2b4ca0a07029e69b64f8dcb
 deps/mysql/tests/dbapi20.py adca43c55bafd10adc79946f63a1a6d8
 deps/pycachelib/setup.py 39db555f90044097c642a695c4738c08
-deps/pycachelib/pycachelib/cache.py a73b828eb2ce7fc699ff8b88297c445e
+deps/pycachelib/pycachelib/cache.py 6409d7e1318033ed1edb62641768a5ca
 deps/pycachelib/pycachelib/__init__.py d41d8cd98f00b204e9800998ecf8427e
 sql/updates/19_02-26-2012.sql bf8a93e15fd758d8a49293e33069c53e
 sql/updates/18_02-26-2012.sql 86b765563f7e86773f01334c7d59babd
@@ -127,6 +127,7 @@ sql/updates/2_02-02-2012.sql 0b38c7109eff565f1dd8be45b12b83c7
 sql/updates/20_02-28-2012.sql b66037752ce0e75a8832dcfc0493bd00
 sql/updates/22_03-09-2012.sql 844d5301ed60a7fb51ea082d9a9718f8
 sql/updates/7_02-06-2012.sql f9cf75884b162a4549736639b64dd3f7
+sql/updates/24_05-11-2012.sql 5f2d5fe876e6ab18a0d06ffbbd708a60
 sql/updates/11_02-17-2012.sql 8871da6e53758f0c79c9944c6c42b106
 sql/updates/15_02-22-2012.sql 0350dcb0d41d78fa4978b9d64b9104cc
 sql/updates/21_03-09-2012.sql 8e2863d1c29f9dbf0a79a6b853d07c36
@@ -137,12 +138,12 @@ sql/updates/17_02-25-2012.sql 24063a1e072ce266911ab6c275f27294
 sql/updates/23_03-09-2012.sql f6464f27b1bdef1001ef8988da4c0a37
 sql/updates/6_02-06-2012.sql fbafe9a42f68bc810fdd8a009c6ac2e2
 sql/updates/5_02-05-2012.sql 2157b0bba185b64f76e7ff6dc60502b1
-sql/base/struct.sql e8d4c77ffa0ad4b79d9ddff15f956a43
+sql/base/struct.sql 501a7060ef18be4e2170afaeb6041da5
 commands/chanmode.py 32f6de9ee8021c606379837546a07193
 commands/request.py ac5e0e2c9eab63636876c6aea7e45879
 commands/fantasy.py 0f6a7c46b09d1a51888d96652d049ff2
 commands/sauserflags.py 615a2bcc4f68d26cfbc4115f818e2683
-commands/sahello.py 5685072c3b0b05f28599b8866e69b581
+commands/sahello.py b669c7d7f8ac3206b77c2277d6cc466f
 commands/halfop.py d561b441b03c7a303758fe4540724da7
 commands/trust.py 1bf582480698c0be41fa6f08cb59ec83
 commands/dehalfop.py 85e9e047d88d798c921bc8b47df510d5
@@ -153,7 +154,7 @@ commands/whois.py 530e3de6b6709eb0b4323647a7aeed14
 commands/protect.py 337f2686e05e6c527fdfe9511eef2d76
 commands/feedback.py ce33e0789c1e58e71998618afdfb366e
 commands/kill.py 0c00a7ef5f541a81abae67e43e8dd07b
-commands/hello.py 495e37c5c130b579aa41098abb0042d5
+commands/hello.py 0d5851d85f2201f100c072739a0a4774
 commands/domaincheck.py 453d0f3409c5333fe22df15d20384e54
 commands/whoami.py a9b962096484447a099db485f813db2e
 commands/sync.py 56a1afe388f5eba88c234d22096adfd8

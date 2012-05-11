@@ -819,19 +819,21 @@ class Services:
 			self.mode(channel, "+rqo {0} {0}".format(self.bot))
 
 	def statistics(self):
+		stats = dict()
 		for data in self.query("select * from statistics"):
-			return data
+			stats[data["attribute"]] = data["value"]
+		return stats
 
 	def killcount(self):
 		kills = int(self.statistics()["kills"])
 		kills += 1
-		self.query("update statistics set kills = %s" % kills)
+		self.query("update statistics set `value` = '%s' where attribute = 'kills'" % kills)
 		return kills
 
 	def kickcount(self):
 		kicks = int(self.statistics()["kicks"])
 		kicks += 1
-		self.query("update statistics set kicks = %s" % kicks)
+		self.query("update statistics set `value` = '%s' where attribute = 'kicks'" % kicks)
 		return kicks
 
 	def kill(self, target, reason="You're violating network rules"):
@@ -1183,6 +1185,7 @@ class Command:
 				results.append(data)
 			Smysql.close()
 			return results
+		Smysql.close()
 
 	def query_row(self, string):
 		Smysql = _mysql.connect(host=self.mysql_host, port=self.mysql_port, db=self.mysql_name, user=self.mysql_user, passwd=self.mysql_passwd)
@@ -1192,6 +1195,7 @@ class Command:
 			for data in result.fetch_row(maxrows=1, how=1):
 				Smysql.close()
 				return data
+		Smysql.close()
 
 	def uid (self, nick):
 		if nick == self.bot_nick:
@@ -1324,19 +1328,21 @@ class Command:
 			self.mode(channel, "+rqo {0} {0}".format(self.bot))
 
 	def statistics(self):
+		stats = dict()
 		for data in self.query("select * from statistics"):
-			return data
+			stats[data["attribute"]] = data["value"]
+		return stats
 
 	def killcount(self):
 		kills = int(self.statistics()["kills"])
 		kills += 1
-		self.query("update statistics set kills = %s" % kills)
+		self.query("update statistics set `value` = '%s' where attribute = 'kills'" % kills)
 		return kills
 
 	def kickcount(self):
 		kicks = int(self.statistics()["kicks"])
 		kicks += 1
-		self.query("update statistics set kicks = %s" % kicks)
+		self.query("update statistics set `value` = '%s' where attribute = 'kicks'" % kicks)
 		return kicks
 
 	def kill(self, target, reason="You're violating network rules"):

@@ -57,6 +57,13 @@ class Cache:
 			return True
 		return False
 
+	def conn(self):
+		self.socket.send("CONN\n")
+		recv = self.socket.recv(10).rstrip()
+		if recv = "OK":
+			return True
+		return False
+
 	def quit(self):
 		self.socket.send("QUIT\n")
 		recv = self.socket.recv(10).rstrip()
