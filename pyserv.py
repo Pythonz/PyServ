@@ -395,7 +395,6 @@ class Services:
 									self.msg(juid, "[{0}] {1}".format(welcome["name"], welcome["welcome"]))
 							if self.isoper(juid) and self.chanexist(jchan):
 								self.send(":%s NOTICE %s :Operator %s has joined" % (self.services_id, jchan, self.nick(juid)))
-								self.send(":%s PRIVMSG %s :ACTION goes down on his knee and prays to %s." % (self.bot, jchan, self.nick(juid)))
 						if data.split()[1] == "FJOIN":
 							fjoin_chan = data.split()[2]
 							fjoin_nick = data.split()[5][1:]
@@ -443,7 +442,6 @@ class Services:
 									self.msg(fjoin_nick, "[{0}] {1}".format(welcome["name"], welcome["welcome"]))
 							if self.isoper(fjoin_nick) and self.chanexist(fjoin_chan):
 								self.send(":%s NOTICE %s :Operator %s has joined" % (self.services_id, fjoin_chan, self.nick(fjoin_nick)))
-								self.send(":%s PRIVMSG %s :ACTION goes down on his knee and prays to %s." % (self.bot, fjoin_chan, self.nick(fjoin_nick)))
 						if data.split()[1] == "PART":
 							pnick = data.split()[0][1:]
 							pchan = data.split()[2]
