@@ -24,7 +24,7 @@ class voice(Command):
 								self.mode(arg[0], "+v "+user)
 								if self.chanflag("b", arg[0]):
 									uflag = self.getflag(user, arg[0])
-									if uflag != "v" and uflag != "h" and uflag != "o" and uflag != "a" and uflag != "q" and uflag != "n":
+									if uflag != "v" and uflag != "h" and uflag != "o" and uflag != "a" and uflag != "q" and uflag != "n" and not self.chanflag("v", arg[0]):
 										self.mode(arg[0], "-v "+user)
 					self.msg(source, "Done.")
 				else: self.msg(source, "Denied.")
