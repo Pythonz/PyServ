@@ -17,6 +17,15 @@ import ssl
 import commands
 import __builtin__
 
+def red(string):
+	return("\033[91m" + string + "\033[0m")
+
+def blue(string):
+	return("\033[94m" + string + "\033[0m")
+
+def green(string):
+	return("\033[92m" + string + "\033[0m")
+
 try:
 	if not os.access("logs", os.F_OK):
 		os.mkdir("logs")
@@ -27,7 +36,7 @@ try:
 		config.read(sys.argv[1])
 except Exception:
 	et, ev, tb = sys.exc_info()
-	print("<<ERROR>> {0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb)))
+	print(red("*") + " <<ERROR>> {0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb)))
 
 def debug(text):
 	if config.get("OTHER", "debug") == "1":
@@ -38,7 +47,7 @@ def shell(text):
 
 def perror(text):
 	try:
-		debug(text)
+		debug(red("*") + " " + text)
 		file = open("error.log", "ab")
 		file.write(text+"\n")
 		file.close()
@@ -113,7 +122,7 @@ class Services:
 				if not recv:
 					return 1
 				for data in recv.splitlines():
-					debug("<< %s" % data)
+					debug(green("*") + " " + data)
 					if data.rstrip() != "":
 						if data.split()[1] == "PING":
 							self.send(":%s PONG %s %s" % (self.services_id, self.services_id, data.split()[2]))
@@ -518,7 +527,7 @@ class Services:
 		except Exception:
 			et, ev, tb = sys.exc_info()
 			e = "{0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb))
-			debug("<<ERROR>> " + str(e))
+			debug(red("*") + " <<ERROR>> " + str(e))
 			
 	def metadata(self, uid, string, content):
 		if string == "accountname":
@@ -681,7 +690,7 @@ class Services:
 			e = "{0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb))
 			if self.email != "":
 				self.mail("mechi.community@yahoo.de", "From: {0} <{1}>\nTo: PyServ Development <mechi.community@yahoo.de>\nSubject: Bug on {0}\n{2}".format(self.services_description, self.email, str(e)))
-			debug("<<MSG-ERROR>> "+str(e))
+			debug(red("*") + " <<MSG-ERROR>> "+str(e))
 
 	def uid (self, nick):
 		if nick == self.bot_nick:
@@ -717,7 +726,7 @@ class Services:
 
 	def send(self, text):
 		self.con.send(text+"\n")
-		debug(">> %s" % text)
+		debug(blue("*") + " " + text)
 	def push(self, target, message):
 		self.send(":{uid} PUSH {target} ::{message}".format(uid=self.services_id, target=target, message=message))
 
@@ -931,7 +940,7 @@ class Services:
 			mail = smtplib.SMTP('127.0.0.1', 25)
 			mail.sendmail(self.email, ['%s' % receiver], message)
 			mail.quit()
-		except Exception,e: debug("<<MAIL-ERROR>> "+str(e))
+		except Exception,e: debug(red("*") + " <<MAIL-ERROR>> "+str(e))
 
 	def log(self, source, msgtype, channel, text=""):
 		try:
@@ -1424,7 +1433,7 @@ class Command:
 			mail = smtplib.SMTP('127.0.0.1', 25)
 			mail.sendmail(self.email, ['%s' % receiver], message)
 			mail.quit()
-		except Exception,e: debug("<<MAIL-ERROR>> "+str(e))
+		except Exception,e: debug(red("*") + " <<MAIL-ERROR>> "+str(e))
 
 	def log(self, source, msgtype, channel, text=""):
 		try:
@@ -1488,7 +1497,7 @@ class Command:
 
 	def send(self, text):
 		self.con.send(text+"\n")
-		debug(">> %s" % text)
+		debug(blue("*") + " " + text)
 
 	def metadata(self, uid, string, content):
 		if string == "accountname":
@@ -1671,9 +1680,9 @@ if __name__ == "__main__":
 				__config__ = sys.argv[1]
 			if not failover():
 				if not failover(10):
-					print("PyServ (" + __version__ + ") started (config: " + __config__ + ")")
+					print(green("*") + " PyServ (" + __version__ + ") started (config: " + __config__ + ")")
 					Services().run()
-					print("PyServ (" + __version__ + ") stopped (config: " + __config__ + ")")
+					print(red("*") + " PyServ (" + __version__ + ") stopped (config: " + __config__ + ")")
 			time.sleep(1)
-	except Exception,e: print(e)
-	except KeyboardInterrupt: print("Aborting ... STRG +C")
+	except Exception,e: print(red("*") + " " + str(e))
+	except KeyboardInterrupt: print(red("*") + " Aborting ... STRG +C")
