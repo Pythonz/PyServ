@@ -3,6 +3,7 @@ from pyserv import Command
 class userflags(Command):
 	help = "Changes and shows your userflags"
 	nauth = 1
+
 	def onCommand(self, uid, args):
 		mode = list()
 		desc = list()
@@ -11,11 +12,13 @@ class userflags(Command):
 		mode.append("a")
 		desc.append("Autojoin all channels where you have chanflag +v or higher.")
 		arg = args.split()
+		
 		if len(arg) == 0:
 			self.msg(uid, "Current user flags: "+self.userflags(uid))
 		elif len(arg) == 1:
 			if arg[0] == "?":
 				i = 0
+				
 				while i != len(mode):
 					self.msg(uid, mode[i]+" = "+desc[i])
 					i += 1

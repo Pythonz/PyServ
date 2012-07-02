@@ -3,6 +3,7 @@ from pyserv import Command
 class sauserflags(Command):
 	help = "Changes and shows the userflags of other users"
 	oper = 1
+
 	def onCommand(self, uid, args):
 		mode = list()
 		desc = list()
@@ -11,11 +12,13 @@ class sauserflags(Command):
 		mode.append("a")
 		desc.append("Autojoin all channels where you have chanflag +v or higher.")
 		arg = args.split()
+		
 		if len(arg) == 1:
 			self.msg(uid, "Current user flags: "+self.userflags(self.uid(arg[0])))
 		elif len(arg) == 2:
 			if arg[0] == "?":
 				i = 0
+				
 				while i != len(mode):
 					self.msg(uid, mode[i]+" = "+desc[i])
 					i += 1

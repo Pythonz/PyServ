@@ -3,6 +3,7 @@ from pyserv import Command
 class chanflags(Command):
 	help = "Sets flags for your channel"
 	nauth = 1
+
 	def onCommand(self, source, args):
 		mode = list()
 		desc = list()
@@ -31,6 +32,7 @@ class chanflags(Command):
 		mode.append("c")
 		desc.append("Display count at Q-kicks")
 		arg = args.split()
+		
 		if len(arg) == 1:
 			if arg[0].startswith("#"):
 				if self.getflag(source, arg[0]) == "n" or self.getflag(source, arg[0]) == "q" or self.getflag(source, arg[0]) == "a":
@@ -40,6 +42,7 @@ class chanflags(Command):
 					self.msg(source, "No permission")
 			elif arg[0] == "?":
 				listed = 0
+				
 				while listed != len(mode):
 					self.msg(source, "{0} = {1}".format(mode[listed], desc[listed]))
 					listed += 1

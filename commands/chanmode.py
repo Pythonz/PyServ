@@ -3,8 +3,10 @@ from pyserv import Command
 class chanmode(Command):
 	help = "Sets modes for your channel"
 	nauth = 1
+
 	def onCommand(self, source, args):
 		arg = args.split()
+		
 		if len(arg) == 1:
 			if arg[0].startswith("#"):
 				if self.getflag(source, arg[0]) == "n" or self.getflag(source, arg[0]) == "q" or self.getflag(source, arg[0]) == "a":
@@ -16,6 +18,7 @@ class chanmode(Command):
 				self.msg(source, "Invalid channel '{0}'".format(arg[0]))
 		elif len(arg) == 2:
 			modes = arg[1]
+			
 			if arg[0].startswith("#"):
 				if self.getflag(source, arg[0]) == "n" or self.getflag(source, arg[0]) == "q" or self.getflag(source, arg[0]) == "a":
 					for channel in self.query("select name from channelinfo where name = '{0}'".format(arg[0])):
