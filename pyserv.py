@@ -5,7 +5,7 @@ import socket
 import os
 import ConfigParser
 import time
-import base64
+import hashlib
 import smtplib
 import _mysql
 import subprocess
@@ -1105,10 +1105,7 @@ class Services:
 		return isoper
 
 	def encode(self, string):
-		return base64.encodestring(string).rstrip()
-
-	def decode(self, string):
-		return base64.decodestring(string).rstrip()
+		return hashlib.sha512(string).hexdigest()
 
 	def query(self, string):
 		self.db.query(str(string))
@@ -1388,7 +1385,7 @@ class Command:
 	import os
 	import ConfigParser
 	import time
-	import base64
+	import hashlib
 	import smtplib
 	import _mysql
 	import traceback
@@ -1716,10 +1713,7 @@ class Command:
 		return isoper
 
 	def encode(self, string):
-		return base64.encodestring(string).rstrip()
-
-	def decode(self, string):
-		return base64.decodestring(string).rstrip()
+		return hashlib.sha512(string).hexdigest()
 
 	def mail(self, receiver, message):
 		try:
