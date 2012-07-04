@@ -15,7 +15,7 @@ class chanlev(Command):
 					self.msg(source, "Username               Flag")
 					
 					for data in self.query("select user,flag from channels where channel = '{0}' order by flag".format(channel)):
-						self.msg(source, " {0} {1} {2}".format(data["user"], " "*int(24-len(data["user"])), data["flag"))
+						self.msg(source, " {0} {1} {2}".format(data["user"], " "*int(24-len(data["user"])), data["flag"]))
 						
 					self.msg(source, "End of list.")
 				else:
