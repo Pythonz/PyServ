@@ -22,7 +22,7 @@ commands/email.py c8455f8eb55fd02904b50045e2ed5356
 commands/fantasy.py 0f6a7c46b09d1a51888d96652d049ff2
 commands/feedback.py c7da348e92284af1f447e4077bdc337c
 commands/halfop.py 04876bf41aa07f2c0665856d651fed92
-commands/hello.py d11b9c6d21a516674bfdc729d0deab1d
+commands/hello.py b5163e406c3c00e05ba49d93a4cfd6ee
 commands/info.py 9bed8d32b81d42fed751f76f8ff95f62
 commands/invite.py f9f77ad17d64a76d8abf62e8230bf497
 commands/ipchan.py cd743852e9ac7bf691ab5767815cb27a

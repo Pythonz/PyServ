@@ -21,7 +21,7 @@ class hello(Command):
 			if not exists:
 				if arg[0].find("@") != -1 and arg[0].find(".") != -1 and arg[0].lower() == arg[1].lower():
 					newpw = str(hash(str(time()) + arg[0] + arg[1]))
-					self.query("insert into users (name,pass,email,flags,modes,suspended) values ('%s','%s','%s','n','+i','0')" % (self.nick(source), self.encode(newpw), escape_string(arg[0]))
+					self.query("insert into users (name,pass,email,flags,modes,suspended) values ('%s','%s','%s','n','+i','0')" % (self.nick(source), self.encode(newpw), escape_string(arg[0])))
 					self.msg(source, "The account %s has been created successfully. You can login now with /msg Q auth account password" % self.nick(source))
 					
 					if self.regmail == "1":
@@ -33,6 +33,6 @@ class hello(Command):
 				else:
 					self.msg(source, "Invalid email %s!" % arg[0])
 			else:
-				self.msg(source, "The account %s already exists or your email %s is used!" % (self.nick(source),arg[0]))
+				self.msg(source, "The account %s already exists or your email %s is used!" % (self.nick(source), arg[0]))
 		else:
 			self.msg(source, "Syntax: HELLO <email> <email>")
