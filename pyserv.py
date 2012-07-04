@@ -1056,7 +1056,7 @@ class Services:
 
 	def flag(self, target):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
-			for flag in self.query("select flag,channel from channels where user = '%s'" % str(data["user"])):
+			for flag in self.query("select flag,channel from channels where user = '%s' order by channel" % str(data["user"])):
 				if flag["flag"] == "n" or flag["flag"] == "q":
 					self.mode(flag["channel"], "+qo " + target + " " + target)
 				elif flag["flag"] == "a":
@@ -1664,7 +1664,7 @@ class Command:
 
 	def flag(self, target):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
-			for flag in self.query("select flag,channel from channels where user = '%s'" % str(data["user"])):
+			for flag in self.query("select flag,channel from channels where user = '%s' order by channel" % str(data["user"])):
 				if flag["flag"] == "n" or flag["flag"] == "q":
 					self.mode(flag["channel"], "+qo " + target + " " + target)
 				elif flag["flag"] == "a":

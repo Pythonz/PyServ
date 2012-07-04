@@ -10,14 +10,14 @@ class ipchan(Command):
 		if len(arg) == 0:
 			self.msg(uid, "IP                 Channel")
 			
-			for data in self.query("select ip,channel from ipchan"):
+			for data in self.query("select ip,channel from ipchan order by id"):
 				self.msg(uid, "  {0} {1} {2}".format(data["ip"], " "*int(15-len(data["ip"])), data["channel"]))
 				
 			self.msg(uid, "End of list.")
 		elif len(arg) == 1:
 			self.msg(uid, "IP                 Channel")
 			
-			for data in self.query("select ip,channel from ipchan where channel = '%s'" % arg[0]):
+			for data in self.query("select ip,channel from ipchan where channel = '%s' order by id" % arg[0]):
 				self.msg(uid, "  {0} {1} {2}".format(data["ip"], " "*int(15-len(data["ip"])), data["channel"]))
 				
 			self.msg(uid, "End of list.")

@@ -36,7 +36,7 @@ class info(Command):
 					self.msg(uid, "Known on following channels:")
 					self.msg(uid, "Channel              Flag")
 					
-					for channel in self.query("select channel,flag from channels where user = '{0}' order by flag".format(user["name"])):
+					for channel in self.query("select channel,flag from channels where user = '{0}' order by flag,channel".format(user["name"])):
 						self.msg(uid, " {0}{1}{2}".format(channel["channel"], " "*int(20-len(channel["channel"])), channel["flag"]))
 						
 					self.msg(uid, "End of list.")

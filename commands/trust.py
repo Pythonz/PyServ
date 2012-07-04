@@ -8,7 +8,7 @@ class trust(Command):
 		arg = args.split()
 		
 		if len(arg) == 0:
-			for trust in self.query("select * from trust"):
+			for trust in self.query("select * from trust order by id"):
 				self.msg(source, "IP: {0} {2} Limit: {1}".format(trust["address"], trust["limit"], ' '*int(23-len(trust["address"]))))
 		elif len(arg) == 1:
 			entry = False
