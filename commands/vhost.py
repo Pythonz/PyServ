@@ -44,7 +44,7 @@ class vhost(Command):
 							self.send(":%s CHGHOST %s %s" % (self.bot, source, data["host"]))
 						else:
 							self.send(":%s CHGIDENT %s %s" % (self.bot, source, data["username"]))
-							crypthost = ''.join([char for char in self.encode(source) if char.isalnum()])
+							crypthost = self.encode_md5(source)
 							self.send(":%s CHGHOST %s %s.gateway.%s" % (self.bot, source, crypthost, '.'.join(self.services_name.split(".")[-2:])))
 							
 					for data in self.query("select uid from opers"):
@@ -61,7 +61,7 @@ class vhost(Command):
 					self.send(":%s CHGHOST %s %s" % (self.bot, source, data["host"]))
 				else:
 					self.send(":%s CHGIDENT %s %s" % (self.bot, source, data["username"]))
-					crypthost = ''.join([char for char in self.encode(source) if char.isalnum()])
+					crypthost = self.encode_md5(source)
 					self.send(":%s CHGHOST %s %s.gateway.%s" % (self.bot, source, crypthost, '.'.join(self.services_name.split(".")[-2:])))
 		else:
 			self.msg(source, "Syntax: VHOST <vhost>")

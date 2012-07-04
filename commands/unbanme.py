@@ -15,7 +15,7 @@ class unbanme(Command):
 				if flag == "n" or flag == "q" or flag == "a" or flag == "o" or flag == "h":
 					for ban in self.query("select ban from banlist where channel = '%s'" % arg[0]):
 						if self.gateway(uid):
-							crypthost = ''.join([char for char in self.encode(uid) if char.isalnum()])+".gateway."+'.'.join(self.services_name.split(".")[-2:])
+							crypthost = self.encode_md5(uid)+".gateway."+'.'.join(self.services_name.split(".")[-2:])
 							
 							if fnmatch(self.nick(uid)+"!"+self.userhost(uid).split("@")[0]+"@"+crypthost, ban["ban"]):
 								self.mode(arg[0], "-b "+ban["ban"])
