@@ -41,7 +41,7 @@ commands/remove.py 4cf78d99b295d53db51929bf72418f9c
 commands/request.py d4a38ce3232d642ab2c635d1cd4f4b61
 commands/requestpass.py b54f5d38bb38200034aedb45a983f3b3
 commands/safeedback.py eb693d4c1472e606d719503d3811b095
-commands/sahello.py 6a2e4a5f28324db0f4a7df3b407e437a
+commands/sahello.py ce29f482f7e8407cd676c040d5f5f213
 commands/sajoin.py 27391aade4af83f41d05f5dabe8608cf
 commands/sakick.py b97b35551b29a2656eb81a58888d2a4f
 commands/samode.py a97455edae77d77cde70b1621426ce74
