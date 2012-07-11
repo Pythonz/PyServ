@@ -584,7 +584,7 @@ class Services:
 									smodes = smodes.split("-")[0]
 									
 								if smodes.find("B") != -1:
-									crypthost = self.encode_md5(data.split()[0][1:])
+									crypthost = self.encode_md5(data.split()[0][1:] + ":" + self.nick(data.split()[0][1:]) + "!" + self.userhost(data.split()[0][1:]))
 									self.send(":%s CHGHOST %s %s.gateway.%s" % (self.services_id, data.split()[0][1:], crypthost, '.'.join(self.services_name.split(".")[-2:])))
 									self.query("insert into gateway values ('%s')" % data.split()[0][1:])
 									
@@ -636,7 +636,7 @@ class Services:
 								self.send(":%s SVSJOIN %s %s" % (self.bot, data.split()[2], ip["channel"]))
 								
 							if data.split()[10].find("B") != -1:
-								crypthost = self.encode_md5(data.split()[2])
+								crypthost = self.encode_md5(data.split()[2] + ":" + self.nick(data.split()[2]) + "!" + self.userhost(data.split()[2]))
 								self.send(":%s CHGHOST %s %s.gateway.%s" % (self.services_id, data.split()[2], crypthost, '.'.join(self.services_name.split(".")[-2:])))
 								self.query("insert into gateway values ('%s')" % data.split()[2])
 		except Exception:
@@ -1049,7 +1049,7 @@ class Services:
 		else:
 			username = self.userhost(target).split("@")[0]
 			self.send(":%s CHGIDENT %s %s" % (self.bot, target, username))
-			crypthost = self.encode_md5(target)
+			crypthost = self.encode_md5(target + ":" + self.nick(target) + "!" + self.userhost(target))
 			self.send(":%s CHGHOST %s %s.gateway.%s" % (self.services_id, target, crypthost, '.'.join(self.services_name.split(".")[-2:])))
 			self.msg(target, "Your vhost %s.gateway.%s has been activated" % (crypthost, '.'.join(self.services_name.split(".")[-2:])))
 
@@ -1280,7 +1280,7 @@ class Services:
 		if target != "*!*@*":
 			for user in self.userlist(channel):
 				if self.gateway(user):
-					crypthost = self.encode_md5(user)+".gateway."+'.'.join(self.services_name.split(".")[-2:])
+					crypthost = self.encode_md5(user + ":" + self.nick(user) + "!" + self.userhost(user))+".gateway."+'.'.join(self.services_name.split(".")[-2:])
 					
 					if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, target):
 						self.mode(channel, "+b "+target)
@@ -1296,7 +1296,7 @@ class Services:
 			if data["ban"] != "*!*@*":
 				for user in self.userlist(channel):
 					if self.gateway(user):
-						crypthost = self.encode_md5(user)+".gateway."+'.'.join(self.services_name.split(".")[-2:])
+						crypthost = self.encode_md5(user + ":" + self.nick(user) + "!" + self.userhost(user))+".gateway."+'.'.join(self.services_name.split(".")[-2:])
 						
 						if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, data["ban"]):
 							self.mode(channel, "+b "+data["ban"])
@@ -1313,7 +1313,7 @@ class Services:
 				if fnmatch.fnmatch(ban, "*!*@*") and ban != "*!*@*":
 					for user in self.userlist(channel):
 						if self.gateway(user):
-							crypthost = ''.join([char for char in self.encode(user) if char.isalnum()])+".gateway."+'.'.join(self.services_name.split(".")[-2:])
+							crypthost = self.encode(user + ":" + self.nick(user) + "!" + self.userhost(user))+".gateway."+'.'.join(self.services_name.split(".")[-2:])
 							
 							if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, ban):
 								self.kick(channel, user, "Banned.")
@@ -1660,7 +1660,7 @@ class Command:
 		else:
 			username = self.userhost(target).split("@")[0]
 			self.send(":%s CHGIDENT %s %s" % (self.bot, target, username))
-			crypthost = self.encode_md5(target)
+			crypthost = self.encode_md5(target + ":" + self.nick(target) + "!" + self.userhost(target))
 			self.send(":%s CHGHOST %s %s.gateway.%s" % (self.services_id, target, crypthost, '.'.join(self.services_name.split(".")[-2:])))
 			self.msg(target, "Your vhost %s.gateway.%s has been activated" % (crypthost, '.'.join(self.services_name.split(".")[-2:])))
 
@@ -1884,7 +1884,7 @@ class Command:
 		if target != "*!*@*":
 			for user in self.userlist(channel):
 				if self.gateway(user):
-					crypthost = self.encode_md5(user)+".gateway."+'.'.join(self.services_name.split(".")[-2:])
+					crypthost = self.encode_md5(user + ":" + self.nick(user) + "!" + self.userhost(user))+".gateway."+'.'.join(self.services_name.split(".")[-2:])
 					
 					if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, target):
 						self.mode(channel, "+b "+target)
@@ -1900,7 +1900,7 @@ class Command:
 			if data["ban"] != "*!*@*":
 				for user in self.userlist(channel):
 					if self.gateway(user):
-						crypthost = self.encode_md5(user)+".gateway."+'.'.join(self.services_name.split(".")[-2:])
+						crypthost = self.encode_md5(user + ":" + self.nick(user) + "!" + self.userhost(user))+".gateway."+'.'.join(self.services_name.split(".")[-2:])
 						
 						if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, data["ban"]):
 							self.mode(channel, "+b "+data["ban"])
@@ -1917,7 +1917,7 @@ class Command:
 				if fnmatch.fnmatch(ban, "*!*@*") and ban != "*!*@*":
 					for user in self.userlist(channel):
 						if self.gateway(user):
-							crypthost = self.encode_md5(user)+".gateway."+'.'.join(self.services_name.split(".")[-2:])
+							crypthost = self.encode_md5(user + ":" + self.nick(user) + "!" + self.userhost(user))+".gateway."+'.'.join(self.services_name.split(".")[-2:])
 							
 							if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, ban):
 								self.kick(channel, user, "Banned.")
