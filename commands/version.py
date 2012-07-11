@@ -1,15 +1,15 @@
 from pyserv import Command, config
+import psutil
 
 class version(Command):
 	help = "Shows version of services"
 
 	def onCommand(self, source, args):
-		from hashlib import md5
 		file = open("version", "r")
 		version = file.read()
 		file.close()
 		self.msg(source, "PyServ {0}".format(version))
-		self.msg(source, "Hash: {0}".format(md5(open("list","r").read()).hexdigest()))
+		self.msg(source, "Hash: {0}".format(self.encode_md5(open("list","r").read())))
 		options = list()
 		
 		if self.ssl:
@@ -28,7 +28,6 @@ class version(Command):
 			self.msg(source, "Options: {0}".format(', '.join(options)))
 			
 		if self.isoper(source):
-			import psutil
 			self.msg(source, "CPU:")
 			i = 0
 			
