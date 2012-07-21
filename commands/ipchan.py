@@ -34,7 +34,7 @@ class ipchan(Command):
 					self.msg(uid, "Done.")
 				else:
 					self.msg(uid, "Force %s to %s ..." % (arg[1], arg[0]))
-					self.query("insert into ipchan values ('%s', '%s')" % (arg[1], arg[0]))
+					self.query("insert into ipchan (`ip`, `channel`) values ('%s', '%s')" % (arg[1], arg[0]))
 					self.msg(uid, "Done.")
 			else:
 				self.msg(uid, "Invalid channel: "+arg[0])

@@ -83,7 +83,7 @@ class trust(Command):
 				limit = filter(lambda x: x.isdigit(), arg[1])
 				
 				if limit != "":
-					self.query("insert into  trust values ('{1}','{0}')".format(limit, arg[0]))
+					self.query("insert into trust (`address`, `limit`) values ('{1}','{0}')".format(limit, arg[0]))
 					self.msg(source, "Trust for {0} has been set to {1}.".format(arg[0], limit))
 					conns = 0
 					nicks = list()

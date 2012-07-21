@@ -84,8 +84,8 @@ CREATE TABLE IF NOT EXISTS `memo` (
 DROP TABLE IF EXISTS `banlist`;
 CREATE TABLE IF NOT EXISTS `banlist` (
 	`id` bigint(20) not null auto_increment key,
-	channel text,
-	ban text
+	`channel` text,
+	`ban` text
 );
 
 DROP TABLE IF EXISTS `suspended`;

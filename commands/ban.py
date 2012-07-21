@@ -22,7 +22,7 @@ class ban(Command):
 								entry = True
 								
 							if not entry:
-								self.query("insert into banlist values ('%s', '%s')" % (arg[0], arg[1]))
+								self.query("insert into banlist (`channel`, `ban`) values ('%s', '%s')" % (arg[0], arg[1]))
 								self.msg(uid, "Done.")
 								self.enforceban(arg[0], arg[1])
 							else:
@@ -47,7 +47,7 @@ class ban(Command):
 										entry = True
 										
 									if not entry:
-										self.query("insert into banlist values ('%s', '%s')" % (arg[0], ban))
+										self.query("insert into banlist (`channel`, `ban`) values ('%s', '%s')" % (arg[0], ban))
 										self.msg(uid, "Done.")
 										self.enforceban(arg[0], ban)
 									else:

@@ -339,7 +339,7 @@ class Services:
 														entry = True
 														
 													if not entry and ban != "*!*@*":
-														self.query("insert into banlist values ('%s','%s')" % (data.split()[2], ban))
+														self.query("insert into banlist (`channel`, `ban`) values ('%s','%s')" % (data.split()[2], ban))
 														self.msg(data.split()[0][1:], "Done.")
 													elif ban == "*!*@*":
 														self.msg(data.split()[2], "ACTION is angry about %s, because he tried to set a *!*@* ban." % self.nick(data.split()[0][1:]), True)

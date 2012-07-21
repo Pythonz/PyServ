@@ -22,7 +22,7 @@ class suspend(Command):
 		elif len(arg) > 1:
 			if arg[0].startswith("#"):
 				if not self.suspended(arg[0]):
-					self.query("insert into suspended values ('%s', '%s')" % (arg[0], _mysql.escape_string(' '.join(arg[1:]))))
+					self.query("insert into suspended (`channel`, `reason`) values ('%s', '%s')" % (arg[0], _mysql.escape_string(' '.join(arg[1:]))))
 					
 					if self.chanexist(arg[0]):
 						self.query("delete from channels where channel = '{0}'".format(arg[0]))
