@@ -22,7 +22,7 @@ commands/email.py c8455f8eb55fd02904b50045e2ed5356
 commands/fantasy.py 0f6a7c46b09d1a51888d96652d049ff2
 commands/feedback.py c7da348e92284af1f447e4077bdc337c
 commands/halfop.py 04876bf41aa07f2c0665856d651fed92
-commands/hello.py b5163e406c3c00e05ba49d93a4cfd6ee
+commands/hello.py 05337ff116e5d0cc3ea8fb69be275883
 commands/info.py f1621426be44f54ff7ca8af1c935eaf0
 commands/invite.py f9f77ad17d64a76d8abf62e8230bf497
 commands/ipchan.py 49d0a91bab9fde0e16d61f4a6e368ce3
@@ -39,7 +39,7 @@ commands/remove.py 4cf78d99b295d53db51929bf72418f9c
 commands/request.py d4a38ce3232d642ab2c635d1cd4f4b61
 commands/resetpass.py 23829dc8a40b100918140b6fb074a121
 commands/safeedback.py eb693d4c1472e606d719503d3811b095
-commands/sahello.py ce29f482f7e8407cd676c040d5f5f213
+commands/sahello.py bd6ba2d507d84bff02bc730c90155180
 commands/sajoin.py 27391aade4af83f41d05f5dabe8608cf
 commands/sakick.py b97b35551b29a2656eb81a58888d2a4f
 commands/samode.py a97455edae77d77cde70b1621426ce74
