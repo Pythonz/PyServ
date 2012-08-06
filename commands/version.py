@@ -12,7 +12,7 @@ class version(Command):
 		self.msg(source, "PyServ {0}".format(version))
 		self.msg(source, "Hash: {0}".format(self.encode_md5(open("list","r").read())))
 		if self.isoper(source):
-			self.msg(source, "Latest commit: {0}".format(Popen("git log --oneline -n 2", shell=True, stdout=PIPE).stdout.read().rstrip()))
+			self.msg(source, "Latest commit: {0}".format(Popen("git log --oneline -n 1", shell=True, stdout=PIPE).stdout.read().rstrip()))
 
 		options = list()
 		
