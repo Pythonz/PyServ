@@ -52,7 +52,7 @@ commands/setwhois.py 4dd3092a4af36145c804d521928a7d58
 commands/spamscan.py 6f20d8afed3573365bbd0cd561ccdd37
 commands/suspend.py 07575e5fe7ee815d47cd524f41804acf
 commands/sync.py 4348340c6acbef24be8d71167d7e0c5a
-commands/trust.py b2235d327cbd4b6840a7946009869c7e
+commands/trust.py 1e4df57c8fec7d9ca395e8d231c3bb22
 commands/unban.py a577a7f2925e1f3c94284be491ec7bac
 commands/unbanall.py 77169e0947f7aa58237bd71c6096d24a
 commands/unbanme.py 6ae5c9efacc4549c9a1a282d7c113a8f

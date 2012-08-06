@@ -33,7 +33,7 @@ class trust(Command):
 					for nick in nicks:
 						self.send(":{0} KILL {1} :G-lined".format(self.bot, nick))
 						
-					self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.bot, arg[0], limit))
+					self.send(":{0} GLINE *@{1} 1800 :Connection limit (3) reached".format(self.bot, arg[0]))
 				elif conns == 3 and arg[0] != "0.0.0.0":
 					for nick in nicks:
 						self.msg(nick, "Your IP is scratching the connection limit. If you need more connections please request a trust and give us a reason on #help.")
