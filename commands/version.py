@@ -10,6 +10,10 @@ class version(Command):
 		file.close()
 		self.msg(source, "PyServ {0}".format(version))
 		self.msg(source, "Hash: {0}".format(self.encode_md5(open("list","r").read())))
+		if self.isoper(source):
+			from subprocess import Popen, PIPE
+			self.msg(source, "Latest commit: {0}".format(Popen("git log --oneline -n 1", shell=True, stdout=PIPE).stdout.read().rstrip()))
+
 		options = list()
 		
 		if self.ssl:
