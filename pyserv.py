@@ -757,7 +757,7 @@ class Services:
 								_modules.append(module)
 								
 						self.msg(source, "{0} -> {1}".format(open("version", "r").read(), _version))
-						shell("git add .")
+						shell("git add config.cfg")
 						shell("git commit -m 'Save'")
 						shell("git pull")
 						_files = os.listdir("sql/updates")

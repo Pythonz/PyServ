@@ -70,7 +70,7 @@ case $1 in
 				running="true"
 			fi
 			git rm commands/*.pyc
-			git add .
+			git add config.cfg
 			git commit -m 'Save'
 			git pull
 			if [ $running = "true" ]; then
