@@ -60,7 +60,7 @@ case $1 in
 			fi
 		done
 		;;
-        update)
+	update)
 		available=$(curl https://raw.github.com/Pythonz/PyServ/master/version)
 		version=$(cat version)
 		if [ $available != $version ]; then
@@ -70,7 +70,7 @@ case $1 in
 				running="true"
 			fi
 			git rm commands/*.pyc
-			git add config.cfg
+			git add .
 			git commit -m 'Save'
 			git pull
 			if [ $running = "true" ]; then
