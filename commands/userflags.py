@@ -8,7 +8,7 @@ class userflags(Command):
 		mode = list()
 		desc = list()
 		mode.append("n")
-		desc.append("Q will answer with notices, instead of privmsgs.")
+		desc.append("%s will answer with notices, instead of privmsgs." % self.bot_nick)
 		mode.append("a")
 		desc.append("Autojoin all channels where you have chanflag +v or higher.")
 		arg = args.split()
