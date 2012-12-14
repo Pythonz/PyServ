@@ -50,9 +50,9 @@ commands/scanport.py 4b777fc131c4ff4794caee5ea5e53c1a
 commands/settopic.py 2fdbd69f5a781f419996b41cb874ba77
 commands/setwhois.py 4dd3092a4af36145c804d521928a7d58
 commands/spamscan.py 6f20d8afed3573365bbd0cd561ccdd37
-commands/suspend.py 0688ec2e313146ed181ab668c512282e
+commands/suspend.py 0ecea3682330a17b6fb3a81a2c71f864
 commands/sync.py 4348340c6acbef24be8d71167d7e0c5a
-commands/trust.py 502134d9ca253366f71b9f472b0aaa41
+commands/trust.py 7ad8894aa04248a268aa28d50a3ef604
 commands/unban.py a577a7f2925e1f3c94284be491ec7bac
 commands/unbanall.py 77169e0947f7aa58237bd71c6096d24a
 commands/unbanme.py 6ae5c9efacc4549c9a1a282d7c113a8f
@@ -60,7 +60,7 @@ commands/userflags.py 5cf84800bbe2198991fb7c6e86f6cc05
 commands/userlist.py f3b89a419b4af498ef8280e27f13e806
 commands/usermodes.py 37b1e16f9ed246b9bb36f6468c871118
 commands/version.py e3a97072d3e63c7691e4b81083fbe0d1
-commands/vhost.py c5d775f96260014264e9de1291be3913
+commands/vhost.py 25d1f08dc31a3302db309dcc00f30723
 commands/voice.py fb6b8fd6b310495739ff5fc31f18053a
 commands/welcome.py fb3f585956972fc97d9c188f991d5e24
 commands/whoami.py 8ea0ee08e9cb406f4a209c0c042a4e3d

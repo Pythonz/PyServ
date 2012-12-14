@@ -10,10 +10,10 @@ class trust(Command):
 		if len(arg) > 1:
 			trip = escape_string(arg[1])
 		
-		if len(arg) == 1 && arg[0] == "list":
+		if len(arg) == 1 and arg[0] == "list":
 			for trust in self.query("select * from trust order by id"):
 				self.msg(source, "IP: {0} {2} Limit: {1}".format(trust["address"], trust["limit"], ' '*int(23-len(trust["address"]))))
-		elif len(arg) == 2 && arg[0] == "remove":
+		elif len(arg) == 2 and arg[0] == "remove":
 			entry = False
 			
 			for trust in self.query("select * from trust where address = '{0}'".format(trip)):
@@ -42,7 +42,7 @@ class trust(Command):
 						self.msg(nick, "Your IP is scratching the connection limit. If you need more connections please request a trust and give us a reason on #help.")
 			else:
 				self.msg(source, "Trust for {0} does not exist.".format(arg[1]))
-		elif len(arg) == 3 && arg[0] == "set":
+		elif len(arg) == 3 and arg[0] == "set":
 			entry = False
 			
 			for trust in self.query("select * from trust where address = '{0}'".format(trip)):

@@ -12,7 +12,7 @@ class suspend(Command):
 		if len(arg) > 2:
 			reason = _mysql.escape_string(' '.join(arg[2:]))
 		
-		if len(arg) == 2 && arg[0].lower() == "remove":
+		if len(arg) == 2 and arg[0].lower() == "remove":
 			if arg[1].startswith("#"):
 				if self.suspended(channel):
 					self.query("delete from suspended where channel = '%s'" % channel)
@@ -21,7 +21,7 @@ class suspend(Command):
 					self.msg(uid, arg[1]+" is not suspended.")
 			else:
 				self.msg(uid, "Invalid channel: "+arg[1])
-		elif len(arg) > 2 && arg[0].lower() == "set":
+		elif len(arg) > 2 and arg[0].lower() == "set":
 			if arg[1].startswith("#"):
 				if not self.suspended(channel):
 					self.query("insert into suspended (`channel`, `reason`) values ('%s', '%s')" % (channel, reason))
@@ -49,7 +49,7 @@ class suspend(Command):
 				self.msg(uid, "Suspended.")
 			else:
 				self.msg(uid, "Invalid channel: "+arg[1])
-		elif len(arg) == 2 && arg[0].lower() == "list":
+		elif len(arg) == 2 and arg[0].lower() == "list":
 			for data in self.query("select * from suspended"):
 				self.msg(uid, "Channel: {0} {1} Reason: {2}".format(data["channel"], " "*int(23-len(data["channel"])), data["reason"]))
 		else:

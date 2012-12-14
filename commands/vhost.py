@@ -8,7 +8,7 @@ class vhost(Command):
 		from _mysql import escape_string
 		arg = args.split()
 		
-		if len(arg) == 2 && arg[0] == "set":
+		if len(arg) == 2 and arg[0] == "set":
 			if arg[].find(".") == -1:
 				self.msg(source, "Invalid vhost. Where's the dot?")
 			elif arg[1][-2] == "." or arg[0][-1] == ".":
@@ -52,7 +52,7 @@ class vhost(Command):
 						self.msg(data["uid"], "vHost request received from %s" % self.auth(source))
 				else:
 					self.msg(source, "%s is already using this vHost." % user)
-		elif len(arg) == 1 && arg[0].lower() == "remove":
+		elif len(arg) == 1 and arg[0].lower() == "remove":
 			self.query("delete from vhosts where user = '%s'" % self.auth(source))
 			self.msg(source, "Done.")
 			
