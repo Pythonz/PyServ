@@ -2,7 +2,6 @@ HOWTO 009ba50ed7d5c91a176e17ea8a9a2958
 README.md ff30f05bd646c192e7c4798066290502
 config.cfg.dist fda11158a5d1c0bb69d53956361b1028
 pyserv 7a48baa70d9bcff4810ff6d23e4d3d5f
-pyserv.pid ed08c686571086f386e58ba6847c848c
 pyserv.py ba8cac1cbe58647aee0726711f091f9a
 setup.py b0cc0d42c26eb1617e7202a832c3878f
 commands/__init__.py 91f5e2b4ee7c7b1e74893bc8b1287691
