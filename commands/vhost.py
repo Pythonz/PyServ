@@ -9,7 +9,7 @@ class vhost(Command):
 		arg = args.split()
 		
 		if len(arg) == 2 and arg[0] == "set":
-			if arg[].find(".") == -1:
+			if arg[1].find(".") == -1:
 				self.msg(source, "Invalid vhost. Where's the dot?")
 			elif arg[1][-2] == "." or arg[0][-1] == ".":
 				self.msg(source, "Domain ending is too short.")
