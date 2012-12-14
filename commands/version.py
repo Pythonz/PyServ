@@ -32,18 +32,7 @@ class version(Command):
 			self.msg(source, "Options: {0}".format(', '.join(options)))
 			
 		if self.isoper(source):
-			self.msg(source, "CPU:")
-			i = 0
-			
-			for cpu in psutil.cpu_percent(interval=0, percpu=True):
-				i += 1
-				self.msg(source, "  CPU_{0}: {1}%".format(i, cpu))
-				
-			self.msg(source, "Memory:")
-			self.msg(source, "  Total: {0} mb".format(psutil.phymem_usage()[0] / 1024 / 1024))
-			self.msg(source, "  Free: {0} mb".format(psutil.phymem_usage()[1] / 1024 / 1024))
-			self.msg(source, "  Used: {0} mb".format(psutil.phymem_usage()[2] / 1024 / 1024))
-			self.msg(source, "If you're looking for more commands, check out this: https://github.com/Pythonz/PyServ-Commands")
+			self.msg(source, "If you're looking for more commands, check this out: https://github.com/Pythonz/PyServ-Commands")
 			
 		self.msg(source, "Developed by Pythonz (https://github.com/Pythonz). Suggestions to pythonz@chiruclan.de or mechi.community@yahoo.de.")
 
