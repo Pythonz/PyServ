@@ -14,7 +14,7 @@ import traceback
 import thread
 import fnmatch
 import ssl
-import commands
+import modules
 import __builtin__
 
 def red(string):
@@ -247,7 +247,7 @@ class Services:
 									messages = 10
 									seconds = [6, 5]
 									
-									for dump in self.query("select spamscan from channelinfo where name = '%s'" % pchan):
+									for dump in self.query("select spamscan from channelinfo where name = '%s'" % _mysql.escape_string(pchan)):
 										messages = int(dump["spamscan"].split(":")[0])
 										seconds = [int(dump["spamscan"].split(":")[1]) + 1, int(dump["spamscan"].split(":")[1])]
 										
@@ -271,7 +271,7 @@ class Services:
 							if data.split()[2].startswith("#") and self.chanflag("l", data.split()[2]):
 								self.log(data.split()[0][1:], "notice", data.split()[2], ' '.join(data.split()[3:]))
 						elif data.split()[1] == "NICK":
-							self.query("update online set nick = '%s' where uid = '%s'" % (data.split()[2], str(data.split()[0])[1:]))
+							self.query("update online set nick = '%s' where uid = '%s'" % (_mysql.escape_string(data.split()[2]), str(data.split()[0])[1:]))
 						elif data.split()[1] == "KICK":
 							arg = data.split()
 							knick = arg[0][1:]
@@ -282,7 +282,7 @@ class Services:
 							if ktarget == self.bot:
 								self.join(kchan)
 							else:
-								self.query("delete from chanlist where channel = '{0}' and uid = '{1}'".format(kchan, ktarget))
+								self.query("delete from chanlist where channel = '{0}' and uid = '{1}'".format(_mysql.escape_string(kchan), ktarget))
 						elif data.split()[1] == "QUIT":
 							for qchan in self.query("select * from chanlist where uid = '{0}'".format(data.split()[0][1:])):
 								if self.chanflag("l", qchan["channel"]):
@@ -292,7 +292,7 @@ class Services:
 										self.log(qchan["uid"], "quit", qchan["channel"], ' '.join(data.split()[2:])[1:])
 										
 							self.query("delete from chanlist where uid = '{0}'".format(data.split()[0][1:]))
-							self.query("delete from temp_nick where nick = '%s'" % str(data.split()[0])[1:])
+							self.query("delete from temp_nick where nick = '%s'" % _mysql.escape_string(str(data.split()[0])[1:]))
 							self.query("delete from gateway where uid = '%s'" % str(data.split()[0])[1:])
 							self.query("delete from online where uid = '%s'" % str(data.split()[0])[1:])
 						elif data.split()[1] == "TOPIC":
@@ -301,7 +301,7 @@ class Services:
 									self.log(data.split()[0][1:], "topic", data.split()[2], ' '.join(data.split()[3:]))
 									
 								if self.chanflag("t", data.split()[2]):
-									for channel in self.query("select topic from channelinfo where name = '{0}'".format(data.split()[2])):
+									for channel in self.query("select topic from channelinfo where name = '{0}'".format(_mysql.escape_string(data.split()[2]))):
 										self.send(":{0} TOPIC {1} :{2}".format(self.bot, data.split()[2], channel["topic"]))
 										
 										if self.chanflag("l", data.split()[2]):
@@ -312,7 +312,7 @@ class Services:
 								
 							if self.chanflag("m", data.split()[2]) and len(data.split()) == 5:
 								if data.split()[2].startswith("#"):
-									for channel in self.query("select name,modes from channelinfo where name = '{0}'".format(data.split()[2])):
+									for channel in self.query("select name,modes from channelinfo where name = '{0}'".format(_mysql.escape_string(data.split()[2]))):
 										self.mode(channel["name"], channel["modes"])
 										
 							if len(data.split()) > 5:
@@ -335,11 +335,11 @@ class Services:
 												if fnmatch.fnmatch(ban, "*!*@*"):
 													entry = False
 													
-													for sql in self.query("select ban from banlist where ban = '%s' and channel = '%s'" % (ban, data.split()[2])):
+													for sql in self.query("select ban from banlist where ban = '%s' and channel = '%s'" % (_mysql.escape_string(ban), _mysql.escape_string(data.split()[2]))):
 														entry = True
 														
 													if not entry and ban != "*!*@*":
-														self.query("insert into banlist (`channel`, `ban`) values ('%s','%s')" % (data.split()[2], ban))
+														self.query("insert into banlist (`channel`, `ban`) values ('%s','%s')" % (_mysql.escape_string(data.split()[2]), _mysql.escape_string(ban)))
 														self.msg(data.split()[0][1:], "Done.")
 													elif ban == "*!*@*":
 														self.msg(data.split()[2], "ACTION is angry about %s, because he tried to set a *!*@* ban." % self.nick(data.split()[0][1:]), True)
@@ -362,11 +362,11 @@ class Services:
 													if fnmatch.fnmatch(ban, "*!*@*"):
 														entry = False
 														
-														for sql in self.query("select ban from banlist where channel = '%s' and ban = '%s'" % (data.split()[2], ban)):
+														for sql in self.query("select ban from banlist where channel = '%s' and ban = '%s'" % (_mysql.escape_string(data.split()[2]), _mysql.escape_string(ban))):
 															entry = True
 															
 														if entry:
-															self.query("delete from banlist where channel = '%s' and ban = '%s'" % (data.split()[2], ban))
+															self.query("delete from banlist where channel = '%s' and ban = '%s'" % (_mysql.escape_string(data.split()[2]), _mysql.escape_string(ban)))
 															self.msg(data.split()[0][1:], "Done.")
 										else:
 											self.mode(data.split()[2], "+{0} {1}".format("b"*len(data.split()[5:]), ' '.join(data.split()[5:])))
@@ -427,7 +427,7 @@ class Services:
 									for user in data.split()[5:]:
 										fm_chan = data.split()[2]
 										
-										for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (data.split()[2], self.auth(user))):
+										for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (_mysql.escape_string(data.split()[2]), self.auth(user))):
 											if flag["flag"] == "n" or flag["flag"] == "q":
 												self.mode(fm_chan, "+qo {0} {0}".format(user))
 											elif flag["flag"] == "a":
@@ -443,7 +443,7 @@ class Services:
 						elif data.split()[1] == "JOIN":
 							juid = data.split()[0][1:]
 							jchan = data.split()[2][1:]
-							self.query("insert into chanlist value ('%s', '%s')" % (juid, jchan))
+							self.query("insert into chanlist value ('%s', '%s')" % (juid, _mysql.escape_string(jchan)))
 							
 							if self.suspended(jchan):
 								self.kick(jchan, juid, "Suspended: "+self.suspended(jchan))
@@ -458,7 +458,7 @@ class Services:
 							fjoin_user = self.auth(juid)
 							hasflag = False
 							
-							for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (jchan, fjoin_user)):
+							for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (_mysql.escape_string(jchan), _mysql.escape_string(fjoin_user))):
 								if flag["flag"] == "n" or flag["flag"] == "q":
 									self.mode(jchan, "+qo " + juid + " " + juid)
 									hasflag = True
@@ -482,7 +482,7 @@ class Services:
 								if self.chanflag("v", jchan):
 									self.mode(jchan, "+v %s" % juid)
 									
-							for welcome in self.query("select name,welcome from channelinfo where name = '{0}'".format(jchan)):
+							for welcome in self.query("select name,welcome from channelinfo where name = '{0}'".format(_mysql.escape_string(jchan))):
 								if self.chanflag("w", jchan):
 									self.msg(juid, "[{0}] {1}".format(welcome["name"], welcome["welcome"]))
 									
@@ -499,7 +499,7 @@ class Services:
 								if pnick.find(",") != -1:
 									pnick = pnick.split(",")[1]
 									
-								self.query("insert into chanlist value ('{0}','{1}')".format(pnick, fjoin_chan))
+								self.query("insert into chanlist value ('{0}','{1}')".format(_mysql.escape_string(pnick), _mysql.escape_string(fjoin_chan)))
 								
 								if self.suspended(fjoin_chan):
 									if not self.isoper(pnick):
@@ -517,7 +517,7 @@ class Services:
 							fjoin_user = self.auth(fjoin_nick)
 							hasflag = False
 							
-							for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (fjoin_chan, fjoin_user)):
+							for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (_mysql.escape_string(fjoin_chan), fjoin_user)):
 								if flag["flag"] == "n" or flag["flag"] == "q":
 									self.mode(fjoin_chan, "+qo " + fjoin_nick + " " + fjoin_nick)
 									hasflag = True
@@ -541,7 +541,7 @@ class Services:
 								if self.chanflag("v", fjoin_chan):
 									self.mode(fjoin_chan, "+v %s" % fjoin_nick)
 									
-							for welcome in self.query("select name,welcome from channelinfo where name = '{0}'".format(fjoin_chan)):
+							for welcome in self.query("select name,welcome from channelinfo where name = '{0}'".format(_mysql.escape_string(fjoin_chan))):
 								if self.chanflag("w", fjoin_chan):
 									self.msg(fjoin_nick, "[{0}] {1}".format(welcome["name"], welcome["welcome"]))
 									
@@ -551,11 +551,11 @@ class Services:
 							pnick = data.split()[0][1:]
 							pchan = data.split()[2]
 							
-							for parted in self.query("select channel from ipchan where ip = '%s' and channel = '%s'" % (self.getip(pnick), pchan)):
+							for parted in self.query("select channel from ipchan where ip = '%s' and channel = '%s'" % (self.getip(pnick), _mysql.escape_string(pchan))):
 								self.send(":%s SVSJOIN %s %s" % (self.bot, pnick, parted["channel"]))
 								self.msg(pnick, "Your IP is forced to be in "+parted["channel"])
 								
-							self.query("delete from chanlist where uid = '{0}' and channel = '{1}'".format(pnick, pchan))
+							self.query("delete from chanlist where uid = '{0}' and channel = '{1}'".format(pnick, _mysql.escape_string(pchan)))
 							
 							if self.chanflag("l", pchan):
 								if len(data.split()) == 3:
@@ -1346,7 +1346,7 @@ class Services:
 		self.send(":"+self.bot+" GLINE *@"+ip+" 1800 :"+reason)
 
 	def suspended(self, channel):
-		for data in self.query("select reason from suspended where channel = '%s'" % channel):
+		for data in self.query("select reason from suspended where channel = '%s'" % _mysql.escape_string(channel)):
 			return data["reason"]
 			
 		return False
@@ -1377,7 +1377,7 @@ class Services:
 
 	def fantasy(self, channel):
 		if self.chanexist(channel):
-			for data in self.query("select fantasy from channelinfo where name = '%s'" % channel):
+			for data in self.query("select fantasy from channelinfo where name = '%s'" % _mysql.escape_string(channel)):
 				return data["fantasy"]
 				
 		return False
@@ -1694,13 +1694,13 @@ class Command:
 
 	def getflag(self, target, channel):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
-			for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (channel, data["user"])):
+			for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (_mysql.escape_string(channel), data["user"])):
 				return flag["flag"]
 				
 		return 0
 
 	def chanflag(self, flag, channel):
-		for data in self.query("select flags from channelinfo where name = '{0}'".format(channel)):
+		for data in self.query("select flags from channelinfo where name = '{0}'".format(_mysql.escape_string(channel))):
 			if data["flags"].find(flag) != -1:
 				return True
 				
@@ -1817,8 +1817,8 @@ class Command:
 
 	def metadata(self, uid, string, content):
 		if string == "accountname":
-			self.query("delete from temp_nick where nick = '%s' or user = '%s'" % (uid, content))
-			self.query("insert into temp_nick values ('%s','%s')" % (uid, content))
+			self.query("delete from temp_nick where nick = '%s' or user = '%s'" % (uid, _mysql.escape_string(content)))
+			self.query("insert into temp_nick values ('%s','%s')" % (uid, _mysql.escape_string(content)))
 			self.msg(uid, "You are now logged in as %s" % content)
 			self.vhost(uid)
 			self.flag(uid)
@@ -1834,7 +1834,7 @@ class Command:
 				self.send(":{uid} KICK {channel} {target} :{reason}".format(uid=self.bot, target=uid, channel=channel, reason=reason))
 				self.kickcount()
 				
-			self.query("delete from chanlist where channel = '{0}' and uid = '{1}'".format(channel, uid))
+			self.query("delete from chanlist where channel = '{0}' and uid = '{1}'".format(_mysql.escape_string(channel), uid))
 
 	def userlist(self, channel):
 		uid = list()
@@ -1847,7 +1847,7 @@ class Command:
 	def onchan(self, channel, target):
 		uid = self.uid(target)
 		
-		for data in self.query("select * from chanlist where channel = '%s' and uid = '%s'" % (channel, uid)):
+		for data in self.query("select * from chanlist where channel = '%s' and uid = '%s'" % (_mysql.escape_string(channel), uid)):
 			return True
 			
 		return False
@@ -1953,7 +1953,7 @@ class Command:
 		self.send(":"+self.bot+" GLINE *@"+ip+" 1800 :"+reason)
 
 	def suspended(self, channel):
-		for data in self.query("select reason from suspended where channel = '%s'" % channel):
+		for data in self.query("select reason from suspended where channel = '%s'" % _mysql.escape_string(channel)):
 			return data["reason"]
 			
 		return False
@@ -1967,7 +1967,7 @@ class Command:
 		return 0
 
 	def getvhost(self, target):
-		for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % target):
+		for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % _mysql.escape_string(target)):
 			return data["vhost"]
 			
 		return "None"
@@ -1984,7 +1984,7 @@ class Command:
 
 	def fantasy(self, channel):
 		if self.chanexist(channel):
-			for data in self.query("select fantasy from channelinfo where name = '%s'" % channel):
+			for data in self.query("select fantasy from channelinfo where name = '%s'" % _mysql.escape_string(channel)):
 				return data["fantasy"]
 				
 		return False
