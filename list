@@ -61,7 +61,7 @@ commands/userflags.py 9ee8d86c855293b6f2b6a5c716f06f57
 commands/userlist.py f3b89a419b4af498ef8280e27f13e806
 commands/usermodes.py 37b1e16f9ed246b9bb36f6468c871118
 commands/version.py 56f9bf0cba7b2c8147847183c1c6df8e
-commands/vhost.py f3113c0c15d1346dab680d722c627224
+commands/vhost.py eaa5f6d9bb2bff528f16bba4dadc70b9
 commands/voice.py fb6b8fd6b310495739ff5fc31f18053a
 commands/welcome.py fb3f585956972fc97d9c188f991d5e24
 commands/whoami.py 8ea0ee08e9cb406f4a209c0c042a4e3d

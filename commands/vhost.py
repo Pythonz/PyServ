@@ -11,7 +11,7 @@ class vhost(Command):
 		if len(arg) == 2 and arg[0] == "set":
 			if arg[1].find(".") == -1:
 				self.msg(source, "Invalid vhost. Where's the dot?")
-			elif arg[1][-2] == "." or arg[0][-1] == ".":
+			elif arg[1][-2] == "." or arg[1][-1] == ".":
 				self.msg(source, "Domain ending is too short.")
 			elif arg[1].find("@") != -1 and len(arg[1].split("@")[0]) < 3:
 				self.msg(source, "vIdent too short.")
@@ -21,7 +21,7 @@ class vhost(Command):
 				self.msg(source, "No dots allowed in vIdent.")
 			elif arg[1].find("@") != -1 and arg[1].split("@")[1].find(".") == -1:
 				self.msg(source, "Thats no vHost, the DOT is missing.")
-			elif len(arg[0]) < 6:
+			elif len(arg[1]) < 6:
 				self.msg(source, "Your vhost is too short.")
 			else:
 				entry = False
