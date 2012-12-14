@@ -35,7 +35,7 @@ commands/op.py 3628a41b1a155b55817c98336b7019a7
 commands/opers.py 32f64207ebb9287f14ab8940e028152d
 commands/owner.py c1905038b1729f8c1048e77241ea984e
 commands/protect.py 6e18181253a80809455d35c79e761779
-commands/remove.py 4cf78d99b295d53db51929bf72418f9c
+commands/remove.py dc3f3e6c0d0aee155beb20d835862f93
 commands/request.py d4a38ce3232d642ab2c635d1cd4f4b61
 commands/resetpass.py 23829dc8a40b100918140b6fb074a121
 commands/safeedback.py eb693d4c1472e606d719503d3811b095
