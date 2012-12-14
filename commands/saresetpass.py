@@ -17,7 +17,7 @@ class saresetpass(Command):
 				
 				if data["suspended"] == "0":
 					newpw = str(hash(str(time()) + data["name"] + data["pass"] + data["email"]))
-					self.query("update users set pass = '%s' where user = '%s' and email = '%s'" % (self.encode(newpw), escape_string(data["name"]), escape_string(data["email"])))
+					self.query("update users set pass = '%s' where name = '%s' and email = '%s'" % (self.encode(newpw), escape_string(data["name"]), escape_string(data["email"])))
 					self.msg(uid, "The new password of the user {0} is {1}. He/She should change it as soon as possible!".format(data["name"], newpw))
 				else:
 					self.msg(uid, "The account have been banned from " + self.services_description + ". Reason: " + data["suspended"])

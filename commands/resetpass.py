@@ -17,7 +17,7 @@ class resetpass(Command):
 					
 					if data["suspended"] == "0":
 						newpw = str(hash(str(time()) + data["name"] + data["pass"] + data["email"]))
-						self.query("update users set pass = '%s' where user = '%s' and email = '%s'" % (self.encode(newpw), escape_string(arg[0]), escape_string(arg[1])))
+						self.query("update users set pass = '%s' where name = '%s' and email = '%s'" % (self.encode(newpw), escape_string(arg[0]), escape_string(arg[1])))
 						self.mail(data["email"], "From: %s <%s>\nTo: %s <%s>\nSubject: Password reset\nThis is an automated message, do not respond to this email!\n\nAccount: %s\nPassword: %s" % (self.services_description, self.email, data["name"], data["email"], data["name"], newpw))
 						self.msg(uid, "I've sent an email with your lost password to %s." % data["email"])
 					else:

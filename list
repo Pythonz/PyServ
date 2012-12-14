@@ -37,14 +37,14 @@ commands/owner.py c1905038b1729f8c1048e77241ea984e
 commands/protect.py 6e18181253a80809455d35c79e761779
 commands/remove.py dc3f3e6c0d0aee155beb20d835862f93
 commands/request.py d4a38ce3232d642ab2c635d1cd4f4b61
-commands/resetpass.py 23829dc8a40b100918140b6fb074a121
+commands/resetpass.py 79243ee938012e8f1e58cd6e51613997
 commands/safeedback.py eb693d4c1472e606d719503d3811b095
 commands/sahello.py bd6ba2d507d84bff02bc730c90155180
 commands/sajoin.py 27391aade4af83f41d05f5dabe8608cf
 commands/sakick.py b97b35551b29a2656eb81a58888d2a4f
 commands/samode.py a97455edae77d77cde70b1621426ce74
 commands/sapart.py 99f59fa357d7317c980ab53f7c097eaf
-commands/saresetpass.py b937d8a4984a4fc92df1679606ddd633
+commands/saresetpass.py 6ef1b39f03a08905b881999a6da049cb
 commands/sauserflags.py 25b6b0e355c34560b24c50c3251e363f
 commands/savhost.py fb2a6c047a47ecdfb47ad8440b97cc59
 commands/scanport.py 4b777fc131c4ff4794caee5ea5e53c1a
