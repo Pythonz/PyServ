@@ -23,7 +23,7 @@ class auth(Command):
 							
 						self.query("insert into temp_nick values ('%s','%s')" % (source, str(data["name"])))
 						self.msg(source, "You are now logged in as %s" % str(data["name"]))
-						self.msg(source, "Remember: NO-ONE from %s will ever ask for your password. NEVER send your password to ANYONE except Q@%s." % (self.services_description, self.services_name))
+						self.msg(source, "Remember: NO-ONE from %s will ever ask for your password. NEVER send your password to ANYONE except %s@%s." % (self.services_description, self.bot_nick, self.services_name))
 						self.meta(source, "accountname", str(data["name"]))
 						self.usermodes(source)
 						self.vhost(source)
