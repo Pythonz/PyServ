@@ -14,7 +14,7 @@ import traceback
 import thread
 import fnmatch
 import ssl
-import modules
+import commands
 import __builtin__
 
 def red(string):
