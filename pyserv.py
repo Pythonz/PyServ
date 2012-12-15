@@ -795,12 +795,6 @@ class ServiceThread:
 							self.help(source, "UPDATE", "Updates the services")
 							
 						if len(args) != 0:
-							if fnmatch.fnmatch("restart", "*" + args.lower() + "*"):
-								self.help(source, "RESTART", "Restarts the services")
-						else:
-							self.help(source, "RESTART", "Restarts the services")
-							
-						if len(args) != 0:
 							if fnmatch.fnmatch("quit", "*" + args.lower() + "*"):
 								self.help(source, "QUIT", "Shutdowns the services")
 						else:
