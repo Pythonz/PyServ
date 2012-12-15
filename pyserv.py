@@ -845,7 +845,7 @@ class Services:
 		if nick == self.bot_nick:
 			return self.bot
 			
-		for data in self.query("select uid from online where nick = '{0}'".format(nick)):
+		for data in self.query("select uid from online where nick = '{0}'".format(_mysql.escape_string(nick))):
 			return str(data["uid"])
 			
 		return nick
@@ -854,7 +854,7 @@ class Services:
 		if source == self.bot:
 			return self.bot_nick
 			
-		for data in self.query("select nick from online where uid = '%s'" % source):
+		for data in self.query("select nick from online where uid = '%s'" % _mysql.escape_string(source)):
 			return str(data["nick"])
 			
 		return source
@@ -863,7 +863,7 @@ class Services:
 		if user.lower() == self.bot_nick.lower():
 			return self.bot_nick
 			
-		for data in self.query("select name from users where name = '%s'" % user):
+		for data in self.query("select name from users where name = '%s'" % _mysql.escape_string(user)):
 			return str(data["name"])
 			
 		return False
@@ -1460,7 +1460,7 @@ class Command:
 		if nick == self.bot_nick:
 			return self.bot
 			
-		for data in self.query("select uid from online where nick = '{0}'".format(nick)):
+		for data in self.query("select uid from online where nick = '{0}'".format(_mysql.escape_string(nick))):
 			return data["uid"]
 			
 		return nick
@@ -1469,7 +1469,7 @@ class Command:
 		if source == self.bot:
 			return self.bot_nick
 			
-		for data in self.query("select nick from online where uid = '%s'" % source):
+		for data in self.query("select nick from online where uid = '%s'" % _mysql.escape_string(source)):
 			return data["nick"]
 			
 		return source
@@ -1478,7 +1478,7 @@ class Command:
 		if user.lower() == self.bot_nick.lower():
 			return self.bot_nick
 			
-		for data in self.query("select name from users where name = '%s'" % user):
+		for data in self.query("select name from users where name = '%s'" % _mysql.escape_string(user)):
 			return str(data["name"])
 			
 		return False
