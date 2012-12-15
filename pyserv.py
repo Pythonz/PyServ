@@ -90,6 +90,20 @@ class Services:
 		self.bot_real = config.get("BOT", "real")
 		self.db = _mysql.connect(host=self.mysql_host, port=self.mysql_port, db=self.mysql_name, user=self.mysql_user, passwd=self.mysql_passwd)
 		
+	def query(self, string):
+		self.db.query(str(string))
+		result = self.db.store_result()
+		
+		if result:
+			results = list()
+			
+			for data in result.fetch_row(maxrows=0, how=1):
+				results.append(data)
+				
+			return results
+			
+		return None
+		
 	def send(self, text):
 		self.con.send(text+"\n")
 		debug(blue("*") + " " + text)
