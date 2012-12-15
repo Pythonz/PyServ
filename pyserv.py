@@ -1338,12 +1338,14 @@ class Services:
 
 	def gline(self, target, reason=""):
 		uid = self.uid(target)
-		ip = self.getip(uid)
 		
-		for data in self.query("select uid from online where address = '%s'" % self.getip(uid)):
-			self.send(":"+self.bot+" KILL "+data["uid"]+" :G-lined")
+		if uid != self.bot and target.tolower() != self.bot_nick.tolower():
+			ip = self.getip(uid)
 			
-		self.send(":"+self.bot+" GLINE *@"+ip+" 1800 :"+reason)
+			for data in self.query("select uid from online where address = '%s'" % self.getip(uid)):
+				self.send(":"+self.bot+" KILL "+data["uid"]+" :G-lined")
+				
+			self.send(":"+self.bot+" GLINE *@"+ip+" 1800 :"+reason)
 
 	def suspended(self, channel):
 		for data in self.query("select reason from suspended where channel = '%s'" % _mysql.escape_string(channel)):
@@ -1945,12 +1947,14 @@ class Command:
 
 	def gline(self, target, reason=""):
 		uid = self.uid(target)
-		ip = self.getip(uid)
 		
-		for data in self.query("select uid from online where address = '%s'" % self.getip(uid)):
-			self.send(":"+self.bot+" KILL "+data["uid"]+" :G-lined")
+		if uid != self.bot and target.tolower() != self.bot_nick.tolower():
+			ip = self.getip(uid)
 			
-		self.send(":"+self.bot+" GLINE *@"+ip+" 1800 :"+reason)
+			for data in self.query("select uid from online where address = '%s'" % self.getip(uid)):
+				self.send(":"+self.bot+" KILL "+data["uid"]+" :G-lined")
+				
+			self.send(":"+self.bot+" GLINE *@"+ip+" 1800 :"+reason)
 
 	def suspended(self, channel):
 		for data in self.query("select reason from suspended where channel = '%s'" % _mysql.escape_string(channel)):
