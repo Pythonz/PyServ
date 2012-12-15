@@ -101,6 +101,14 @@ class Services:
 				results.append(data)
 				
 			return results
+			
+	def query_row(self, string):
+		self.db.query(str(string))
+		result = self.db.store_result()
+		
+		if result:
+			for data in result.fetch_row(maxrows=1, how=1):
+				return data
 		
 	def log(self, source, msgtype, channel, text=""):
 		try:
@@ -193,7 +201,6 @@ class Services:
 			__builtin__.con = self.con
 			__builtin__.spamscan = {}
 			_connected = False
-			__builtin__.db = self.db
 			__builtin__.config = config
 			
 			while 1:
@@ -271,7 +278,6 @@ class ServiceThread:
 		self.bot_user = config.get("BOT", "user").split()[0]
 		self.bot_real = config.get("BOT", "real")
 		self.con = con
-		self.db = db
 	
 	def onData(self, data):
 		if data.split()[1] == "PRIVMSG":
@@ -1229,8 +1235,9 @@ class ServiceThread:
 		return hashlib.md5(string).hexdigest()
 
 	def query(self, string):
-		self.db.query(str(string))
-		result = self.db.store_result()
+		Smysql = _mysql.connect(host=self.mysql_host, port=self.mysql_port, db=self.mysql_name, user=self.mysql_user, passwd=self.mysql_passwd)
+		Smysql.query(str(string))
+		result = Smysql.store_result()
 		
 		if result:
 			results = list()
@@ -1238,15 +1245,22 @@ class ServiceThread:
 			for data in result.fetch_row(maxrows=0, how=1):
 				results.append(data)
 				
+			Smysql.close()
 			return results
+			
+		Smysql.close()
 
 	def query_row(self, string):
-		self.db.query(str(string))
-		result = self.db.store_result()
+		Smysql = _mysql.connect(host=self.mysql_host, port=self.mysql_port, db=self.mysql_name, user=self.mysql_user, passwd=self.mysql_passwd)
+		Smysql.query(str(string))
+		result = Smysql.store_result()
 		
 		if result:
 			for data in result.fetch_row(maxrows=1, how=1):
+				Smysql.close()
 				return data
+				
+		Smysql.close()
 
 	def mail(self, receiver, message):
 		try:
