@@ -89,6 +89,28 @@ class Services:
 		self.bot_user = config.get("BOT", "user").split()[0]
 		self.bot_real = config.get("BOT", "real")
 		self.db = _mysql.connect(host=self.mysql_host, port=self.mysql_port, db=self.mysql_name, user=self.mysql_user, passwd=self.mysql_passwd)
+		
+	def msg(self, target, text=" ", action=False):
+		if self.userflag(target, "n") and not action:
+			self.send(":%s NOTICE %s :%s" % (self.bot, target, text))
+		elif not self.userflag(target, "n") and not action:
+			self.send(":%s PRIVMSG %s :%s" % (self.bot, target, text))
+		else:
+			self.send(":%s PRIVMSG %s :\001ACTION %s\001" % (self.bot, target, text))
+
+	def mode(self, target, mode):
+		self.send(":%s SVSMODE %s %s" % (self.bot, target, mode))
+		
+		if target.startswith("#"):
+			if self.chanflag("l", target):
+				self.log(self.bot_nick, "mode", target, mode)
+
+	def meta(self, target, meta, content):
+		self.send(":%s METADATA %s %s :%s" % (self.services_id, target, meta, content))
+		
+	def send(self, text):
+		self.con.send(text+"\n")
+		debug(blue("*") + " " + text)
 
 	def run(self):
 		try:
@@ -117,8 +139,9 @@ class Services:
 			self.send(":%s BURST" % self.services_id)
 			self.send(":%s ENDBURST" % self.services_id)
 			__builtin__.con = self.con
-			spamscan = {}
+			__builtin__.spamscan = {}
 			_connected = False
+			__builtin__.db = self.db
 			
 			while 1:
 				recv = self.con.recv(25600)
@@ -151,498 +174,541 @@ class Services:
 									
 									if self.chanflag("l", channel["name"]):
 										self.log(self.bot_nick, "topic", channel["name"], ":"+channel["topic"])
-						elif data.split()[1] == "PRIVMSG":
-							if data.split()[2] == self.bot:
-								iscmd = False
-								cmd = data.split()[3][1:]
-								
-								if os.access("commands/"+cmd.lower()+".py", os.F_OK):
-									iscmd = True
-									exec("oper = commands.%s.%s().oper" % (cmd.lower(), cmd.lower()))
-									
-									if oper == 0:
-										exec("cmd_auth = commands.%s.%s().nauth" % (cmd.lower(), cmd.lower()))
-										
-										if not cmd_auth:
-											if len(data.split()) == 4:
-												exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', ''))" % (cmd.lower(), cmd.lower(), data.split()[0][1:]))
-											elif len(data.split()) > 4:
-												exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', '%s'))" % (cmd.lower(), cmd.lower(), data.split()[0][1:], ' '.join(data.split()[4:]).replace("'", "\\'")))
-										elif cmd_auth:
-											if self.auth(data.split()[0][1:]):
-												if len(data.split()) == 4:
-													exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', ''))" % (cmd.lower(), cmd.lower(), data.split()[0][1:]))
-												elif len(data.split()) > 4:
-													exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', '%s'))" % (cmd.lower(), cmd.lower(), data.split()[0][1:], ' '.join(data.split()[4:]).replace("'", "\\'")))
-											else:
-												self.msg(data.split()[0][1:], "Unknown command {0}. Please try HELP for more information.".format(cmd.upper()))
-									elif oper == 1:
-										if self.isoper(data.split()[0][1:]):
-											if len(data.split()) == 4:
-												exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', ''))" % (cmd.lower(), cmd.lower(), data.split()[0][1:]))
-											if len(data.split()) > 4:
-												exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', '%s'))" % (cmd.lower(), cmd.lower(), data.split()[0][1:], ' '.join(data.split()[4:]).replace("'", "\\'")))
-										else:
-											self.msg(data.split()[0][1:], "You do not have sufficient privileges to use '{0}'".format(data.split()[3][1:].upper()))
-											
-								if not iscmd:
-									self.message(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
-									
-							if data.split()[2].startswith("#") and self.chanflag("f", data.split()[2]) and self.chanexist(data.split()[2]):
-								if data.split()[3][1:].startswith(self.fantasy(data.split()[2])):
-									iscmd = False
-									fuid = data.split()[0][1:]
-									cmd = self.fantasy(data.split()[2])
-									
-									if len(data.split()[3]) > int(1+len(self.fantasy(data.split()[2]))):
-										fchan = data.split()[2]
-										cmd = data.split()[3][int(1+len(self.fantasy(fchan))):]
-										
-										if len(data.split()) > 4:
-											args = ' '.join(data.split()[4:]).replace("'", "\\'")
-											
-										if os.access("commands/"+cmd.lower()+".py", os.F_OK):
-											iscmd = True
-											exec("oper = commands.%s.%s().oper" % (cmd.lower(), cmd.lower()))
-											
-											if oper == 0:
-												exec("cmd_auth = commands.%s.%s().nauth" % (cmd.lower(), cmd.lower()))
-												
-												if not cmd_auth:
-													if len(data.split()) == 4:
-														exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', ''))" % (cmd.lower(), cmd.lower(), fuid, fchan))
-													elif len(data.split()) > 4:
-														exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', '%s'))" % (cmd.lower(), cmd.lower(), fuid, fchan, args))
-												elif cmd_auth:
-													if self.auth(fuid):
-														if len(data.split()) == 4:
-															exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', ''))" % (cmd.lower(), cmd.lower(), fuid, fchan))
-														elif len(data.split()) > 4:
-															exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', '%s'))" % (cmd.lower(), cmd.lower(), fuid, fchan, args))
-													else:
-														self.msg(fuid, "Unknown command {0}. Please try HELP for more information.".format(cmd.upper()))
-											elif oper == 1:
-												if self.isoper(fuid):
-													if len(data.split()) == 4:
-														exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', ''))" % (cmd.lower(), cmd.lower(), fuid, fchan))
-													elif len(data.split()) > 4:
-														exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', '%s'))" % (cmd.lower(), cmd.lower(), fuid, fchan, args))
-												else:
-													self.msg(fuid, "You do not have sufficient privileges to use '{0}'".format(cmd.upper()))
-													
-									if not iscmd:
-										if len(data.split()) == 4:
-											self.message(fuid, cmd)
-										elif len(data.split()) > 4:
-											self.message(fuid, cmd + " " + args)
-											
-							if data.split()[2].startswith("#") and self.chanflag("l", data.split()[2]):
-								self.log(data.split()[0][1:], "privmsg", data.split()[2], ' '.join(data.split()[3:]))
-								
-							if self.chanexist(data.split()[2]):
-								puid = data.split()[0][1:]
-								pchan = data.split()[2]
-								
-								if self.chanflag("s", pchan):
-									messages = 10
-									seconds = [6, 5]
-									
-									for dump in self.query("select spamscan from channelinfo where name = '%s'" % _mysql.escape_string(pchan)):
-										messages = int(dump["spamscan"].split(":")[0])
-										seconds = [int(dump["spamscan"].split(":")[1]) + 1, int(dump["spamscan"].split(":")[1])]
-										
-									if spamscan.has_key((pchan, puid)):
-										num = spamscan[pchan,puid][0] + 1
-										spamscan[pchan,puid] = [num, spamscan[pchan,puid][1]]
-										timer = int(time.time()) - spamscan[pchan,puid][1]
-										
-										if spamscan[pchan,puid][0] == messages and timer < seconds[0]:
-											if self.isoper(puid):
-												self.msg(puid, "WARNING: You are flooding {0}. Please stop that, but I won't kill you because you're an IRC Operator.".format(pchan))
-											else:
-												self.kill(puid)
-												
-											del spamscan[pchan,puid]
-										elif timer > seconds[1]:
-											spamscan[pchan,puid] = [1, int(time.time())]
-									else:
-										spamscan[pchan,puid] = [1, int(time.time())]
-						elif data.split()[1] == "NOTICE":
-							if data.split()[2].startswith("#") and self.chanflag("l", data.split()[2]):
-								self.log(data.split()[0][1:], "notice", data.split()[2], ' '.join(data.split()[3:]))
-						elif data.split()[1] == "NICK":
-							self.query("update online set nick = '%s' where uid = '%s'" % (_mysql.escape_string(data.split()[2]), str(data.split()[0])[1:]))
-						elif data.split()[1] == "KICK":
-							arg = data.split()
-							knick = arg[0][1:]
-							kchan = arg[2]
-							ktarget = self.uid(arg[3])
-							kreason = ' '.join(arg[4:])[1:]
-							
-							if ktarget == self.bot:
-								self.join(kchan)
-							else:
-								self.query("delete from chanlist where channel = '{0}' and uid = '{1}'".format(_mysql.escape_string(kchan), ktarget))
-						elif data.split()[1] == "QUIT":
-							for qchan in self.query("select * from chanlist where uid = '{0}'".format(data.split()[0][1:])):
-								if self.chanflag("l", qchan["channel"]):
-									if len(data.split()) == 2:
-										self.log(qchan["uid"], "quit", qchan["channel"])
-									else:
-										self.log(qchan["uid"], "quit", qchan["channel"], ' '.join(data.split()[2:])[1:])
-										
-							self.query("delete from chanlist where uid = '{0}'".format(data.split()[0][1:]))
-							self.query("delete from temp_nick where nick = '%s'" % _mysql.escape_string(str(data.split()[0])[1:]))
-							self.query("delete from gateway where uid = '%s'" % str(data.split()[0])[1:])
-							self.query("delete from online where uid = '%s'" % str(data.split()[0])[1:])
-						elif data.split()[1] == "TOPIC":
-							if len(data.split()) > 1:
-								if self.chanflag("l", data.split()[2]):
-									self.log(data.split()[0][1:], "topic", data.split()[2], ' '.join(data.split()[3:]))
-									
-								if self.chanflag("t", data.split()[2]):
-									for channel in self.query("select topic from channelinfo where name = '{0}'".format(_mysql.escape_string(data.split()[2]))):
-										self.send(":{0} TOPIC {1} :{2}".format(self.bot, data.split()[2], channel["topic"]))
-										
-										if self.chanflag("l", data.split()[2]):
-											self.log(self.bot_nick, "topic", data.split()[2], ":"+channel["topic"])
-						elif data.split()[1] == "FMODE":
-							if self.chanflag("l", data.split()[2]) and len(data.split()) > 4:
-								self.log(data.split()[0][1:], "mode", data.split()[2], ' '.join(data.split()[4:]))
-								
-							if self.chanflag("m", data.split()[2]) and len(data.split()) == 5:
-								if data.split()[2].startswith("#"):
-									for channel in self.query("select name,modes from channelinfo where name = '{0}'".format(_mysql.escape_string(data.split()[2]))):
-										self.mode(channel["name"], channel["modes"])
-										
-							if len(data.split()) > 5:
-								if self.chanexist(data.split()[2]):
-									splitted = data.split()[4]
-									
-									if splitted.find("+") != -1:
-										splitted = splitted.split("+")[1]
-										
-									if splitted.find("-") != -1:
-										splitted = splitted.split("-")[0]
-										
-									flag = self.getflag(data.split()[0][1:], data.split()[2])
-									
-									if flag == "h" or flag == "o" or flag == "a" or flag == self.bot_nick or flag == "n":
-										if splitted.find("b") != -1:
-											self.checkbans(data.split()[2], ' '.join(data.split()[5:]))
-											
-											for ban in data.split()[5:]:
-												if fnmatch.fnmatch(ban, "*!*@*"):
-													entry = False
-													
-													for sql in self.query("select ban from banlist where ban = '%s' and channel = '%s'" % (_mysql.escape_string(ban), _mysql.escape_string(data.split()[2]))):
-														entry = True
-														
-													if not entry and ban != "*!*@*":
-														self.query("insert into banlist (`channel`, `ban`) values ('%s','%s')" % (_mysql.escape_string(data.split()[2]), _mysql.escape_string(ban)))
-														self.msg(data.split()[0][1:], "Done.")
-													elif ban == "*!*@*":
-														self.msg(data.split()[2], "ACTION is angry about %s, because he tried to set a *!*@* ban." % self.nick(data.split()[0][1:]), True)
-									else:
-										self.mode(data.split()[2], "-{0} {1}".format("b"*len(data.split()[5:]), ' '.join(data.split()[5:])))
-										
-									splitted = data.split()[4]
-									
-									if splitted.find("-") != -1:
-										splitted = splitted.split("-")[1]
-										
-										if splitted.find("+") != -1:
-											splitted = splitted.split("+")[0]
-											
-										flag = self.getflag(data.split()[0][1:], data.split()[2])
-										
-										if flag == "h" or flag == "o" or flag == "a" or flag == self.bot_nick or flag == "n":
-											if splitted.find("b") != -1:
-												for ban in data.split()[5:]:
-													if fnmatch.fnmatch(ban, "*!*@*"):
-														entry = False
-														
-														for sql in self.query("select ban from banlist where channel = '%s' and ban = '%s'" % (_mysql.escape_string(data.split()[2]), _mysql.escape_string(ban))):
-															entry = True
-															
-														if entry:
-															self.query("delete from banlist where channel = '%s' and ban = '%s'" % (_mysql.escape_string(data.split()[2]), _mysql.escape_string(ban)))
-															self.msg(data.split()[0][1:], "Done.")
-										else:
-											self.mode(data.split()[2], "+{0} {1}".format("b"*len(data.split()[5:]), ' '.join(data.split()[5:])))
-											
-								if self.chanflag("b", data.split()[2]):
-									mchan = data.split()[2]
-									splitted = data.split()[4]
-									musers = data.split()[5:]
-									
-									if splitted.find("+") != -1:
-										splitted = splitted.split("+")[1]
-										
-										if splitted.find("-") != -1:
-											splitted = splitted.split("-")[0]
-											
-										if splitted.find("v") != -1:
-											for user in musers:
-												flag = self.getflag(self.uid(user), mchan)
-												
-												if not self.chanflag("v", mchan) and flag != "v" and flag != "h" and flag != "o" and flag != "a" and flag != "q" and flag != "n" and self.uid(user) != self.bot:
-													self.mode(mchan, "-v "+user)
-													
-										if splitted.find("h") != -1:
-											for user in musers:
-												flag = self.getflag(self.uid(user), mchan)
-												
-												if flag != "h" and flag != "o" and flag != "a" and flag != "q" and flag != "n" and self.uid(user) != self.bot:
-													self.mode(mchan, "-h "+user)
-													
-										if splitted.find("o") != -1:
-											for user in musers:
-												flag = self.getflag(self.uid(user), mchan)
-												
-												if flag != "o" and flag != "a" and flag != "q" and flag != "n" and self.uid(user) != self.bot:
-													self.mode(mchan, "-o "+user)
-													
-										if splitted.find("a") != -1:
-											for user in musers:
-												flag = self.getflag(self.uid(user), mchan)
-												
-												if flag != "a" and flag != self.bot_nick and flag != "n" and self.uid(user) != self.bot:
-													self.mode(mchan, "-a "+user)
-													
-												if flag != "o":
-													self.mode(mchan, "-o "+user)
-													
-										if splitted.find(self.bot_nick) != -1:
-											for user in musers:
-												flag = self.getflag(self.uid(user), mchan)
-												
-												if flag != "q" and flag != "n" and self.uid(user) != self.bot:
-													self.mode(mchan, "-q "+user)
-													
-												if flag != "o":
-													self.mode(mchan, "-o "+user)
-													
-								if self.chanflag("p", data.split()[2]):
-									for user in data.split()[5:]:
-										fm_chan = data.split()[2]
-										
-										for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (_mysql.escape_string(data.split()[2]), self.auth(user))):
-											if flag["flag"] == "n" or flag["flag"] == "q":
-												self.mode(fm_chan, "+qo {0} {0}".format(user))
-											elif flag["flag"] == "a":
-												self.mode(fm_chan, "+ao {0} {0}".format(user))
-											elif flag["flag"] == "o":
-												self.mode(fm_chan, "+o {0}".format(user))
-											elif flag["flag"] == "h":
-												self.mode(fm_chan, "+h {0}".format(user))
-											elif flag["flag"] == "v":
-												self.mode(fm_chan, "+v {0}".format(user))
-											elif flag["flag"] == "b":
-												self.kick(fm_chan, user, "Banned.")
-						elif data.split()[1] == "JOIN":
-							juid = data.split()[0][1:]
-							jchan = data.split()[2][1:]
-							self.query("insert into chanlist value ('%s', '%s')" % (juid, _mysql.escape_string(jchan)))
-							
-							if self.suspended(jchan):
-								self.kick(jchan, juid, "Suspended: "+self.suspended(jchan))
-								
-							if self.chanexist(jchan):
-								self.enforcebans(jchan)
-								
-							if self.chanflag("l", jchan):
-								self.showlog(juid, jchan)
-								self.log(juid, "join", jchan)
-								
-							fjoin_user = self.auth(juid)
-							hasflag = False
-							
-							for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (_mysql.escape_string(jchan), _mysql.escape_string(fjoin_user))):
-								if flag["flag"] == "n" or flag["flag"] == "q":
-									self.mode(jchan, "+qo " + juid + " " + juid)
-									hasflag = True
-								elif flag["flag"] == "a":
-									self.mode(jchan, "+ao " + juid + " " + juid)
-									hasflag = True
-								elif flag["flag"] == "o":
-									self.mode(jchan, "+o " + juid)
-									hasflag = True
-								elif flag["flag"] == "h":
-									self.mode(jchan, "+h " + juid)
-									hasflag = True
-								elif flag["flag"] == "v":
-									self.mode(jchan, "+v " + juid)
-									hasflag = True
-								elif flag["flag"] == "b":
-									self.kick(jchan, juid, "Banned.")
-									hasflag = True
-									
-							if not hasflag:
-								if self.chanflag("v", jchan):
-									self.mode(jchan, "+v %s" % juid)
-									
-							for welcome in self.query("select name,welcome from channelinfo where name = '{0}'".format(_mysql.escape_string(jchan))):
-								if self.chanflag("w", jchan):
-									self.msg(juid, "[{0}] {1}".format(welcome["name"], welcome["welcome"]))
-									
-							if self.isoper(juid) and self.chanexist(jchan):
-								self.send(":%s NOTICE %s :Operator %s has joined" % (self.services_id, jchan, self.nick(juid)))
-						elif data.split()[1] == "FJOIN":
-							fjoin_chan = data.split()[2]
-							fjoin_nick = data.split()[5][1:]
-							
-							if fjoin_nick.find(",") != -1:
-								fjoin_nick = fjoin_nick.split(",")[1]
-								
-							for pnick in data.split()[5:]:
-								if pnick.find(",") != -1:
-									pnick = pnick.split(",")[1]
-									
-								self.query("insert into chanlist value ('{0}','{1}')".format(_mysql.escape_string(pnick), _mysql.escape_string(fjoin_chan)))
-								
-								if self.suspended(fjoin_chan):
-									if not self.isoper(pnick):
-										self.kick(fjoin_chan, pnick, "Suspended: "+self.suspended(fjoin_chan))
-									else:
-										self.msg(fjoin_chan, "This channel is suspended: "+self.suspended(fjoin_chan))
-										
-							if self.chanexist(fjoin_chan):
-								self.enforcebans(fjoin_chan)
-								
-							if self.chanflag("l", fjoin_chan):
-								self.showlog(fjoin_nick, fjoin_chan)
-								self.log(fjoin_nick, "join", fjoin_chan)
-								
-							fjoin_user = self.auth(fjoin_nick)
-							hasflag = False
-							
-							for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (_mysql.escape_string(fjoin_chan), fjoin_user)):
-								if flag["flag"] == "n" or flag["flag"] == "q":
-									self.mode(fjoin_chan, "+qo " + fjoin_nick + " " + fjoin_nick)
-									hasflag = True
-								elif flag["flag"] == "a":
-									self.mode(fjoin_chan, "+ao " + fjoin_nick + " " + fjoin_nick)
-									hasflag = True
-								elif flag["flag"] == "o":
-									self.mode(fjoin_chan, "+o " + fjoin_nick)
-									hasflag = True
-								elif flag["flag"] == "h":
-									self.mode(fjoin_chan, "+h " + fjoin_nick)
-									hasflag = True
-								elif flag["flag"] == "v":
-									self.mode(fjoin_chan, "+v " + fjoin_nick)
-									hasflag = True
-								elif flag["flag"] == "b":
-									self.kick(fjoin_chan, fjoin_nick, "Banned.")
-									hasflag = True
-									
-							if not hasflag:
-								if self.chanflag("v", fjoin_chan):
-									self.mode(fjoin_chan, "+v %s" % fjoin_nick)
-									
-							for welcome in self.query("select name,welcome from channelinfo where name = '{0}'".format(_mysql.escape_string(fjoin_chan))):
-								if self.chanflag("w", fjoin_chan):
-									self.msg(fjoin_nick, "[{0}] {1}".format(welcome["name"], welcome["welcome"]))
-									
-							if self.isoper(fjoin_nick) and self.chanexist(fjoin_chan):
-								self.send(":%s NOTICE %s :Operator %s has joined" % (self.services_id, fjoin_chan, self.nick(fjoin_nick)))
-						elif data.split()[1] == "PART":
-							pnick = data.split()[0][1:]
-							pchan = data.split()[2]
-							
-							for parted in self.query("select channel from ipchan where ip = '%s' and channel = '%s'" % (self.getip(pnick), _mysql.escape_string(pchan))):
-								self.send(":%s SVSJOIN %s %s" % (self.bot, pnick, parted["channel"]))
-								self.msg(pnick, "Your IP is forced to be in "+parted["channel"])
-								
-							self.query("delete from chanlist where uid = '{0}' and channel = '{1}'".format(pnick, _mysql.escape_string(pchan)))
-							
-							if self.chanflag("l", pchan):
-								if len(data.split()) == 3:
-									self.log(pnick, "part", pchan)
-								else:
-									self.log(pnick, "part", pchan, ' '.join(data.split()[3:])[1:])
-						elif data.split()[1] == "OPERTYPE":
-							uid = data.split()[0][1:]
-							self.query("insert into opers values ('%s')" % uid)
-						elif data.split()[1] == "METADATA":
-							if len(data.split()) == 5 and len(data.split()[4]) != 1:
-								uid = data.split()[2]
-								string = data.split()[3]
-								content = ' '.join(data.split()[4:])[1:]
-								self.metadata(uid, string, content)
-						elif data.split()[1] == "IDLE":
-							if len(data.split()) == 3:
-								self.send(":{uid} IDLE {source} 0 0".format(uid=data.split()[2], source=data.split()[0][1:]))
-						elif data.split()[1] == "MODE":
-							smodes = data.split()[3]
-							
-							if smodes.find("+") != -1:
-								smodes = smodes.split("+")[1]
-								
-								if smodes.find("-") != -1:
-									smodes = smodes.split("-")[0]
-									
-								if smodes.find("B") != -1:
-									crypthost = self.encode_md5(data.split()[0][1:] + ":" + self.nick(data.split()[0][1:]) + "!" + self.userhost(data.split()[0][1:]))
-									self.send(":%s CHGHOST %s %s.gateway.%s" % (self.services_id, data.split()[0][1:], crypthost, '.'.join(self.services_name.split(".")[-2:])))
-									self.query("insert into gateway values ('%s')" % data.split()[0][1:])
-									
-							smodes = data.split()[3]
-							
-							if smodes.find("-") != -1:
-								smodes = smodes.split("-")[1]
-								
-								if smodes.find("+") != -1:
-									smodes = smodes.split("+")[0]
-									
-								if smodes.find("B") != -1:
-									self.send(":%s CHGHOST %s %s" % (self.bot, data.split()[0][1:], self.gethost(data.split()[0][1:])))
-									self.query("delete from gateway where uid = '%s'" % data.split()[0][1:])
-						elif data.split()[1] == "UID":
-							self.query("delete from temp_nick where nick = '%s'" % data.split()[2])
-							self.query("delete from gateway where uid = '%s'" % data.split()[2])
-							self.query("delete from online where uid = '%s'" % data.split()[2])
-							self.query("delete from online where nick = '%s'" % data.split()[4])
-							self.query("insert into online values ('%s','%s','%s','%s','%s')" % (data.split()[2], data.split()[4], data.split()[8], data.split()[5], data.split()[7]))
-							conns = 0
-							nicks = list()
-							
-							for connection in self.query("select nick from online where address = '%s'" % data.split()[8]):
-								nicks.append(connection["nick"])
-								conns += 1
-								
-							limit = 3
-							
-							for trust in self.query("select `limit` from trust where address = '%s'" % data.split()[8]):
-								limit = int(trust["limit"])
-								
-								if data.split()[7].startswith("~"):
-									for nick in nicks:
-										self.send(":{0} KILL {1} :G-lined".format(self.bot, nick))
-										
-									self.send(":{0} GLINE *@{1} 1800 :You ignored the trust rules. Run an identd before you connect again.".format(self.bot, data.split()[8]))
-									
-							if conns > limit and data.split()[8] != "0.0.0.0" and limit != 0:
-								for nick in nicks:
-									self.send(":{0} KILL {1} :G-lined".format(self.bot, nick))
-									
-								self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.bot, data.split()[8], limit))
-							elif conns == limit and data.split()[8] != "0.0.0.0":
-								for nick in nicks:
-									self.msg(nick, "Your IP is scratching the connection limit. If you need more connections please request a trust and give us a reason on #help.")
-									
-							for ip in self.query("select channel from ipchan where ip = '%s'" % data.split()[8]):
-								self.send(":%s SVSJOIN %s %s" % (self.bot, data.split()[2], ip["channel"]))
-								
-							if data.split()[10].find("B") != -1:
-								crypthost = self.encode_md5(data.split()[2] + ":" + self.nick(data.split()[2]) + "!" + self.userhost(data.split()[2]))
-								self.send(":%s CHGHOST %s %s.gateway.%s" % (self.services_id, data.split()[2], crypthost, '.'.join(self.services_name.split(".")[-2:])))
-								self.query("insert into gateway values ('%s')" % data.split()[2])
+						else:
+							thread.start_new_thread(ServiceThread().onData, data)
 		except Exception:
 			et, ev, tb = sys.exc_info()
 			e = "{0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb))
 			debug(red("*") + " <<ERROR>> " + str(e))
+
+class ServiceThread:
+	import sys
+	import socket
+	import os
+	import ConfigParser
+	import time
+	import hashlib
+	import smtplib
+	import _mysql
+	import subprocess
+	import urllib2
+	import traceback
+	import thread
+	import fnmatch
+	#import commands
+	import __builtin__
+
+	def __init__(self):
+		self.server_name = config.get("SERVER", "name")
+		self.server_address = config.get("SERVER", "address")
+		self.server_port = config.get("SERVER", "port")
+		self.server_id = config.get("SERVER", "id")
+		self.server_password = config.get("SERVER", "password")
+		self.services_name = config.get("SERVICES", "name")
+		self.services_id = config.get("SERVICES", "id")
+		self.services_description = config.get("SERVICES", "description")
+		self.debug = config.get("OTHER", "debug")
+		self.email = config.get("OTHER", "email")
+		self.ipv6 = config.getboolean("OTHER", "ipv6")
+		self.ssl = config.getboolean("OTHER", "ssl")
+		self.status = config.getboolean("FAILOVER", "active")
+		self.regmail = config.get("OTHER", "regmail")
+		self.bot = "%sAAAAAA" % self.services_id
+		self.bot_nick = config.get("BOT", "nick").split()[0]
+		self.bot_user = config.get("BOT", "user").split()[0]
+		self.bot_real = config.get("BOT", "real")
+		self.con = con
+		self.db = db
+	
+	def onData(self, data):
+		if data.split()[1] == "PRIVMSG":
+			if data.split()[2] == self.bot:
+				iscmd = False
+				cmd = data.split()[3][1:]
+				
+				if os.access("commands/"+cmd.lower()+".py", os.F_OK):
+					iscmd = True
+					exec("oper = commands.%s.%s().oper" % (cmd.lower(), cmd.lower()))
+					
+					if oper == 0:
+						exec("cmd_auth = commands.%s.%s().nauth" % (cmd.lower(), cmd.lower()))
+						
+						if not cmd_auth:
+							if len(data.split()) == 4:
+								exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', ''))" % (cmd.lower(), cmd.lower(), data.split()[0][1:]))
+							elif len(data.split()) > 4:
+								exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', '%s'))" % (cmd.lower(), cmd.lower(), data.split()[0][1:], ' '.join(data.split()[4:]).replace("'", "\\'")))
+						elif cmd_auth:
+							if self.auth(data.split()[0][1:]):
+								if len(data.split()) == 4:
+									exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', ''))" % (cmd.lower(), cmd.lower(), data.split()[0][1:]))
+								elif len(data.split()) > 4:
+									exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', '%s'))" % (cmd.lower(), cmd.lower(), data.split()[0][1:], ' '.join(data.split()[4:]).replace("'", "\\'")))
+							else:
+								self.msg(data.split()[0][1:], "Unknown command {0}. Please try HELP for more information.".format(cmd.upper()))
+					elif oper == 1:
+						if self.isoper(data.split()[0][1:]):
+							if len(data.split()) == 4:
+								exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', ''))" % (cmd.lower(), cmd.lower(), data.split()[0][1:]))
+							if len(data.split()) > 4:
+								exec("thread.start_new_thread(commands.%s.%s().onCommand,('%s', '%s'))" % (cmd.lower(), cmd.lower(), data.split()[0][1:], ' '.join(data.split()[4:]).replace("'", "\\'")))
+						else:
+							self.msg(data.split()[0][1:], "You do not have sufficient privileges to use '{0}'".format(data.split()[3][1:].upper()))
+							
+				if not iscmd:
+					self.message(data.split()[0][1:], ' '.join(data.split()[3:])[1:])
+					
+			if data.split()[2].startswith("#") and self.chanflag("f", data.split()[2]) and self.chanexist(data.split()[2]):
+				if data.split()[3][1:].startswith(self.fantasy(data.split()[2])):
+					iscmd = False
+					fuid = data.split()[0][1:]
+					cmd = self.fantasy(data.split()[2])
+					
+					if len(data.split()[3]) > int(1+len(self.fantasy(data.split()[2]))):
+						fchan = data.split()[2]
+						cmd = data.split()[3][int(1+len(self.fantasy(fchan))):]
+						
+						if len(data.split()) > 4:
+							args = ' '.join(data.split()[4:]).replace("'", "\\'")
+							
+						if os.access("commands/"+cmd.lower()+".py", os.F_OK):
+							iscmd = True
+							exec("oper = commands.%s.%s().oper" % (cmd.lower(), cmd.lower()))
+							
+							if oper == 0:
+								exec("cmd_auth = commands.%s.%s().nauth" % (cmd.lower(), cmd.lower()))
+								
+								if not cmd_auth:
+									if len(data.split()) == 4:
+										exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', ''))" % (cmd.lower(), cmd.lower(), fuid, fchan))
+									elif len(data.split()) > 4:
+										exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', '%s'))" % (cmd.lower(), cmd.lower(), fuid, fchan, args))
+								elif cmd_auth:
+									if self.auth(fuid):
+										if len(data.split()) == 4:
+											exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', ''))" % (cmd.lower(), cmd.lower(), fuid, fchan))
+										elif len(data.split()) > 4:
+											exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', '%s'))" % (cmd.lower(), cmd.lower(), fuid, fchan, args))
+									else:
+										self.msg(fuid, "Unknown command {0}. Please try HELP for more information.".format(cmd.upper()))
+							elif oper == 1:
+								if self.isoper(fuid):
+									if len(data.split()) == 4:
+										exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', ''))" % (cmd.lower(), cmd.lower(), fuid, fchan))
+									elif len(data.split()) > 4:
+										exec("thread.start_new_thread(commands.%s.%s().onFantasy,('%s', '%s', '%s'))" % (cmd.lower(), cmd.lower(), fuid, fchan, args))
+								else:
+									self.msg(fuid, "You do not have sufficient privileges to use '{0}'".format(cmd.upper()))
+									
+					if not iscmd:
+						if len(data.split()) == 4:
+							self.message(fuid, cmd)
+						elif len(data.split()) > 4:
+							self.message(fuid, cmd + " " + args)
+							
+			if data.split()[2].startswith("#") and self.chanflag("l", data.split()[2]):
+				self.log(data.split()[0][1:], "privmsg", data.split()[2], ' '.join(data.split()[3:]))
+				
+			if self.chanexist(data.split()[2]):
+				puid = data.split()[0][1:]
+				pchan = data.split()[2]
+				
+				if self.chanflag("s", pchan):
+					messages = 10
+					seconds = [6, 5]
+					
+					for dump in self.query("select spamscan from channelinfo where name = '%s'" % _mysql.escape_string(pchan)):
+						messages = int(dump["spamscan"].split(":")[0])
+						seconds = [int(dump["spamscan"].split(":")[1]) + 1, int(dump["spamscan"].split(":")[1])]
+						
+					if spamscan.has_key((pchan, puid)):
+						num = spamscan[pchan,puid][0] + 1
+						spamscan[pchan,puid] = [num, spamscan[pchan,puid][1]]
+						timer = int(time.time()) - spamscan[pchan,puid][1]
+						
+						if spamscan[pchan,puid][0] == messages and timer < seconds[0]:
+							if self.isoper(puid):
+								self.msg(puid, "WARNING: You are flooding {0}. Please stop that, but I won't kill you because you're an IRC Operator.".format(pchan))
+							else:
+								self.kill(puid)
+								
+							del spamscan[pchan,puid]
+						elif timer > seconds[1]:
+							spamscan[pchan,puid] = [1, int(time.time())]
+					else:
+						spamscan[pchan,puid] = [1, int(time.time())]
+		elif data.split()[1] == "NOTICE":
+			if data.split()[2].startswith("#") and self.chanflag("l", data.split()[2]):
+				self.log(data.split()[0][1:], "notice", data.split()[2], ' '.join(data.split()[3:]))
+		elif data.split()[1] == "NICK":
+			self.query("update online set nick = '%s' where uid = '%s'" % (_mysql.escape_string(data.split()[2]), str(data.split()[0])[1:]))
+		elif data.split()[1] == "KICK":
+			arg = data.split()
+			knick = arg[0][1:]
+			kchan = arg[2]
+			ktarget = self.uid(arg[3])
+			kreason = ' '.join(arg[4:])[1:]
+			
+			if ktarget == self.bot:
+				self.join(kchan)
+			else:
+				self.query("delete from chanlist where channel = '{0}' and uid = '{1}'".format(_mysql.escape_string(kchan), ktarget))
+		elif data.split()[1] == "QUIT":
+			for qchan in self.query("select * from chanlist where uid = '{0}'".format(data.split()[0][1:])):
+				if self.chanflag("l", qchan["channel"]):
+					if len(data.split()) == 2:
+						self.log(qchan["uid"], "quit", qchan["channel"])
+					else:
+						self.log(qchan["uid"], "quit", qchan["channel"], ' '.join(data.split()[2:])[1:])
+						
+			self.query("delete from chanlist where uid = '{0}'".format(data.split()[0][1:]))
+			self.query("delete from temp_nick where nick = '%s'" % _mysql.escape_string(str(data.split()[0])[1:]))
+			self.query("delete from gateway where uid = '%s'" % str(data.split()[0])[1:])
+			self.query("delete from online where uid = '%s'" % str(data.split()[0])[1:])
+		elif data.split()[1] == "TOPIC":
+			if len(data.split()) > 1:
+				if self.chanflag("l", data.split()[2]):
+					self.log(data.split()[0][1:], "topic", data.split()[2], ' '.join(data.split()[3:]))
+					
+				if self.chanflag("t", data.split()[2]):
+					for channel in self.query("select topic from channelinfo where name = '{0}'".format(_mysql.escape_string(data.split()[2]))):
+						self.send(":{0} TOPIC {1} :{2}".format(self.bot, data.split()[2], channel["topic"]))
+						
+						if self.chanflag("l", data.split()[2]):
+							self.log(self.bot_nick, "topic", data.split()[2], ":"+channel["topic"])
+		elif data.split()[1] == "FMODE":
+			if self.chanflag("l", data.split()[2]) and len(data.split()) > 4:
+				self.log(data.split()[0][1:], "mode", data.split()[2], ' '.join(data.split()[4:]))
+				
+			if self.chanflag("m", data.split()[2]) and len(data.split()) == 5:
+				if data.split()[2].startswith("#"):
+					for channel in self.query("select name,modes from channelinfo where name = '{0}'".format(_mysql.escape_string(data.split()[2]))):
+						self.mode(channel["name"], channel["modes"])
+						
+			if len(data.split()) > 5:
+				if self.chanexist(data.split()[2]):
+					splitted = data.split()[4]
+					
+					if splitted.find("+") != -1:
+						splitted = splitted.split("+")[1]
+						
+					if splitted.find("-") != -1:
+						splitted = splitted.split("-")[0]
+						
+					flag = self.getflag(data.split()[0][1:], data.split()[2])
+					
+					if flag == "h" or flag == "o" or flag == "a" or flag == self.bot_nick or flag == "n":
+						if splitted.find("b") != -1:
+							self.checkbans(data.split()[2], ' '.join(data.split()[5:]))
+							
+							for ban in data.split()[5:]:
+								if fnmatch.fnmatch(ban, "*!*@*"):
+									entry = False
+									
+									for sql in self.query("select ban from banlist where ban = '%s' and channel = '%s'" % (_mysql.escape_string(ban), _mysql.escape_string(data.split()[2]))):
+										entry = True
+										
+									if not entry and ban != "*!*@*":
+										self.query("insert into banlist (`channel`, `ban`) values ('%s','%s')" % (_mysql.escape_string(data.split()[2]), _mysql.escape_string(ban)))
+										self.msg(data.split()[0][1:], "Done.")
+									elif ban == "*!*@*":
+										self.msg(data.split()[2], "ACTION is angry about %s, because he tried to set a *!*@* ban." % self.nick(data.split()[0][1:]), True)
+					else:
+						self.mode(data.split()[2], "-{0} {1}".format("b"*len(data.split()[5:]), ' '.join(data.split()[5:])))
+						
+					splitted = data.split()[4]
+					
+					if splitted.find("-") != -1:
+						splitted = splitted.split("-")[1]
+						
+						if splitted.find("+") != -1:
+							splitted = splitted.split("+")[0]
+							
+						flag = self.getflag(data.split()[0][1:], data.split()[2])
+						
+						if flag == "h" or flag == "o" or flag == "a" or flag == self.bot_nick or flag == "n":
+							if splitted.find("b") != -1:
+								for ban in data.split()[5:]:
+									if fnmatch.fnmatch(ban, "*!*@*"):
+										entry = False
+										
+										for sql in self.query("select ban from banlist where channel = '%s' and ban = '%s'" % (_mysql.escape_string(data.split()[2]), _mysql.escape_string(ban))):
+											entry = True
+											
+										if entry:
+											self.query("delete from banlist where channel = '%s' and ban = '%s'" % (_mysql.escape_string(data.split()[2]), _mysql.escape_string(ban)))
+											self.msg(data.split()[0][1:], "Done.")
+						else:
+							self.mode(data.split()[2], "+{0} {1}".format("b"*len(data.split()[5:]), ' '.join(data.split()[5:])))
+							
+				if self.chanflag("b", data.split()[2]):
+					mchan = data.split()[2]
+					splitted = data.split()[4]
+					musers = data.split()[5:]
+					
+					if splitted.find("+") != -1:
+						splitted = splitted.split("+")[1]
+						
+						if splitted.find("-") != -1:
+							splitted = splitted.split("-")[0]
+							
+						if splitted.find("v") != -1:
+							for user in musers:
+								flag = self.getflag(self.uid(user), mchan)
+								
+								if not self.chanflag("v", mchan) and flag != "v" and flag != "h" and flag != "o" and flag != "a" and flag != "q" and flag != "n" and self.uid(user) != self.bot:
+									self.mode(mchan, "-v "+user)
+									
+						if splitted.find("h") != -1:
+							for user in musers:
+								flag = self.getflag(self.uid(user), mchan)
+								
+								if flag != "h" and flag != "o" and flag != "a" and flag != "q" and flag != "n" and self.uid(user) != self.bot:
+									self.mode(mchan, "-h "+user)
+									
+						if splitted.find("o") != -1:
+							for user in musers:
+								flag = self.getflag(self.uid(user), mchan)
+								
+								if flag != "o" and flag != "a" and flag != "q" and flag != "n" and self.uid(user) != self.bot:
+									self.mode(mchan, "-o "+user)
+									
+						if splitted.find("a") != -1:
+							for user in musers:
+								flag = self.getflag(self.uid(user), mchan)
+								
+								if flag != "a" and flag != self.bot_nick and flag != "n" and self.uid(user) != self.bot:
+									self.mode(mchan, "-a "+user)
+									
+								if flag != "o":
+									self.mode(mchan, "-o "+user)
+									
+						if splitted.find(self.bot_nick) != -1:
+							for user in musers:
+								flag = self.getflag(self.uid(user), mchan)
+								
+								if flag != "q" and flag != "n" and self.uid(user) != self.bot:
+									self.mode(mchan, "-q "+user)
+									
+								if flag != "o":
+									self.mode(mchan, "-o "+user)
+									
+				if self.chanflag("p", data.split()[2]):
+					for user in data.split()[5:]:
+						fm_chan = data.split()[2]
+						
+						for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (_mysql.escape_string(data.split()[2]), self.auth(user))):
+							if flag["flag"] == "n" or flag["flag"] == "q":
+								self.mode(fm_chan, "+qo {0} {0}".format(user))
+							elif flag["flag"] == "a":
+								self.mode(fm_chan, "+ao {0} {0}".format(user))
+							elif flag["flag"] == "o":
+								self.mode(fm_chan, "+o {0}".format(user))
+							elif flag["flag"] == "h":
+								self.mode(fm_chan, "+h {0}".format(user))
+							elif flag["flag"] == "v":
+								self.mode(fm_chan, "+v {0}".format(user))
+							elif flag["flag"] == "b":
+								self.kick(fm_chan, user, "Banned.")
+		elif data.split()[1] == "JOIN":
+			juid = data.split()[0][1:]
+			jchan = data.split()[2][1:]
+			self.query("insert into chanlist value ('%s', '%s')" % (juid, _mysql.escape_string(jchan)))
+			
+			if self.suspended(jchan):
+				self.kick(jchan, juid, "Suspended: "+self.suspended(jchan))
+				
+			if self.chanexist(jchan):
+				self.enforcebans(jchan)
+				
+			if self.chanflag("l", jchan):
+				self.showlog(juid, jchan)
+				self.log(juid, "join", jchan)
+				
+			fjoin_user = self.auth(juid)
+			hasflag = False
+			
+			for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (_mysql.escape_string(jchan), _mysql.escape_string(fjoin_user))):
+				if flag["flag"] == "n" or flag["flag"] == "q":
+					self.mode(jchan, "+qo " + juid + " " + juid)
+					hasflag = True
+				elif flag["flag"] == "a":
+					self.mode(jchan, "+ao " + juid + " " + juid)
+					hasflag = True
+				elif flag["flag"] == "o":
+					self.mode(jchan, "+o " + juid)
+					hasflag = True
+				elif flag["flag"] == "h":
+					self.mode(jchan, "+h " + juid)
+					hasflag = True
+				elif flag["flag"] == "v":
+					self.mode(jchan, "+v " + juid)
+					hasflag = True
+				elif flag["flag"] == "b":
+					self.kick(jchan, juid, "Banned.")
+					hasflag = True
+					
+			if not hasflag:
+				if self.chanflag("v", jchan):
+					self.mode(jchan, "+v %s" % juid)
+					
+			for welcome in self.query("select name,welcome from channelinfo where name = '{0}'".format(_mysql.escape_string(jchan))):
+				if self.chanflag("w", jchan):
+					self.msg(juid, "[{0}] {1}".format(welcome["name"], welcome["welcome"]))
+					
+			if self.isoper(juid) and self.chanexist(jchan):
+				self.send(":%s NOTICE %s :Operator %s has joined" % (self.services_id, jchan, self.nick(juid)))
+		elif data.split()[1] == "FJOIN":
+			fjoin_chan = data.split()[2]
+			fjoin_nick = data.split()[5][1:]
+			
+			if fjoin_nick.find(",") != -1:
+				fjoin_nick = fjoin_nick.split(",")[1]
+				
+			for pnick in data.split()[5:]:
+				if pnick.find(",") != -1:
+					pnick = pnick.split(",")[1]
+					
+				self.query("insert into chanlist value ('{0}','{1}')".format(_mysql.escape_string(pnick), _mysql.escape_string(fjoin_chan)))
+				
+				if self.suspended(fjoin_chan):
+					if not self.isoper(pnick):
+						self.kick(fjoin_chan, pnick, "Suspended: "+self.suspended(fjoin_chan))
+					else:
+						self.msg(fjoin_chan, "This channel is suspended: "+self.suspended(fjoin_chan))
+						
+			if self.chanexist(fjoin_chan):
+				self.enforcebans(fjoin_chan)
+				
+			if self.chanflag("l", fjoin_chan):
+				self.showlog(fjoin_nick, fjoin_chan)
+				self.log(fjoin_nick, "join", fjoin_chan)
+				
+			fjoin_user = self.auth(fjoin_nick)
+			hasflag = False
+			
+			for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (_mysql.escape_string(fjoin_chan), fjoin_user)):
+				if flag["flag"] == "n" or flag["flag"] == "q":
+					self.mode(fjoin_chan, "+qo " + fjoin_nick + " " + fjoin_nick)
+					hasflag = True
+				elif flag["flag"] == "a":
+					self.mode(fjoin_chan, "+ao " + fjoin_nick + " " + fjoin_nick)
+					hasflag = True
+				elif flag["flag"] == "o":
+					self.mode(fjoin_chan, "+o " + fjoin_nick)
+					hasflag = True
+				elif flag["flag"] == "h":
+					self.mode(fjoin_chan, "+h " + fjoin_nick)
+					hasflag = True
+				elif flag["flag"] == "v":
+					self.mode(fjoin_chan, "+v " + fjoin_nick)
+					hasflag = True
+				elif flag["flag"] == "b":
+					self.kick(fjoin_chan, fjoin_nick, "Banned.")
+					hasflag = True
+					
+			if not hasflag:
+				if self.chanflag("v", fjoin_chan):
+					self.mode(fjoin_chan, "+v %s" % fjoin_nick)
+					
+			for welcome in self.query("select name,welcome from channelinfo where name = '{0}'".format(_mysql.escape_string(fjoin_chan))):
+				if self.chanflag("w", fjoin_chan):
+					self.msg(fjoin_nick, "[{0}] {1}".format(welcome["name"], welcome["welcome"]))
+					
+			if self.isoper(fjoin_nick) and self.chanexist(fjoin_chan):
+				self.send(":%s NOTICE %s :Operator %s has joined" % (self.services_id, fjoin_chan, self.nick(fjoin_nick)))
+		elif data.split()[1] == "PART":
+			pnick = data.split()[0][1:]
+			pchan = data.split()[2]
+			
+			for parted in self.query("select channel from ipchan where ip = '%s' and channel = '%s'" % (self.getip(pnick), _mysql.escape_string(pchan))):
+				self.send(":%s SVSJOIN %s %s" % (self.bot, pnick, parted["channel"]))
+				self.msg(pnick, "Your IP is forced to be in "+parted["channel"])
+				
+			self.query("delete from chanlist where uid = '{0}' and channel = '{1}'".format(pnick, _mysql.escape_string(pchan)))
+			
+			if self.chanflag("l", pchan):
+				if len(data.split()) == 3:
+					self.log(pnick, "part", pchan)
+				else:
+					self.log(pnick, "part", pchan, ' '.join(data.split()[3:])[1:])
+		elif data.split()[1] == "OPERTYPE":
+			uid = data.split()[0][1:]
+			self.query("insert into opers values ('%s')" % uid)
+		elif data.split()[1] == "METADATA":
+			if len(data.split()) == 5 and len(data.split()[4]) != 1:
+				uid = data.split()[2]
+				string = data.split()[3]
+				content = ' '.join(data.split()[4:])[1:]
+				self.metadata(uid, string, content)
+		elif data.split()[1] == "IDLE":
+			if len(data.split()) == 3:
+				self.send(":{uid} IDLE {source} 0 0".format(uid=data.split()[2], source=data.split()[0][1:]))
+		elif data.split()[1] == "MODE":
+			smodes = data.split()[3]
+			
+			if smodes.find("+") != -1:
+				smodes = smodes.split("+")[1]
+				
+				if smodes.find("-") != -1:
+					smodes = smodes.split("-")[0]
+					
+				if smodes.find("B") != -1:
+					crypthost = self.encode_md5(data.split()[0][1:] + ":" + self.nick(data.split()[0][1:]) + "!" + self.userhost(data.split()[0][1:]))
+					self.send(":%s CHGHOST %s %s.gateway.%s" % (self.services_id, data.split()[0][1:], crypthost, '.'.join(self.services_name.split(".")[-2:])))
+					self.query("insert into gateway values ('%s')" % data.split()[0][1:])
+					
+			smodes = data.split()[3]
+			
+			if smodes.find("-") != -1:
+				smodes = smodes.split("-")[1]
+				
+				if smodes.find("+") != -1:
+					smodes = smodes.split("+")[0]
+					
+				if smodes.find("B") != -1:
+					self.send(":%s CHGHOST %s %s" % (self.bot, data.split()[0][1:], self.gethost(data.split()[0][1:])))
+					self.query("delete from gateway where uid = '%s'" % data.split()[0][1:])
+		elif data.split()[1] == "UID":
+			self.query("delete from temp_nick where nick = '%s'" % data.split()[2])
+			self.query("delete from gateway where uid = '%s'" % data.split()[2])
+			self.query("delete from online where uid = '%s'" % data.split()[2])
+			self.query("delete from online where nick = '%s'" % data.split()[4])
+			self.query("insert into online values ('%s','%s','%s','%s','%s')" % (data.split()[2], data.split()[4], data.split()[8], data.split()[5], data.split()[7]))
+			conns = 0
+			nicks = list()
+			
+			for connection in self.query("select nick from online where address = '%s'" % data.split()[8]):
+				nicks.append(connection["nick"])
+				conns += 1
+				
+			limit = 3
+			
+			for trust in self.query("select `limit` from trust where address = '%s'" % data.split()[8]):
+				limit = int(trust["limit"])
+				
+				if data.split()[7].startswith("~"):
+					for nick in nicks:
+						self.send(":{0} KILL {1} :G-lined".format(self.bot, nick))
+						
+					self.send(":{0} GLINE *@{1} 1800 :You ignored the trust rules. Run an identd before you connect again.".format(self.bot, data.split()[8]))
+					
+			if conns > limit and data.split()[8] != "0.0.0.0" and limit != 0:
+				for nick in nicks:
+					self.send(":{0} KILL {1} :G-lined".format(self.bot, nick))
+					
+				self.send(":{0} GLINE *@{1} 1800 :Connection limit ({2}) reached".format(self.bot, data.split()[8], limit))
+			elif conns == limit and data.split()[8] != "0.0.0.0":
+				for nick in nicks:
+					self.msg(nick, "Your IP is scratching the connection limit. If you need more connections please request a trust and give us a reason on #help.")
+					
+			for ip in self.query("select channel from ipchan where ip = '%s'" % data.split()[8]):
+				self.send(":%s SVSJOIN %s %s" % (self.bot, data.split()[2], ip["channel"]))
+				
+			if data.split()[10].find("B") != -1:
+				crypthost = self.encode_md5(data.split()[2] + ":" + self.nick(data.split()[2]) + "!" + self.userhost(data.split()[2]))
+				self.send(":%s CHGHOST %s %s.gateway.%s" % (self.services_id, data.split()[2], crypthost, '.'.join(self.services_name.split(".")[-2:])))
+				self.query("insert into gateway values ('%s')" % data.split()[2])
 			
 	def metadata(self, uid, string, content):
 		if string == "accountname":
