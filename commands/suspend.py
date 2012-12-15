@@ -49,7 +49,7 @@ class suspend(Command):
 				self.msg(uid, "Suspended.")
 			else:
 				self.msg(uid, "Invalid channel: "+arg[1])
-		elif len(arg) == 2 and arg[0].lower() == "list":
+		elif len(arg) == 1 and arg[0].lower() == "list":
 			for data in self.query("select * from suspended"):
 				self.msg(uid, "Channel: {0} {1} Reason: {2}".format(data["channel"], " "*int(23-len(data["channel"])), data["reason"]))
 		else:
