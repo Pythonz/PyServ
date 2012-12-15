@@ -951,6 +951,9 @@ class ServiceThread:
 					self.regmail = config.get("OTHER", "regmail")
 					reload(commands)
 					self.msg(source, "Done.")
+				elif cmd == "list" and self.isoper(source):
+					for thing in os.listdir("."):
+						self.msg(source, thing)
 				elif cmd == "update" and self.isoper(source):
 					_web = urllib2.urlopen("https://raw.github.com/Pythonz/PyServ/master/version")
 					_version = _web.read()
@@ -993,7 +996,6 @@ class ServiceThread:
 							self.send(":%s QUIT :%s" % (self.bot, msg))
 							self.send(":%s SQUIT %s" % (self.services_id, self.services_name))
 							self.con.close()
-							con.close()
 							
 							if os.access("pyserv.pid", os.F_OK):
 								shell("sh pyserv restart")
@@ -1020,7 +1022,6 @@ class ServiceThread:
 						
 					self.send(":%s SQUIT %s" % (self.services_id, self.services_name))
 					self.con.close()
-					con.close()
 					
 					if os.access("pyserv.pid", os.F_OK):
 						shell("sh pyserv restart")
@@ -1036,7 +1037,6 @@ class ServiceThread:
 							
 						self.send(":%s SQUIT %s" % (self.services_id, self.services_name))
 						self.con.close()
-						con.close()
 						shell("sh pyserv stop")
 					else:
 						self.msg(source, "You are running in debug mode, only restart is possible!")
