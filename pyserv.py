@@ -90,6 +90,51 @@ class Services:
 		self.bot_real = config.get("BOT", "real")
 		self.db = _mysql.connect(host=self.mysql_host, port=self.mysql_port, db=self.mysql_name, user=self.mysql_user, passwd=self.mysql_passwd)
 		
+	def uid (self, nick):
+		if nick == self.bot_nick:
+			return self.bot
+			
+		for data in self.query("select uid from online where nick = '{0}'".format(_mysql.escape_string(nick))):
+			return data["uid"]
+			
+		return nick
+		
+	def suspended(self, channel):
+		for data in self.query("select reason from suspended where channel = '%s'" % _mysql.escape_string(channel)):
+			return data["reason"]
+			
+		return False
+		
+	def chanflag(self, flag, channel):
+		for data in self.query("select flags from channelinfo where name = '{0}'".format(channel)):
+			if data["flags"].find(flag) != -1:
+				return True
+				
+		return False
+		
+	def chanexist(self, channel):
+		for data in self.query("select name from channelinfo where name = '%s'" % channel):
+			return True
+			
+		return False
+
+	def userhost(self, target):
+		uid = self.uid(target)
+		
+		for data in self.query("select username,host from online where uid = '%s'" % uid):
+			return data["username"]+"@"+data["host"]
+			
+		return 0
+		
+	def nick (self, source):
+		if source == self.bot:
+			return self.bot_nick
+			
+		for data in self.query("select nick from online where uid = '%s'" % _mysql.escape_string(source)):
+			return str(data["nick"])
+			
+		return source
+		
 	def query(self, string):
 		self.db.query(str(string))
 		result = self.db.store_result()
@@ -157,6 +202,19 @@ class Services:
 			self.send(":%s PRIVMSG %s :%s" % (self.bot, target, text))
 		else:
 			self.send(":%s PRIVMSG %s :\001ACTION %s\001" % (self.bot, target, text))
+			
+	def userflag(self, target, flag):
+		user = self.auth(target)
+		
+		if self.ison(user):
+			for data in self.query("select flags from users where name = '%s'" % user):
+				if str(data["flags"]).find(flag) != -1:
+					return True
+		else:
+			if flag == "n":
+				return True
+				
+		return False
 
 	def mode(self, target, mode):
 		self.send(":%s SVSMODE %s %s" % (self.bot, target, mode))
