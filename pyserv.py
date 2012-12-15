@@ -227,7 +227,7 @@ class Services:
 									if self.chanflag("l", channel["name"]):
 										self.log(self.bot_nick, "topic", channel["name"], ":"+channel["topic"])
 						else:
-							thread.start_new_thread(ServiceThread().onData, (data))
+							thread.start_new_thread(ServiceThread().onData, (data,))
 		except Exception:
 			et, ev, tb = sys.exc_info()
 			e = "{0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb))
