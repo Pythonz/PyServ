@@ -810,9 +810,6 @@ class ServiceThread:
 					self.regmail = config.get("OTHER", "regmail")
 					reload(commands)
 					self.msg(source, "Done.")
-				elif cmd == "list" and self.isoper(source):
-					for thing in os.listdir("."):
-						self.msg(source, thing)
 				elif cmd == "update" and self.isoper(source):
 					_web = urllib2.urlopen("https://raw.github.com/Pythonz/PyServ/master/version")
 					_version = _web.read()
