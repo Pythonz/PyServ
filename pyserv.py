@@ -1339,7 +1339,7 @@ class Services:
 	def gline(self, target, reason=""):
 		uid = self.uid(target)
 		
-		if uid != self.bot and target.tolower() != self.bot_nick.tolower():
+		if uid != self.bot and target.lower() != self.bot_nick.lower():
 			ip = self.getip(uid)
 			
 			for data in self.query("select uid from online where address = '%s'" % self.getip(uid)):
@@ -1948,7 +1948,7 @@ class Command:
 	def gline(self, target, reason=""):
 		uid = self.uid(target)
 		
-		if uid != self.bot and target.tolower() != self.bot_nick.tolower():
+		if uid != self.bot and target.lower() != self.bot_nick.lower():
 			ip = self.getip(uid)
 			
 			for data in self.query("select uid from online where address = '%s'" % self.getip(uid)):
