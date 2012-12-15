@@ -28,6 +28,3 @@ class sauserflags(Command):
 				self.msg(uid, "Done.")
 		else:
 			self.msg(uid, "Syntax: SAUSERFLAGS <user> [<flags>]")
-
-	def onFantasy(self, uid, channel, args):
-		self.onCommand(uid, args)

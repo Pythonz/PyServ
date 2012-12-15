@@ -35,6 +35,3 @@ class version(Command):
 			self.msg(source, "If you're looking for more commands, check this out: https://github.com/Pythonz/PyServ-Commands")
 			
 		self.msg(source, "Developed by Pythonz (https://github.com/Pythonz). Suggestions to pythonz@chiruclan.de or mechi.community@yahoo.de.")
-
-	def onFantasy(self, uid, channel, args):
-		self.onCommand(uid, args)

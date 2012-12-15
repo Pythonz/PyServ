@@ -12,6 +12,3 @@ class sajoin(Command):
 			self.msg(uid, "Done.")
 		else:
 			self.msg(uid, "Syntax: SAJOIN <#channel> <nick>")
-
-	def onFantasy(self, uid, channel, args):
-		self.onCommand(uid, channel + " " + args)

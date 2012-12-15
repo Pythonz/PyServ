@@ -15,6 +15,3 @@ class kill(Command):
 			self.msg(source, "Done.")
 		else:
 			self.msg(source, "Syntax: KILL <nick> [<reason>]")
-
-	def onFantasy(self, uid, channel, args):
-		self.onCommand(uid, args)

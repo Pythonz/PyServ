@@ -26,4 +26,7 @@ class unbanall(Command):
 			self.msg(uid, "Syntax: UNBANALL <#channel>")
 
 	def onFantasy(self, uid, chan, args):
-		self.onCommand(uid, chan)
+		flag = self.getflag(uid, chan)
+		
+		if flag == "n" or flag == "q" or flag == "a" or flag == "o" or flag == "h":
+			self.onCommand(uid, chan)

@@ -12,6 +12,3 @@ class sapart(Command):
 			self.msg(uid, "Done.")
 		else:
 			self.msg(uid, "Syntax: SAPART <#channel> <nick>")
-
-	def onFantasy(self, uid, channel, args):
-		self.onCommand(uid, channel + " " + args)

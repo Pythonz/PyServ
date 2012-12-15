@@ -66,6 +66,3 @@ class vhost(Command):
 					self.send(":%s CHGHOST %s %s.gateway.%s" % (self.bot, source, crypthost, '.'.join(self.services_name.split(".")[-2:])))
 		else:
 			self.msg(source, "Syntax: VHOST <set/remove> [<vhost>]")
-
-	def onFantasy(self, uid, channel, args):
-		self.onCommand(uid, args)

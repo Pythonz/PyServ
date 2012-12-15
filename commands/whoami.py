@@ -26,6 +26,3 @@ class whoami(Command):
 				self.msg(source, " {0}{1}{2}".format(channel["channel"], " "*int(20-len(channel["channel"])), channel["flag"]))
 				
 			self.msg(source, "End of list.")
-
-	def onFantasy(self, uid, channel, args):
-		self.onCommand(uid, args)

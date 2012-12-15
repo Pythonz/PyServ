@@ -24,6 +24,3 @@ class safeedback(Command):
 				
 			if not entry:
 				self.msg(source, "There is no feedback from %s" % arg[0])
-
-	def onFantasy(self, uid, channel, args):
-		self.onCommand(uid, args)

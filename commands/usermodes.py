@@ -16,6 +16,3 @@ class usermodes(Command):
 			self.msg(uid, "Done.")
 		else:
 			self.msg(uid, "Syntax: USERMODES [<modes>]")
-
-	def onFantasy(self, uid, chan, args):
-		self.onCommand(uid, args)

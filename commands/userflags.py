@@ -28,6 +28,3 @@ class userflags(Command):
 				self.msg(uid, "Done.")
 		else:
 			self.msg(uid, "Syntax: USERFLAGS [<flags>]")
-
-	def onFantasy(self, uid, channel, args):
-		self.onCommand(uid, args)

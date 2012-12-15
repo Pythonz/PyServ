@@ -78,6 +78,3 @@ class savhost(Command):
 					self.memo(data[0])
 		else:
 			self.msg(source, "Syntax: SAVHOST [?list] [[?set] <user> [<reject-reason>]]")
-
-	def onFantasy(self, uid, channel, args):
-		self.onCommand(uid, args)

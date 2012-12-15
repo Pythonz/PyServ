@@ -26,6 +26,3 @@ class gline(Command):
 				self.msg(uid, "Cannot find user '" + arg[0] + "' on the network.")
 		else:
 			self.msg(uid, "Syntax: GLINE <user> [<reason>]")
-
-	def onFantasy(self, uid, channel, args):
-		self.onCommand(uid, args)

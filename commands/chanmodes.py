@@ -1,6 +1,6 @@
 from pyserv import Command
 
-class chanmode(Command):
+class chanmodes(Command):
 	help = "Sets modes for your channel"
 	nauth = 1
 
@@ -33,4 +33,7 @@ class chanmode(Command):
 			self.msg(source, "Syntax: CHANMODE <#channel> [<modes>]")
 
 	def onFantasy(self, uid, chan, args):
-		self.onCommand(uid, chan + " " + args)
+		flag = self.getflag(uid, chan)
+		
+		if flag == "n" or flag == "q" or flag == "a" or flag == "o" or flag == "h":
+			self.onCommand(uid, chan + " " + args)

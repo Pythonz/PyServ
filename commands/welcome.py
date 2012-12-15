@@ -36,4 +36,7 @@ class welcome(Command):
 			self.msg(source, "Syntax: WELCOME <#channel> [<text>]")
 
 	def onFantasy(self, uid, chan, args):
-		self.onCommand(uid, chan + " " + args)
+		flag = self.getflag(uid, chan)
+		
+		if flag == "n" or flag == "q" or flag == "a":
+			self.onCommand(uid, chan + " " + args)

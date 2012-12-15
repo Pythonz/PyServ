@@ -15,6 +15,3 @@ class samode(Command):
 				self.msg(uid, "Invalid channel: " + arg[0])
 		else:
 			self.msg(uid, "Syntax: SAMODE <#channel> <modes>")
-
-	def onFantasy(self, uid, chan, args):
-		self.onCommand(uid, chan + " " + args)

@@ -117,6 +117,3 @@ class trust(Command):
 					self.msg(source, "Invalid limit")
 		else:
 			self.msg(source, "Syntax: TRUST <list/set/remove> [<address> [<limit>]]")
-
-	def onFantasy(self, uid, channel, args):
-		self.onCommand(uid, args)

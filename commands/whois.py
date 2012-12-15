@@ -80,6 +80,3 @@ class whois(Command):
 				self.msg(source, "Can't find user {0}".format(arg[0]))
 		else:
 			self.msg(source, "Syntax: WHOIS <nick>/<#account>")
-
-	def onFantasy(self, uid, channel, args):
-		self.onCommand(uid, args)

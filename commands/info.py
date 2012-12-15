@@ -47,6 +47,3 @@ class info(Command):
 				self.msg(uid, "Can't find user " + arg[0] + ".")
 		else:
 			self.msg(uid, "Syntax: INFO <account>")
-
-	def onFantasy(self, uid, chan, args):
-		self.onCommand(uid, args)

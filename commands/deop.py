@@ -44,4 +44,7 @@ class deop(Command):
 			self.msg(source, "Syntax: DEOP <#channel> [<nick> [<nick>]]")
 
 	def onFantasy(self, uid, chan, args):
-		self.onCommand(uid, chan + " " + args)
+		flag = self.getflag(uid, chan)
+		
+		if flag == "n" or flag == "q" or flag == "a" or flag == "o" or flag == "h":
+			self.onCommand(uid, chan + " " + args)

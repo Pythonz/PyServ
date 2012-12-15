@@ -33,6 +33,3 @@ class memo(Command):
 					self.msg(source, "Can't find user %s." % arg[0])
 		else:
 			self.msg(source, "Syntax: MEMO <user> <message>")
-
-	def onFantasy(self, uid, channel, args):
-		self.onCommand(uid, args)
