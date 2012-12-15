@@ -989,7 +989,7 @@ class ServiceThread:
 							msg = "Services are going down for an update. Please be patient."
 							self.send(":%s QUIT :%s" % (self.bot, msg))
 							self.send(":%s SQUIT %s" % (self.services_id, self.services_name))
-							self.con.close()
+							con.close()
 							
 							if os.access("pyserv.pid", os.F_OK):
 								shell("sh pyserv restart")
@@ -1015,7 +1015,7 @@ class ServiceThread:
 						self.send(":%s QUIT :%s" % (self.bot, args))
 						
 					self.send(":%s SQUIT %s" % (self.services_id, self.services_name))
-					self.con.close()
+					con.close()
 					
 					if os.access("pyserv.pid", os.F_OK):
 						shell("sh pyserv restart")
@@ -1030,7 +1030,7 @@ class ServiceThread:
 							self.send(":%s QUIT :%s" % (self.bot, args))
 							
 						self.send(":%s SQUIT %s" % (self.services_id, self.services_name))
-						self.con.close()
+						con.close()
 						shell("sh pyserv stop")
 					else:
 						self.msg(source, "You are running in debug mode, only restart is possible!")
