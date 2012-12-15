@@ -1021,7 +1021,7 @@ class ServiceThread:
 					self.con.close()
 					
 					if os.access("pyserv.pid", os.F_OK):
-						self.shell("sh pyserv restart")
+						thread.start_new_thread(shell, ("sh pyserv restart",))
 					else:
 						sys.exit(0)
 				elif cmd == "quit" and self.isoper(source):
