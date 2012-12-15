@@ -90,154 +90,6 @@ class Services:
 		self.bot_real = config.get("BOT", "real")
 		self.db = _mysql.connect(host=self.mysql_host, port=self.mysql_port, db=self.mysql_name, user=self.mysql_user, passwd=self.mysql_passwd)
 		
-	def auth(self, target):
-		for data in self.query("select user from temp_nick where nick = '%s'" % target):
-			return data["user"]
-			
-		return 0
-		
-	def ison(self, user):
-		for data in self.query("select * from temp_nick where user = '%s'" % user):
-			return True
-			
-		return False
-		
-	def uid (self, nick):
-		if nick == self.bot_nick:
-			return self.bot
-			
-		for data in self.query("select uid from online where nick = '{0}'".format(_mysql.escape_string(nick))):
-			return data["uid"]
-			
-		return nick
-		
-	def suspended(self, channel):
-		for data in self.query("select reason from suspended where channel = '%s'" % _mysql.escape_string(channel)):
-			return data["reason"]
-			
-		return False
-		
-	def chanflag(self, flag, channel):
-		for data in self.query("select flags from channelinfo where name = '{0}'".format(channel)):
-			if data["flags"].find(flag) != -1:
-				return True
-				
-		return False
-		
-	def chanexist(self, channel):
-		for data in self.query("select name from channelinfo where name = '%s'" % channel):
-			return True
-			
-		return False
-
-	def userhost(self, target):
-		uid = self.uid(target)
-		
-		for data in self.query("select username,host from online where uid = '%s'" % uid):
-			return data["username"]+"@"+data["host"]
-			
-		return 0
-		
-	def nick (self, source):
-		if source == self.bot:
-			return self.bot_nick
-			
-		for data in self.query("select nick from online where uid = '%s'" % _mysql.escape_string(source)):
-			return str(data["nick"])
-			
-		return source
-		
-	def query(self, string):
-		self.db.query(str(string))
-		result = self.db.store_result()
-		
-		if result:
-			results = list()
-			
-			for data in result.fetch_row(maxrows=0, how=1):
-				results.append(data)
-				
-			return results
-			
-	def query_row(self, string):
-		self.db.query(str(string))
-		result = self.db.store_result()
-		
-		if result:
-			for data in result.fetch_row(maxrows=1, how=1):
-				return data
-		
-	def log(self, source, msgtype, channel, text=""):
-		try:
-			if msgtype.lower() == "mode" and len(text.split()) > 1:
-				nicks = list()
-				
-				for nick in text.split()[1:]:
-					nicks.append(self.nick(nick))
-					
-				text = "{text} {nicks}".format(text=text.split()[0], nicks=' '.join(nicks))
-				
-			if source == self.bot_nick:
-				sender = self.bot_nick+"!"+self.bot_user+"@"+self.services_name
-			else:
-				sender = self.nick(source)+"!"+self.userhost(source)
-				
-			file = open("logs/"+channel, "ab+")
-			lines = file.readlines()
-			
-			if len(lines) > 100:
-				file.close()
-				file = open("logs/"+channel, "wb")
-				i = 49
-				
-				while i != 0:
-					file.write(lines[-i])
-					i -= 1
-					
-				file.write(sender+" "+msgtype.upper()+" "+channel+" "+text+"\n")
-			else:
-				file.write(sender+" "+msgtype.upper()+" "+channel+" "+text+"\n")
-				
-			file.close()
-		except:
-			pass
-		
-	def join(self, channel):
-		if self.chanexist(channel) and not self.suspended(channel):
-			self.send(":%s JOIN %s" % (self.bot, channel))
-			self.mode(channel, "+rqo {0} {0}".format(self.bot))
-		
-	def msg(self, target, text=" ", action=False):
-		if self.userflag(target, "n") and not action:
-			self.send(":%s NOTICE %s :%s" % (self.bot, target, text))
-		elif not self.userflag(target, "n") and not action:
-			self.send(":%s PRIVMSG %s :%s" % (self.bot, target, text))
-		else:
-			self.send(":%s PRIVMSG %s :\001ACTION %s\001" % (self.bot, target, text))
-			
-	def userflag(self, target, flag):
-		user = self.auth(target)
-		
-		if self.ison(user):
-			for data in self.query("select flags from users where name = '%s'" % user):
-				if str(data["flags"]).find(flag) != -1:
-					return True
-		else:
-			if flag == "n":
-				return True
-				
-		return False
-
-	def mode(self, target, mode):
-		self.send(":%s SVSMODE %s %s" % (self.bot, target, mode))
-		
-		if target.startswith("#"):
-			if self.chanflag("l", target):
-				self.log(self.bot_nick, "mode", target, mode)
-
-	def meta(self, target, meta, content):
-		self.send(":%s METADATA %s %s :%s" % (self.services_id, target, meta, content))
-		
 	def send(self, text):
 		self.con.send(text+"\n")
 		debug(blue("*") + " " + text)
@@ -280,32 +132,10 @@ class Services:
 					return 1
 					
 				for data in recv.splitlines():
-					debug(green("*") + " " + data)
-					
 					if data.rstrip() != "":
-						if data.split()[1] == "PING":
-							self.send(":%s PONG %s %s" % (self.services_id, self.services_id, data.split()[2]))
-							self.send(":%s PING %s %s" % (self.services_id, self.services_id, data.split()[2]))
-						elif data.split()[1] == "ENDBURST" and not _connected:
-							self.send(":%s UID %s %s %s %s %s %s 0.0.0.0 %s +Ik :%s" % (self.services_id, self.bot, time.time(), self.bot_nick, self.services_name, self.services_name, self.bot_user, time.time(), self.bot_real))
-							_connected = True
-							self.send(":%s OPERTYPE Service" % self.bot)
-							self.meta(self.bot, "accountname", self.bot_nick)
-							self.msg("$*", "Services are now back online. Have a nice day :)")
-							
-							for channel in self.query("select name,modes,topic from channelinfo"):
-								self.join(str(channel["name"]))
-								
-								if self.chanflag("m", channel["name"]):
-									self.mode(channel["name"], channel["modes"])
-									
-								if self.chanflag("t", channel["name"]):
-									self.send(":{0} TOPIC {1} :{2}".format(self.bot, channel["name"], channel["topic"]))
-									
-									if self.chanflag("l", channel["name"]):
-										self.log(self.bot_nick, "topic", channel["name"], ":"+channel["topic"])
-						else:
-							thread.start_new_thread(ServiceThread().onData, (data,))
+						debug(green("*") + " " + data)
+						thread.start_new_thread(ServiceThread().onData, (data,))
+					
 		except Exception:
 			et, ev, tb = sys.exc_info()
 			e = "{0}: {1} (Line #{2})".format(et, ev, traceback.tb_lineno(tb))
@@ -358,7 +188,28 @@ class ServiceThread:
 	
 	def onData(self, data):
 		try:
-			if data.split()[1] == "PRIVMSG":
+			if data.split()[1] == "PING":
+				self.send(":%s PONG %s %s" % (self.services_id, self.services_id, data.split()[2]))
+				self.send(":%s PING %s %s" % (self.services_id, self.services_id, data.split()[2]))
+			elif data.split()[1] == "ENDBURST" and not _connected:
+				self.send(":%s UID %s %s %s %s %s %s 0.0.0.0 %s +Ik :%s" % (self.services_id, self.bot, time.time(), self.bot_nick, self.services_name, self.services_name, self.bot_user, time.time(), self.bot_real))
+				_connected = True
+				self.send(":%s OPERTYPE Service" % self.bot)
+				self.meta(self.bot, "accountname", self.bot_nick)
+				self.msg("$*", "Services are now back online. Have a nice day :)")
+				
+				for channel in self.query("select name,modes,topic from channelinfo"):
+					self.join(str(channel["name"]))
+					
+					if self.chanflag("m", channel["name"]):
+						self.mode(channel["name"], channel["modes"])
+						
+					if self.chanflag("t", channel["name"]):
+						self.send(":{0} TOPIC {1} :{2}".format(self.bot, channel["name"], channel["topic"]))
+						
+						if self.chanflag("l", channel["name"]):
+							self.log(self.bot_nick, "topic", channel["name"], ":"+channel["topic"])
+			elif data.split()[1] == "PRIVMSG":
 				if data.split()[2] == self.bot:
 					iscmd = False
 					cmd = data.split()[3][1:]
@@ -994,13 +845,7 @@ class ServiceThread:
 							self.msg(source, "Restart ...")
 							msg = "Services are going down for an update. Please be patient."
 							self.send(":%s QUIT :%s" % (self.bot, msg))
-							self.send(":%s SQUIT %s" % (self.services_id, self.services_name))
-							self.con.close()
-							
-							if os.access("pyserv.pid", os.F_OK):
-								shell("sh pyserv restart")
-							else:
-								sys.exit(0)
+							self.send(":%s NOTICE :You have restart the services manually. The bot has been taken offline to avoid malfunctions." % self.services_id)
 						else:
 							self.msg(source, "Reload ...")
 							reload(commands)
@@ -1013,20 +858,6 @@ class ServiceThread:
 							self.msg(source, "Done.")
 					else:
 						self.msg(source, "No update available.")
-				elif cmd == "restart" and self.isoper(source):
-					if len(arg) == 0:
-						msg = "Services are going down for a restart. Please be patient."
-						self.send(":%s QUIT :%s" % (self.bot, msg))
-					else:
-						self.send(":%s QUIT :%s" % (self.bot, args))
-						
-					self.send(":%s SQUIT %s" % (self.services_id, self.services_name))
-					self.con.close()
-					
-					if os.access("pyserv.pid", os.F_OK):
-						shell("sh pyserv restart")
-					else:
-						sys.exit(0)
 				elif cmd == "quit" and self.isoper(source):
 					if os.access("pyserv.pid", os.F_OK):
 						if len(arg) == 0:
@@ -1039,7 +870,7 @@ class ServiceThread:
 						self.con.close()
 						shell("sh pyserv stop")
 					else:
-						self.msg(source, "You are running in debug mode, only restart is possible!")
+						self.msg(source, "You're running the debug mode. You cannot restart via commands!")
 				else:
 					self.msg(source, "Unknown command {0}. Please try HELP for more information.".format(text.split()[0].upper()))
 			else:
