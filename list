@@ -21,7 +21,7 @@ commands/domaincheck.py 922e145c805bf5ad251ffd57fdc1ef4d
 commands/email.py c8455f8eb55fd02904b50045e2ed5356
 commands/fantasy.py 0f6a7c46b09d1a51888d96652d049ff2
 commands/feedback.py c7da348e92284af1f447e4077bdc337c
-commands/gline.py f9bcc934980ed585d2764d2b8ad2e46b
+commands/gline.py 52b305c135aeded62a2fc9bfa8696adb
 commands/halfop.py 04876bf41aa07f2c0665856d651fed92
 commands/hello.py f4d823ce0199e4734fc42b6068487725
 commands/info.py f1621426be44f54ff7ca8af1c935eaf0
