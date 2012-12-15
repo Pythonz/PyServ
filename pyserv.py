@@ -90,6 +90,18 @@ class Services:
 		self.bot_real = config.get("BOT", "real")
 		self.db = _mysql.connect(host=self.mysql_host, port=self.mysql_port, db=self.mysql_name, user=self.mysql_user, passwd=self.mysql_passwd)
 		
+	def auth(self, target):
+		for data in self.query("select user from temp_nick where nick = '%s'" % target):
+			return data["user"]
+			
+		return 0
+		
+	def ison(self, user):
+		for data in self.query("select * from temp_nick where user = '%s'" % user):
+			return True
+			
+		return False
+		
 	def uid (self, nick):
 		if nick == self.bot_nick:
 			return self.bot
