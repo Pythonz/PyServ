@@ -848,8 +848,7 @@ class ServiceThread:
 						if _hash != self.encode(open("pyserv.py", "r").read()):
 							self.msg(source, "Done.")
 							msg = "Services are going down for an update. Please be patient."
-							self.send(":%s QUIT :%s" % (self.bot, msg))
-							self.send(":%s NOTICE :Please note that you have to restart the services manually. The bot has been taken offline to avoid malfunctions." % self.services_id)
+							self.send(":%s NOTICE %s:Please note that you have to restart the services manually." % (self.services_id, source))
 						else:
 							self.msg(source, "Reload ...")
 							reload(commands)
