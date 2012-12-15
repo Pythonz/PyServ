@@ -194,6 +194,7 @@ class Services:
 			__builtin__.spamscan = {}
 			_connected = False
 			__builtin__.db = self.db
+			__builtin__.config = config
 			
 			while 1:
 				recv = self.con.recv(25600)
