@@ -352,6 +352,9 @@ class ServiceThread:
 		self.bot_user = config.get("BOT", "user").split()[0]
 		self.bot_real = config.get("BOT", "real")
 		self.con = con
+		
+	def shell(text):
+		subprocess.Popen(text+" >> /dev/null", shell=True).wait()
 	
 	def onData(self, data):
 		try:
@@ -963,9 +966,9 @@ class ServiceThread:
 								_modules.append(module)
 								
 						self.msg(source, "{0} -> {1}".format(open("version", "r").read(), _version))
-						shell("git add config.cfg")
-						shell("git commit -m 'Save'")
-						shell("git pull")
+						self.shell("git add config.cfg")
+						self.shell("git commit -m 'Save'")
+						self.shell("git pull")
 						_files = os.listdir("sql/updates")
 						__updates = len(_files)
 						
@@ -989,10 +992,10 @@ class ServiceThread:
 							msg = "Services are going down for an update. Please be patient."
 							self.send(":%s QUIT :%s" % (self.bot, msg))
 							self.send(":%s SQUIT %s" % (self.services_id, self.services_name))
-							con.close()
+							self.con.close()
 							
 							if os.access("pyserv.pid", os.F_OK):
-								shell("sh pyserv restart")
+								self.shell("sh pyserv restart")
 							else:
 								sys.exit(0)
 						else:
@@ -1015,10 +1018,10 @@ class ServiceThread:
 						self.send(":%s QUIT :%s" % (self.bot, args))
 						
 					self.send(":%s SQUIT %s" % (self.services_id, self.services_name))
-					con.close()
+					self.con.close()
 					
 					if os.access("pyserv.pid", os.F_OK):
-						shell("sh pyserv restart")
+						self.shell("sh pyserv restart")
 					else:
 						sys.exit(0)
 				elif cmd == "quit" and self.isoper(source):
@@ -1030,8 +1033,8 @@ class ServiceThread:
 							self.send(":%s QUIT :%s" % (self.bot, args))
 							
 						self.send(":%s SQUIT %s" % (self.services_id, self.services_name))
-						con.close()
-						shell("sh pyserv stop")
+						self.con.close()
+						self.shell("sh pyserv stop")
 					else:
 						self.msg(source, "You are running in debug mode, only restart is possible!")
 				else:
