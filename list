@@ -176,7 +176,7 @@ deps/psutil/test/test_psutil.py f0318b3428e8f3ebd5051836e50f540b
 deps/pycachelib/setup.py 39db555f90044097c642a695c4738c08
 deps/pycachelib/pycachelib/__init__.py d41d8cd98f00b204e9800998ecf8427e
 deps/pycachelib/pycachelib/cache.py 6409d7e1318033ed1edb62641768a5ca
-sql/base/struct.sql e430081278daf49fe1f5a7d41c464c5a
+sql/base/struct.sql bda11784f7b92cb7966584f5cbb3dbef
 sql/updates/10_02-12-2012.sql 01e17aaa106a9b8e173844791fc75655
 sql/updates/11_02-17-2012.sql 8871da6e53758f0c79c9944c6c42b106
 sql/updates/12_02-17-2012.sql 0c5d84bf3909b5091defcd77dcb4805f
@@ -194,6 +194,7 @@ sql/updates/22_03-09-2012.sql 844d5301ed60a7fb51ea082d9a9718f8
 sql/updates/23_03-09-2012.sql f6464f27b1bdef1001ef8988da4c0a37
 sql/updates/24_05-11-2012.sql d6598e5d7b86ae99789553254d49f0c3
 sql/updates/25_07-04-2012.sql edcd01325eb077f027dcaf1c7479d2f1
+sql/updates/26_12-15-2012.sql 61f23daee4ad28a0c6816a57b73a75d8
 sql/updates/2_02-02-2012.sql 0b38c7109eff565f1dd8be45b12b83c7
 sql/updates/3_02-05-2012.sql 30f5568f7a4ec8ba9f7c7ac790bb1f20
 sql/updates/4_02-05-2012.sql 592c83d9ac209484ead4d29c969751f2
