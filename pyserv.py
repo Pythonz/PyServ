@@ -90,6 +90,46 @@ class Services:
 		self.bot_real = config.get("BOT", "real")
 		self.db = _mysql.connect(host=self.mysql_host, port=self.mysql_port, db=self.mysql_name, user=self.mysql_user, passwd=self.mysql_passwd)
 		
+	def log(self, source, msgtype, channel, text=""):
+		try:
+			if msgtype.lower() == "mode" and len(text.split()) > 1:
+				nicks = list()
+				
+				for nick in text.split()[1:]:
+					nicks.append(self.nick(nick))
+					
+				text = "{text} {nicks}".format(text=text.split()[0], nicks=' '.join(nicks))
+				
+			if source == self.bot_nick:
+				sender = self.bot_nick+"!"+self.bot_user+"@"+self.services_name
+			else:
+				sender = self.nick(source)+"!"+self.userhost(source)
+				
+			file = open("logs/"+channel, "ab+")
+			lines = file.readlines()
+			
+			if len(lines) > 100:
+				file.close()
+				file = open("logs/"+channel, "wb")
+				i = 49
+				
+				while i != 0:
+					file.write(lines[-i])
+					i -= 1
+					
+				file.write(sender+" "+msgtype.upper()+" "+channel+" "+text+"\n")
+			else:
+				file.write(sender+" "+msgtype.upper()+" "+channel+" "+text+"\n")
+				
+			file.close()
+		except:
+			pass
+		
+	def join(self, channel):
+		if self.chanexist(channel) and not self.suspended(channel):
+			self.send(":%s JOIN %s" % (self.bot, channel))
+			self.mode(channel, "+rqo {0} {0}".format(self.bot))
+		
 	def msg(self, target, text=" ", action=False):
 		if self.userflag(target, "n") and not action:
 			self.send(":%s NOTICE %s :%s" % (self.bot, target, text))
