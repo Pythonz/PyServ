@@ -10,6 +10,7 @@ class gline(Command):
 			if self.uid(arg[0]).tolower() != arg[0].tolower():
 				if not self.isoper(self.uid(arg[0])):
 					self.gline(arg[0])
+					self.msg(uid, "Done.")
 				else:
 					self.msg(uid, "You cannot g-line another operator!")
 			else:
@@ -18,6 +19,7 @@ class gline(Command):
 			if self.uid(arg[0]).tolower() != arg[0].tolower():
 				if not self.isoper(self.uid(arg[0])):
 					self.gline(arg[0], ' '.join(arg[1:]))
+					self.msg(uid, "Done.")
 				else:
 					self.msg(uid, "You cannot g-line another operator!")
 			else:
