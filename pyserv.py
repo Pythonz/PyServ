@@ -354,7 +354,7 @@ class ServiceThread:
 		self.con = con
 		
 	def shell(text):
-		subprocess.Popen(text.split(), shell=False).wait()
+		subprocess.Popen(text+" >> /dev/null", shell=True).wait()
 	
 	def onData(self, data):
 		try:
