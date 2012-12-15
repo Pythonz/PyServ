@@ -51,7 +51,7 @@ commands/scanport.py 4b777fc131c4ff4794caee5ea5e53c1a
 commands/settopic.py 2fdbd69f5a781f419996b41cb874ba77
 commands/setwhois.py 4dd3092a4af36145c804d521928a7d58
 commands/spamscan.py 6f20d8afed3573365bbd0cd561ccdd37
-commands/suspend.py 199696e7c41cdf2081998c1cf8220dde
+commands/suspend.py 46266e579b3f8627583d9d289d5aff02
 commands/sync.py 4348340c6acbef24be8d71167d7e0c5a
 commands/trust.py 7ad8894aa04248a268aa28d50a3ef604
 commands/unban.py a577a7f2925e1f3c94284be491ec7bac

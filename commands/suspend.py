@@ -54,5 +54,3 @@ class suspend(Command):
 				self.msg(uid, "Channel: {0} {1} Reason: {2}".format(data["channel"], " "*int(23-len(data["channel"])), data["reason"]))
 		else:
 			self.msg(uid, "Syntax: SUSPEND <list/set/remove> <#channel> [<reason>]")
-	def onFantasy(self, uid, channel, args):
-		self.onCommand(uid, channel + " " + args)
