@@ -122,7 +122,7 @@ class Services:
 			self.send(":%s ENDBURST" % self.services_id)
 			__builtin__.con = self.con
 			__builtin__.spamscan = {}
-			_connected = False
+			__builtin__._connected = False
 			__builtin__.config = config
 			
 			while 1:
@@ -132,9 +132,9 @@ class Services:
 					return 1
 					
 				for data in recv.splitlines():
-					if data.rstrip() != "":
+					if data.strip() != "":
 						debug(green("*") + " " + data)
-						thread.start_new_thread(ServiceThread().onData, (data,))
+						thread.start_new_thread(ServiceThread().onData, (data.strip(),))
 					
 		except Exception:
 			et, ev, tb = sys.exc_info()
@@ -193,7 +193,7 @@ class ServiceThread:
 				self.send(":%s PING %s %s" % (self.services_id, self.services_id, data.split()[2]))
 			elif data.split()[1] == "ENDBURST" and not _connected:
 				self.send(":%s UID %s %s %s %s %s %s 0.0.0.0 %s +Ik :%s" % (self.services_id, self.bot, time.time(), self.bot_nick, self.services_name, self.services_name, self.bot_user, time.time(), self.bot_real))
-				_connected = True
+				__builtin__._connected = True
 				self.send(":%s OPERTYPE Service" % self.bot)
 				self.meta(self.bot, "accountname", self.bot_nick)
 				self.msg("$*", "Services are now back online. Have a nice day :)")
