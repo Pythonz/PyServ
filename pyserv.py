@@ -329,6 +329,11 @@ class ServiceThread:
 	import __builtin__
 
 	def __init__(self):
+		self.mysql_host = config.get("MYSQL", "host")
+		self.mysql_port = config.getint("MYSQL", "port")
+		self.mysql_name = config.get("MYSQL", "name")
+		self.mysql_user = config.get("MYSQL", "user")
+		self.mysql_passwd = config.get("MYSQL", "passwd")
 		self.server_name = config.get("SERVER", "name")
 		self.server_address = config.get("SERVER", "address")
 		self.server_port = config.get("SERVER", "port")
