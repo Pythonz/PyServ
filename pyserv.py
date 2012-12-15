@@ -847,7 +847,7 @@ class ServiceThread:
 										
 						if _hash != self.encode(open("pyserv.py", "r").read()):
 							self.msg(source, "Done.")
-							self.send(":%s NOTICE %s:Please note that you have to restart the services manually." % (self.services_id, source))
+							self.msg(source, "Please note that you have to restart the services manually.")
 						else:
 							self.msg(source, "Reload ...")
 							reload(commands)
