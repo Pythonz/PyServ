@@ -11,7 +11,7 @@ commands/ban.py c3fd27151fcb52774ea105e56de9e597
 commands/banlist.py 15c94cd325c45beb60c5b88e66b0801e
 commands/chanflags.py 02c4e13b3a2737a6c4383470be2da496
 commands/chanlev.py a022df0aae4f2d0b8e79dcde60fdd295
-commands/chanmode.py 28b7c058db9bb0707f3bcfc8c7d98130
+commands/chanmode.py 098f5f0bc48d17258c62a075ac433e70
 commands/dehalfop.py 8491804d3522e95cc4c9509e0e7c6389
 commands/deop.py c242b8e6b015972fbb4b05b337a060cc
 commands/deowner.py b0032cf27dea7f60d3b58448c9bfefd6
