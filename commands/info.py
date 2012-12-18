@@ -24,9 +24,9 @@ class info(Command):
 						
 					self.msg(uid, "Online Nicks  : {0}".format(' '.join(online)))
 					self.msg(uid, "Hosts         : {0}".format(' '.join(hosts)))
-					self.msg(uid, "User hosts    : {0}".format(' '.join(userhosts)))
-					self.msg(uid, "User flags    : {0}".format(user["flags"]))
-					self.msg(uid, "User modes    : {0}".format(user["modes"]))
+					self.msg(uid, "Userhosts     : {0}".format(' '.join(userhosts)))
+					self.msg(uid, "User flags    : +{0}".format(user["flags"]))
+					self.msg(uid, "Usermode      : {0}".format(user["modes"]))
 					self.msg(uid, "Email address : {0}".format(user["email"]))
 					self.msg(uid, "vHost         : {0}".format(self.getvhost(user["name"])))
 					
@@ -37,7 +37,7 @@ class info(Command):
 					self.msg(uid, "Channel              Flag")
 					
 					for channel in self.query("select channel,flag from channels where user = '{0}' order by flag,channel".format(user["name"])):
-						self.msg(uid, " {0}{1}{2}".format(channel["channel"], " "*int(20-len(channel["channel"])), channel["flag"]))
+						self.msg(uid, " {0}{1}+{2}".format(channel["channel"], " "*int(20-len(channel["channel"])), channel["flag"]))
 						
 					self.msg(uid, "End of list.")
 					

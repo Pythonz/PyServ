@@ -20,12 +20,12 @@ class userflags(Command):
 				i = 0
 				
 				while i != len(mode):
-					self.msg(uid, mode[i]+" = "+desc[i])
+					self.msg(uid, "+" + mode[i]+" = "+desc[i])
 					i += 1
 			else:
 				userflags = self.regexflag("+" + self.userflags(uid), arg[0])
 				flags = ''.join([char for char in userflags if char in ''.join(mode)])
 				self.query("update users set flags = '%s' where name = '%s'" % (flags, self.auth(uid)))
-				self.msg(uid, "Done.")
+				self.msg(uid, "Done. Current user flags: +" + userflags)
 		else:
 			self.msg(uid, "Syntax: USERFLAGS [<flags>]")

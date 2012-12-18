@@ -14,17 +14,18 @@ class sauserflags(Command):
 		arg = args.split()
 		
 		if len(arg) == 1:
-			self.msg(uid, "Current user flags: "+self.userflags(self.uid(arg[0])))
+			self.msg(uid, "Current user flags: +"+self.userflags(self.uid(arg[0])))
 		elif len(arg) == 2:
 			if arg[0] == "?":
 				i = 0
 				
 				while i != len(mode):
-					self.msg(uid, mode[i]+" = "+desc[i])
+					self.msg(uid, "+" + mode[i]+" = "+desc[i])
 					i += 1
 			else:
-				flags = ''.join([char for char in arg[1] if char in ''.join(mode)])
+				userflags = self.regexflag("+" + self.userflags(self.uid(arg[0])), arg[1])
+				flags = ''.join([char for char in userflags if char in ''.join(mode)])
 				self.query("update users set flags = '%s' where name = '%s'" % (flags, self.auth(self.uid(arg[0]))))
-				self.msg(uid, "Done.")
+				self.msg(uid, "Done. Current user flags for " + arg[0] + ": +" + userflags)
 		else:
 			self.msg(uid, "Syntax: SAUSERFLAGS <user> [<flags>]")

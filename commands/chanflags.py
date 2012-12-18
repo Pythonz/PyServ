@@ -37,14 +37,14 @@ class chanflags(Command):
 			if arg[0].startswith("#"):
 				if self.getflag(source, arg[0]) == "n" or self.getflag(source, arg[0]) == "q" or self.getflag(source, arg[0]) == "a":
 					for channel in self.query("select name,flags from channelinfo where name = '{0}'".format(arg[0])):
-						self.msg(source, "Current flags for {0}: {1}".format(channel["name"], channel["flags"]))
+						self.msg(source, "Current flags for {0}: +{1}".format(channel["name"], channel["flags"]))
 				else:
-					self.msg(source, "No permission")
+					self.msg(source, "Denied.")
 			elif arg[0] == "?":
 				listed = 0
 				
 				while listed != len(mode):
-					self.msg(source, "{0} = {1}".format(mode[listed], desc[listed]))
+					self.msg(source, "+{0} = {1}".format(mode[listed], desc[listed]))
 					listed += 1
 			else:
 				self.msg(source, "Invalid channel '{0}'".format(arg[0]))
@@ -52,11 +52,12 @@ class chanflags(Command):
 			if arg[0].startswith("#"):
 				if self.getflag(source, arg[0]) == "n" or self.getflag(source, arg[0]) == "a":
 					for channel in self.query("select name from channelinfo where name = '{0}'".format(arg[0])):
-						flags = ''.join([char for char in arg[1] if char in ''.join(mode)])
+						chanflags = self.regexflag("+" + channel["flags"], arg[1])
+						flags = ''.join([char for char in chanflags if char in ''.join(mode)])
 						self.query("update channelinfo set flags = '{0}' where name = '{1}'".format(flags, channel["name"]))
-						self.msg(source, "New flags for {0}: {1}".format(channel["name"], flags))
+						self.msg(source, "Done. New flags for {0}: +{1}".format(channel["name"], flags))
 				else:
-					self.msg(source, "No permission")
+					self.msg(source, "Denied.")
 			else:
 				self.msg(source, "Invalid channel '{0}'".format(arg[0]))
 		else:

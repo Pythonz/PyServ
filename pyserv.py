@@ -902,6 +902,9 @@ class ServiceThread:
 			elif actflag == "-":
 				if nflags.find(char) == -1:
 					nflags += char
+			else:
+				if pflags.find(char) == -1:
+					pflags += char
 		
 		for char in pattern:
 			if char == "+":
@@ -1165,8 +1168,8 @@ class ServiceThread:
 						self.send(":%s SVSJOIN %s %s" % (self.bot, target, channel))
 
 	def getflag(self, target, channel):
-		for data in self.query("select user from temp_nick where nick = '%s'" % target):
-			for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (channel, data["user"])):
+		for data in self.query("select user from temp_nick where nick = '%s'" % _mysql.escape_string(target)):
+			for flag in self.query("select flag from channels where channel = '%s' and user = '%s'" % (_mysql.escape_string(channel), data["user"])):
 				return flag["flag"]
 				
 		return 0
@@ -1537,6 +1540,9 @@ class Command:
 			elif actflag == "-":
 				if nflags.find(char) == -1:
 					nflags += char
+			else:
+				if pflags.find(char) == -1:
+					pflags += char
 		
 		for char in pattern:
 			if char == "+":

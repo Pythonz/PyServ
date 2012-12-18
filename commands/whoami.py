@@ -15,7 +15,7 @@ class whoami(Command):
 				online.append(self.nick(uid))
 				
 			self.msg(source, "Online Nicks  : {0}".format(' '.join(online)))
-			self.msg(source, "User flags    : {0}".format(self.userflags(user["name"])))
+			self.msg(source, "User flags    : +{0}".format(self.userflags(user["name"])))
 			self.msg(source, "Email address : {0}".format(user["email"]))
 			self.msg(source, "vHost         : {0}".format(self.getvhost(user["name"])))
 			self.msg(source, "Gateway       : {0}".format(str(self.gateway(source))))
@@ -23,6 +23,6 @@ class whoami(Command):
 			self.msg(source, "Channel              Flag")
 			
 			for channel in self.query("select channel,flag from channels where user = '{0}' order by flag,channel".format(user["name"])):
-				self.msg(source, " {0}{1}{2}".format(channel["channel"], " "*int(20-len(channel["channel"])), channel["flag"]))
+				self.msg(source, " {0}{1}+{2}".format(channel["channel"], " "*int(20-len(channel["channel"])), channel["flag"]))
 				
 			self.msg(source, "End of list.")
