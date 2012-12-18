@@ -897,10 +897,10 @@ class ServiceThread:
 			elif char == "-":
 				actflag = "-"
 			elif actflag == "+":
-				if not pflags.find(char):
+				if pflags.find(char) == -1:
 					pflags += char
 			elif actflag == "-":
-				if not nflags.find(char):
+				if nflags.find(char) == -1:
 					nflags += char
 		
 		for char in pattern:
@@ -909,12 +909,12 @@ class ServiceThread:
 			elif char == "-":
 				actflag = "-"
 			elif actflag == "+":
-				if not pflags.find(char):
+				if pflags.find(char) == -1:
 					if include_negatives:
 						nflags = nflags.replace(char, "")
 					pflags += char
 			elif actflag == "-":
-				if not nflags.find(char):
+				if nflags.find(char) == -1:
 					pflags = pflags.replace(char, "")
 					if include_negatives:
 						nflags += char
@@ -1532,10 +1532,10 @@ class Command:
 			elif char == "-":
 				actflag = "-"
 			elif actflag == "+":
-				if not pflags.find(char):
+				if pflags.find(char) == -1:
 					pflags += char
 			elif actflag == "-":
-				if not nflags.find(char):
+				if nflags.find(char) == -1:
 					nflags += char
 		
 		for char in pattern:
@@ -1544,12 +1544,12 @@ class Command:
 			elif char == "-":
 				actflag = "-"
 			elif actflag == "+":
-				if not pflags.find(char):
+				if pflags.find(char) == -1:
 					if include_negatives:
 						nflags = nflags.replace(char, "")
 					pflags += char
 			elif actflag == "-":
-				if not nflags.find(char):
+				if nflags.find(char) == -1:
 					pflags = pflags.replace(char, "")
 					if include_negatives:
 						nflags += char
