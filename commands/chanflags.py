@@ -51,7 +51,7 @@ class chanflags(Command):
 		elif len(arg) == 2:
 			if arg[0].startswith("#"):
 				if self.getflag(source, arg[0]) == "n" or self.getflag(source, arg[0]) == "a":
-					for channel in self.query("select name from channelinfo where name = '{0}'".format(arg[0])):
+					for channel in self.query("select name,flags from channelinfo where name = '{0}'".format(arg[0])):
 						chanflags = self.regexflag("+" + channel["flags"], arg[1])
 						flags = ''.join([char for char in chanflags if char in ''.join(mode)])
 						self.query("update channelinfo set flags = '{0}' where name = '{1}'".format(flags, channel["name"]))

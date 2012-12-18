@@ -9,9 +9,9 @@ commands/accban.py e6d5d4991b9595d512d3aed0444975de
 commands/auth.py 38fd0783ee0e1f35ae91ed2d57319bf5
 commands/ban.py c3fd27151fcb52774ea105e56de9e597
 commands/banlist.py 15c94cd325c45beb60c5b88e66b0801e
-commands/chanflags.py 02c4e13b3a2737a6c4383470be2da496
+commands/chanflags.py 8ad11bce55ba302803b3ced47fc82559
 commands/chanlev.py a022df0aae4f2d0b8e79dcde60fdd295
-commands/chanmode.py 098f5f0bc48d17258c62a075ac433e70
+commands/chanmode.py 89872b77d2498b22bea359ea4a0c5e7f
 commands/dehalfop.py 8491804d3522e95cc4c9509e0e7c6389
 commands/deop.py c242b8e6b015972fbb4b05b337a060cc
 commands/deowner.py b0032cf27dea7f60d3b58448c9bfefd6
