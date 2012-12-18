@@ -885,6 +885,44 @@ class ServiceThread:
 				self.mail("mechi.community@yahoo.de", "From: {0} <{1}>\nTo: PyServ Development <mechi.community@yahoo.de>\nSubject: Bug on {0}\n{2}".format(self.services_description, self.email, str(e)))
 				
 			debug(red("*") + " <<MSG-ERROR>> "+str(e))
+			
+	def regexflag (self, original, pattern, include_negatives = False):
+		pflags = ""
+		nflags = ""
+		actflag = ""
+		
+		for char in original:
+			if char == "+":
+				actflag = "+"
+			elif char == "-":
+				actflag = "-"
+			elif actflag == "+":
+				if not pflags.find(char):
+					pflags += char
+			elif actflag == "-":
+				if not nflags.find(char):
+					nflags += char
+		
+		for char in pattern:
+			if char == "+":
+				actflag = "+"
+			elif char == "-":
+				actflag = "-"
+			elif actflag == "+":
+				if not pflags.find(char):
+					if include_negatives:
+						nflags = nflags.replace(char, "")
+					pflags += char
+			elif actflag == "-":
+				if not nflags.find(char):
+					pflags = pflags.replace(char, "")
+					if include_negatives:
+						nflags += char
+					
+		if include_negatives:
+			return "+" + pflags + "-" + nflags
+		
+		return pflags
 
 	def uid (self, nick):
 		if nick == self.bot_nick:
@@ -1482,6 +1520,44 @@ class Command:
 
 	def onFantasy(self, uid, channel, arguments):
 		pass
+		
+	def regexflag (self, original, pattern, include_negatives = False):
+		pflags = ""
+		nflags = ""
+		actflag = ""
+		
+		for char in original:
+			if char == "+":
+				actflag = "+"
+			elif char == "-":
+				actflag = "-"
+			elif actflag == "+":
+				if not pflags.find(char):
+					pflags += char
+			elif actflag == "-":
+				if not nflags.find(char):
+					nflags += char
+		
+		for char in pattern:
+			if char == "+":
+				actflag = "+"
+			elif char == "-":
+				actflag = "-"
+			elif actflag == "+":
+				if not pflags.find(char):
+					if include_negatives:
+						nflags = nflags.replace(char, "")
+					pflags += char
+			elif actflag == "-":
+				if not nflags.find(char):
+					pflags = pflags.replace(char, "")
+					if include_negatives:
+						nflags += char
+					
+		if include_negatives:
+			return "+" + pflags + "-" + nflags
+		
+		return pflags
 
 	def query(self, string):
 		Smysql = _mysql.connect(host=self.mysql_host, port=self.mysql_port, db=self.mysql_name, user=self.mysql_user, passwd=self.mysql_passwd)
