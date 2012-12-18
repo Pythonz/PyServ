@@ -913,14 +913,16 @@ class ServiceThread:
 				actflag = "-"
 			elif actflag == "+":
 				if pflags.find(char) == -1:
-					pflags += char
-					if include_negatives:
+					if nflags.find(char) == -1:
+						pflags += char
+					else:
 						nflags = nflags.replace(char, "")
 			elif actflag == "-":
-				pflags = pflags.replace(char, "")
 				if nflags.find(char) == -1:
-					if include_negatives:
+					if pflags.find(char) == -1:
 						nflags += char
+					else:
+						pflags = pflags.replace(char, "")
 					
 		if include_negatives:
 			rData = ""
@@ -1559,14 +1561,16 @@ class Command:
 				actflag = "-"
 			elif actflag == "+":
 				if pflags.find(char) == -1:
-					pflags += char
-					if include_negatives:
+					if nflags.find(char) == -1:
+						pflags += char
+					else:
 						nflags = nflags.replace(char, "")
 			elif actflag == "-":
-				pflags = pflags.replace(char, "")
 				if nflags.find(char) == -1:
-					if include_negatives:
+					if pflags.find(char) == -1:
 						nflags += char
+					else:
+						pflags = pflags.replace(char, "")
 					
 		if include_negatives:
 			rData = ""
