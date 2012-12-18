@@ -923,7 +923,15 @@ class ServiceThread:
 						nflags += char
 					
 		if include_negatives:
-			return "+" + pflags + "-" + nflags
+			rData = ""
+			if pflags:
+				rData += "+"
+				rData += pflags
+			if nflags:
+				rData += "-"
+				rData += nflags
+				
+			return rData
 		
 		return pflags
 
@@ -1561,7 +1569,15 @@ class Command:
 						nflags += char
 					
 		if include_negatives:
-			return "+" + pflags + "-" + nflags
+			rData = ""
+			if pflags:
+				rData += "+"
+				rData += pflags
+			if nflags:
+				rData += "-"
+				rData += nflags
+				
+			return rData
 		
 		return pflags
 

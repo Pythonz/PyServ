@@ -15,6 +15,6 @@ class usermode(Command):
 			modes = self.regexflag(data["modes"], arg[0], True)
 			self.query("update users set modes = '%s' where name = '%s'" % (''.join([char for char in modes if char.isalpha() or char == "+" or char == "-"]), self.auth(uid)))
 			self.usermodes(uid)
-			self.msg(uid, "Done.")
+			self.msg(uid, "Done. Current modes: " + ''.join([char for char in modes if char.isalpha() or char == "+" or char == "-"]))
 		else:
 			self.msg(uid, "Syntax: USERMODES [<modes>]")

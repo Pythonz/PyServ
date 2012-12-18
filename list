@@ -2,7 +2,7 @@ HOWTO 009ba50ed7d5c91a176e17ea8a9a2958
 README.md ff30f05bd646c192e7c4798066290502
 config.cfg.dist fda11158a5d1c0bb69d53956361b1028
 pyserv 6a78d77663b5623ffaf2eeb9d56527d3
-pyserv.py 29ca072e1b4ce4dddd8190f18e4936e0
+pyserv.py 39f161a186795ab47f8aed428b1858be
 setup.py b0cc0d42c26eb1617e7202a832c3878f
 commands/__init__.py 91f5e2b4ee7c7b1e74893bc8b1287691
 commands/accban.py e6d5d4991b9595d512d3aed0444975de
@@ -60,7 +60,7 @@ commands/unbanall.py a291b36542e7df44e511b7bd91c2fb79
 commands/unbanme.py 6ae5c9efacc4549c9a1a282d7c113a8f
 commands/userflags.py 42622f42d1bcd2770a410273bbf2e0fd
 commands/userlist.py 213700d6ad1403ec76cf8e2704f81ce8
-commands/usermode.py cd4c6e13d9af08056e00d7755702e4e2
+commands/usermode.py 8c54a606350ef9374d1119d6ae0315df
 commands/version.py 393ff5facab6590e15b0fcecf90fcbfc
 commands/vhost.py 50a59f1d89880a4a7c7beb4025299d76
 commands/voice.py 74c7131c4646ba233acab52509610030
