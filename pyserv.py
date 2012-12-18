@@ -892,38 +892,44 @@ class ServiceThread:
 		actflag = ""
 		
 		for char in original:
-			if char == "+":
-				actflag = "+"
-			elif char == "-":
-				actflag = "-"
-			elif actflag == "+":
-				if pflags.find(char) == -1:
-					pflags += char
-			elif actflag == "-":
-				if nflags.find(char) == -1:
-					nflags += char
+			if char.isalpha() or char == "+" or char == "-":
+				if char == "+":
+					actflag = "+"
+				elif char == "-":
+					actflag = "-"
+				elif actflag == "+":
+					if pflags.find(char) == -1:
+						pflags += char
+				elif actflag == "-":
+					if nflags.find(char) == -1:
+						nflags += char
+				else:
+					if pflags.find(char) == -1:
+						pflags += char
 			else:
-				if pflags.find(char) == -1:
-					pflags += char
+				return original
 		
 		for char in pattern:
-			if char == "+":
-				actflag = "+"
-			elif char == "-":
-				actflag = "-"
-			elif actflag == "+":
-				if pflags.find(char) == -1:
-					if nflags.find(char) == -1:
-						pflags += char
-					else:
-						nflags = nflags.replace(char, "")
-			elif actflag == "-":
-				if nflags.find(char) == -1:
+			if char.isalpha() or char == "+" or char == "-":
+				if char == "+":
+					actflag = "+"
+				elif char == "-":
+					actflag = "-"
+				elif actflag == "+":
 					if pflags.find(char) == -1:
-						nflags += char
-					else:
-						pflags = pflags.replace(char, "")
-					
+						if nflags.find(char) == -1:
+							pflags += char
+						else:
+							nflags = nflags.replace(char, "")
+				elif actflag == "-":
+					if nflags.find(char) == -1:
+						if pflags.find(char) == -1:
+							nflags += char
+						else:
+							pflags = pflags.replace(char, "")
+			else:
+				return original
+				
 		if include_negatives:
 			rData = ""
 			if pflags:
@@ -934,7 +940,7 @@ class ServiceThread:
 				rData += nflags
 				
 			return rData
-		
+			
 		return pflags
 
 	def uid (self, nick):
@@ -1540,38 +1546,44 @@ class Command:
 		actflag = ""
 		
 		for char in original:
-			if char == "+":
-				actflag = "+"
-			elif char == "-":
-				actflag = "-"
-			elif actflag == "+":
-				if pflags.find(char) == -1:
-					pflags += char
-			elif actflag == "-":
-				if nflags.find(char) == -1:
-					nflags += char
+			if char.isalpha() or char == "+" or char == "-":
+				if char == "+":
+					actflag = "+"
+				elif char == "-":
+					actflag = "-"
+				elif actflag == "+":
+					if pflags.find(char) == -1:
+						pflags += char
+				elif actflag == "-":
+					if nflags.find(char) == -1:
+						nflags += char
+				else:
+					if pflags.find(char) == -1:
+						pflags += char
 			else:
-				if pflags.find(char) == -1:
-					pflags += char
+				return original
 		
 		for char in pattern:
-			if char == "+":
-				actflag = "+"
-			elif char == "-":
-				actflag = "-"
-			elif actflag == "+":
-				if pflags.find(char) == -1:
-					if nflags.find(char) == -1:
-						pflags += char
-					else:
-						nflags = nflags.replace(char, "")
-			elif actflag == "-":
-				if nflags.find(char) == -1:
+			if char.isalpha() or char == "+" or char == "-":
+				if char == "+":
+					actflag = "+"
+				elif char == "-":
+					actflag = "-"
+				elif actflag == "+":
 					if pflags.find(char) == -1:
-						nflags += char
-					else:
-						pflags = pflags.replace(char, "")
-					
+						if nflags.find(char) == -1:
+							pflags += char
+						else:
+							nflags = nflags.replace(char, "")
+				elif actflag == "-":
+					if nflags.find(char) == -1:
+						if pflags.find(char) == -1:
+							nflags += char
+						else:
+							pflags = pflags.replace(char, "")
+			else:
+				return original
+				
 		if include_negatives:
 			rData = ""
 			if pflags:
@@ -1582,7 +1594,7 @@ class Command:
 				rData += nflags
 				
 			return rData
-		
+			
 		return pflags
 
 	def query(self, string):

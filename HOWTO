@@ -1,6 +1,6 @@
 Installing PyServ:
   1. login into root
-  2. run "python setup.py"
+  2. install "python-psutil" and "python-mysql"
   3. login into a normal user
   4. rename "config.cfg.dist" to "config.cfg" and edit it
   5. create mysql database
@@ -14,3 +14,4 @@ Updating PyServ (method 1):
 
 Updating PyServ (method 2):
   1. Run PyServ's command "UPDATE" as IRC-Operator via PRIVMSG (it will insert the update SQLs by itself)
+  2. (run "sh pyserv restart" if needed)
