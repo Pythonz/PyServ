@@ -910,12 +910,12 @@ class ServiceThread:
 				actflag = "-"
 			elif actflag == "+":
 				if pflags.find(char) == -1:
+					pflags += char
 					if include_negatives:
 						nflags = nflags.replace(char, "")
-					pflags += char
 			elif actflag == "-":
+				pflags = pflags.replace(char, "")
 				if nflags.find(char) == -1:
-					pflags = pflags.replace(char, "")
 					if include_negatives:
 						nflags += char
 					
@@ -1545,12 +1545,12 @@ class Command:
 				actflag = "-"
 			elif actflag == "+":
 				if pflags.find(char) == -1:
+					pflags += char
 					if include_negatives:
 						nflags = nflags.replace(char, "")
-					pflags += char
 			elif actflag == "-":
+				pflags = pflags.replace(char, "")
 				if nflags.find(char) == -1:
-					pflags = pflags.replace(char, "")
 					if include_negatives:
 						nflags += char
 					
