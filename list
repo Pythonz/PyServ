@@ -60,7 +60,7 @@ commands/unbanall.py a291b36542e7df44e511b7bd91c2fb79
 commands/unbanme.py 6ae5c9efacc4549c9a1a282d7c113a8f
 commands/userflags.py 42622f42d1bcd2770a410273bbf2e0fd
 commands/userlist.py 213700d6ad1403ec76cf8e2704f81ce8
-commands/usermode.py 16feac71fbbf05b61bb76211d69ffd5c
+commands/usermode.py cd4c6e13d9af08056e00d7755702e4e2
 commands/version.py 393ff5facab6590e15b0fcecf90fcbfc
 commands/vhost.py 50a59f1d89880a4a7c7beb4025299d76
 commands/voice.py 74c7131c4646ba233acab52509610030
