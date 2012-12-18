@@ -23,7 +23,7 @@ class userflags(Command):
 					self.msg(uid, mode[i]+" = "+desc[i])
 					i += 1
 			else:
-				userflags = self.regexflag(self.userflags(uid), arg[0])
+				userflags = self.regexflag("+" + self.userflags(uid), arg[0])
 				flags = ''.join([char for char in arg[0] if char in ''.join(mode)])
 				self.query("update users set flags = '%s' where name = '%s'" % (flags, self.auth(uid)))
 				self.msg(uid, "Done.")
