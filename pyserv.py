@@ -1165,8 +1165,9 @@ class ServiceThread:
 		return fulldomain
 
 	def flag(self, target):
-		for data in self.query("select user from temp_nick where nick = '%s'" % target):
-			for flag in self.query("select flag,channel from channels where user = '%s' order by channel" % str(data["user"])):
+		account = self.auth(target)
+		if account != 0:
+			for flag in self.query("select flag,channel from channels where user = '%s' order by channel" % account):
 				if flag["flag"] == "n" or flag["flag"] == "q":
 					self.mode(flag["channel"], "+qo " + target + " " + target)
 				elif flag["flag"] == "a":
@@ -1860,8 +1861,9 @@ class Command:
 		return fulldomain
 
 	def flag(self, target):
-		for data in self.query("select user from temp_nick where nick = '%s'" % target):
-			for flag in self.query("select flag,channel from channels where user = '%s' order by channel" % str(data["user"])):
+		account = self.auth(target)
+		if account != 0:
+			for flag in self.query("select flag,channel from channels where user = '%s' order by channel" % account):
 				if flag["flag"] == "n" or flag["flag"] == "q":
 					self.mode(flag["channel"], "+qo " + target + " " + target)
 				elif flag["flag"] == "a":
