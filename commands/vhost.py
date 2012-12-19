@@ -52,17 +52,15 @@ class vhost(Command):
 						self.msg(data["uid"], "vHost request received from %s" % self.auth(source))
 				else:
 					self.msg(source, "%s is already using this vHost." % user)
+		elif len(arg) == 1 and arg[0].lower() == "info":
+			vhost = self.getvhost(source)
+			if vhost != "None":
+				self.msg(source, "Your current vHost is: " + vhost)
+			else:
+				self.msg(source, "You did not set a vHost or userflag +x.")
 		elif len(arg) == 1 and arg[0].lower() == "remove":
 			self.query("delete from vhosts where user = '%s'" % self.auth(source))
+			self.vhost(source)
 			self.msg(source, "Done.")
-			
-			for data in self.query("select host,username from online where uid = '%s'" % source):
-				if not self.gateway(source):
-					self.send(":%s CHGIDENT %s %s" % (self.bot, source, data["username"]))
-					self.send(":%s CHGHOST %s %s" % (self.bot, source, data["host"]))
-				else:
-					self.send(":%s CHGIDENT %s %s" % (self.bot, source, data["username"]))
-					crypthost = self.encode_md5(source + ":" + self.nick(source) + "!" + self.userhost(source))
-					self.send(":%s CHGHOST %s %s.gateway.%s" % (self.bot, source, crypthost, '.'.join(self.services_name.split(".")[-2:])))
 		else:
-			self.msg(source, "Syntax: VHOST <set/remove> [<vhost>]")
+			self.msg(source, "Syntax: VHOST <info/set/remove> [<vhost>]")

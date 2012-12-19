@@ -2,7 +2,7 @@ HOWTO cefa3f84161084771f536773d7713e6d
 README.md ff30f05bd646c192e7c4798066290502
 config.cfg.dist fda11158a5d1c0bb69d53956361b1028
 pyserv 6a78d77663b5623ffaf2eeb9d56527d3
-pyserv.py a19d64d1b311a1106a4a07fcc75b4d8c
+pyserv.py 5fa9bf29f842600e58aa4f289e8b989f
 commands/__init__.py 91f5e2b4ee7c7b1e74893bc8b1287691
 commands/accban.py e6d5d4991b9595d512d3aed0444975de
 commands/auth.py 38fd0783ee0e1f35ae91ed2d57319bf5
@@ -61,7 +61,7 @@ commands/userflags.py cd736fa0939dc9a95c0b9ce8d79fbeae
 commands/userlist.py 213700d6ad1403ec76cf8e2704f81ce8
 commands/usermode.py 8c54a606350ef9374d1119d6ae0315df
 commands/version.py 393ff5facab6590e15b0fcecf90fcbfc
-commands/vhost.py 50a59f1d89880a4a7c7beb4025299d76
+commands/vhost.py 60cd55b1d4ef72b4192f919eb6a3d50d
 commands/voice.py 74c7131c4646ba233acab52509610030
 commands/welcome.py bed7a88e9eeb45767c5ec91d66e68a6b
 commands/whoami.py 50b99f787483fc8d0125a83e8a2a420c

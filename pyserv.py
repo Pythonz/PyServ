@@ -1493,6 +1493,9 @@ class ServiceThread:
 		for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % target):
 			return data["vhost"]
 			
+		if self.userflag(target, "x"):
+			return "{0}.users.{1}".format(self.auth(target), self.getservicedomain())
+			
 		return "None"
 
 	def scanport(self, host, port):
@@ -2176,6 +2179,9 @@ class Command:
 	def getvhost(self, target):
 		for data in self.query("select vhost from vhosts where user = '%s' and active = '1'" % _mysql.escape_string(target)):
 			return data["vhost"]
+			
+		if self.userflag(target, "x"):
+			return "{0}.users.{1}".format(self.auth(target), self.getservicedomain())
 			
 		return "None"
 
