@@ -22,7 +22,6 @@ class userflags(Command):
 			if arg[0] == "?":
 				i = 0
 				
-				for flag in 
 				while i != len(mode):
 					self.msg(uid, "+" + mode[i]+" = "+desc[i])
 					i += 1

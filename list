@@ -57,7 +57,7 @@ commands/trust.py 4b670bfd69a45fea687ffcc0eff35374
 commands/unban.py 0e78507994dc206bd2ed5f32860aceb8
 commands/unbanall.py a291b36542e7df44e511b7bd91c2fb79
 commands/unbanme.py 6ae5c9efacc4549c9a1a282d7c113a8f
-commands/userflags.py 9b823087c834808cd67d53cc847d8af5
+commands/userflags.py 69bb768f41338cda6899577d5c52d992
 commands/userlist.py 213700d6ad1403ec76cf8e2704f81ce8
 commands/usermode.py 8c54a606350ef9374d1119d6ae0315df
 commands/version.py 393ff5facab6590e15b0fcecf90fcbfc
