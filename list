@@ -2,7 +2,7 @@ HOWTO cefa3f84161084771f536773d7713e6d
 README.md ff30f05bd646c192e7c4798066290502
 config.cfg.dist fda11158a5d1c0bb69d53956361b1028
 pyserv 6a78d77663b5623ffaf2eeb9d56527d3
-pyserv.py 4f5540ef6cc64d305bd92012018f6be9
+pyserv.py 9c0eff34732fb3296135d4ba4216e981
 commands/__init__.py 91f5e2b4ee7c7b1e74893bc8b1287691
 commands/accban.py e6d5d4991b9595d512d3aed0444975de
 commands/auth.py 38fd0783ee0e1f35ae91ed2d57319bf5
@@ -57,7 +57,7 @@ commands/trust.py 4b670bfd69a45fea687ffcc0eff35374
 commands/unban.py 0e78507994dc206bd2ed5f32860aceb8
 commands/unbanall.py a291b36542e7df44e511b7bd91c2fb79
 commands/unbanme.py 6ae5c9efacc4549c9a1a282d7c113a8f
-commands/userflags.py 42622f42d1bcd2770a410273bbf2e0fd
+commands/userflags.py ab969c0e1199ec6c653ac62a5c910407
 commands/userlist.py 213700d6ad1403ec76cf8e2704f81ce8
 commands/usermode.py 8c54a606350ef9374d1119d6ae0315df
 commands/version.py 393ff5facab6590e15b0fcecf90fcbfc

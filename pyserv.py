@@ -1127,7 +1127,7 @@ class ServiceThread:
 
 	def kill(self, target, reason="You're violating network rules"):
 		if target.lower() != self.bot_nick.lower() and not self.isoper(self.uid(target)):
-			self.send(":%s KILL %s :Killed (*.%s (%s (#%s)))" % (self.bot, target, '.'.join(self.services_name.split(".")[-2:]), reason, str(self.killcount())))
+			self.send(":%s KILL %s :Killed (*.%s (%s (#%s)))" % (self.bot, target, self.getservicedomain(), reason, str(self.killcount())))
 
 	def vhost(self, target):
 		if not self.gateway(target):
@@ -1146,14 +1146,27 @@ class ServiceThread:
 				self.msg(target, "Your vhost %s has been activated" % data["vhost"])
 				
 			if not entry:
-				self.send(":%s CHGIDENT %s %s" % (self.bot, target, self.userhost(target).split("@")[0]))
-				self.send(":%s CHGHOST %s %s" % (self.bot, target, self.gethost(target)))
+				if not self.userflag(target, "x"):
+					self.send(":%s CHGIDENT %s %s" % (self.bot, target, self.getident(target)))
+					self.send(":%s CHGHOST %s %s" % (self.bot, target, self.gethost(target)))
+				else:
+					self.send(":%s CHGIDENT %s %s" % (self.bot, target, self.getident(target))
+					account = self.auth(target)
+					if account != 0:
+						self.send(":%s CHGHOST %s %s.users." % (self.bot, target, account))
+					else:
+						self.send(":%s CHGHOST %s %s" % (self.bot, target, self.gethost(target))
 		else:
 			username = self.userhost(target).split("@")[0]
 			self.send(":%s CHGIDENT %s %s" % (self.bot, target, username))
 			crypthost = self.encode_md5(target + ":" + self.nick(target) + "!" + self.userhost(target))
-			self.send(":%s CHGHOST %s %s.gateway.%s" % (self.services_id, target, crypthost, '.'.join(self.services_name.split(".")[-2:])))
-			self.msg(target, "Your vhost %s.gateway.%s has been activated" % (crypthost, '.'.join(self.services_name.split(".")[-2:])))
+			self.send(":%s CHGHOST %s %s.gateway.%s" % (self.services_id, target, crypthost, self.getservicedomain()))
+			self.msg(target, "Your vhost %s.gateway.%s has been activated" % (crypthost, self.getservicedomain()))
+			
+	def getservicedomain(self):
+		rawdomain = self.services_name.split(".")[-2:]
+		fulldomain = '.'.join(rawdomain)
+		return fulldomain
 
 	def flag(self, target):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
@@ -1358,10 +1371,18 @@ class ServiceThread:
 			
 		return False
 
+	def getident(self, target):
+		uid = self.uid(target)
+		
+		for data in self.query("select username from online where uid = '%s'" % _mysql.escape_string(uid)):
+			return data["username"]
+			
+		return 0
+
 	def gethost(self, target):
 		uid = self.uid(target)
 		
-		for data in self.query("select host from online where uid = '%s'" % uid):
+		for data in self.query("select host from online where uid = '%s'" % _mysql.escape_string(uid)):
 			return data["host"]
 			
 		return 0
@@ -1805,7 +1826,7 @@ class Command:
 
 	def kill(self, target, reason="You're violating network rules"):
 		if target.lower() != self.bot_nick.lower() and not self.isoper(self.uid(target)):
-			self.send(":%s KILL %s :Killed (*.%s (%s (#%s)))" % (self.bot, target, '.'.join(self.services_name.split(".")[-2:]), reason, str(self.killcount())))
+			self.send(":%s KILL %s :Killed (*.%s (%s (#%s)))" % (self.bot, target, self.getservicedomain(), reason, str(self.killcount())))
 
 	def vhost(self, target):
 		if not self.gateway(target):
@@ -1824,14 +1845,27 @@ class Command:
 				self.msg(target, "Your vhost %s has been activated" % data["vhost"])
 				
 			if not entry:
-				self.send(":%s CHGIDENT %s %s" % (self.bot, target, self.userhost(target).split("@")[0]))
-				self.send(":%s CHGHOST %s %s" % (self.bot, target, self.gethost(target)))
+				if not self.userflag(target, "x"):
+					self.send(":%s CHGIDENT %s %s" % (self.bot, target, self.getident(target)))
+					self.send(":%s CHGHOST %s %s" % (self.bot, target, self.gethost(target)))
+				else:
+					self.send(":%s CHGIDENT %s %s" % (self.bot, target, self.getident(target))
+					account = self.auth(target)
+					if account != 0:
+						self.send(":%s CHGHOST %s %s.users." % (self.bot, target, account))
+					else:
+						self.send(":%s CHGHOST %s %s" % (self.bot, target, self.gethost(target))
 		else:
 			username = self.userhost(target).split("@")[0]
 			self.send(":%s CHGIDENT %s %s" % (self.bot, target, username))
 			crypthost = self.encode_md5(target + ":" + self.nick(target) + "!" + self.userhost(target))
-			self.send(":%s CHGHOST %s %s.gateway.%s" % (self.services_id, target, crypthost, '.'.join(self.services_name.split(".")[-2:])))
-			self.msg(target, "Your vhost %s.gateway.%s has been activated" % (crypthost, '.'.join(self.services_name.split(".")[-2:])))
+			self.send(":%s CHGHOST %s %s.gateway.%s" % (self.services_id, target, crypthost, self.getservicedomain()))
+			self.msg(target, "Your vhost %s.gateway.%s has been activated" % (crypthost, self.getservicedomain()))
+			
+	def getservicedomain(self):
+		rawdomain = self.services_name.split(".")[-2:]
+		fulldomain = '.'.join(rawdomain)
+		return fulldomain
 
 	def flag(self, target):
 		for data in self.query("select user from temp_nick where nick = '%s'" % target):
@@ -2020,11 +2054,19 @@ class Command:
 			return True
 			
 		return False
+		
+	def getident(self, target):
+		uid = self.uid(target)
+		
+		for data in self.query("select username from online where uid = '%s'" % _mysql.escape_string(uid)):
+			return data["username"]
+			
+		return 0
 
 	def gethost(self, target):
 		uid = self.uid(target)
 		
-		for data in self.query("select host from online where uid = '%s'" % uid):
+		for data in self.query("select host from online where uid = '%s'" % _mysql.escape_string(uid)):
 			return data["host"]
 			
 		return 0
