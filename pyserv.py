@@ -1150,12 +1150,12 @@ class ServiceThread:
 					self.send(":%s CHGIDENT %s %s" % (self.bot, target, self.getident(target)))
 					self.send(":%s CHGHOST %s %s" % (self.bot, target, self.gethost(target)))
 				else:
-					self.send(":%s CHGIDENT %s %s" % (self.bot, target, self.getident(target))
+					self.send(":%s CHGIDENT %s %s" % (self.bot, target, self.getident(target)))
 					account = self.auth(target)
 					if account != 0:
 						self.send(":%s CHGHOST %s %s.users." % (self.bot, target, account))
 					else:
-						self.send(":%s CHGHOST %s %s" % (self.bot, target, self.gethost(target))
+						self.send(":%s CHGHOST %s %s" % (self.bot, target, self.gethost(target)))
 		else:
 			username = self.userhost(target).split("@")[0]
 			self.send(":%s CHGIDENT %s %s" % (self.bot, target, username))
@@ -1849,12 +1849,12 @@ class Command:
 					self.send(":%s CHGIDENT %s %s" % (self.bot, target, self.getident(target)))
 					self.send(":%s CHGHOST %s %s" % (self.bot, target, self.gethost(target)))
 				else:
-					self.send(":%s CHGIDENT %s %s" % (self.bot, target, self.getident(target))
+					self.send(":%s CHGIDENT %s %s" % (self.bot, target, self.getident(target)))
 					account = self.auth(target)
 					if account != 0:
 						self.send(":%s CHGHOST %s %s.users." % (self.bot, target, account))
 					else:
-						self.send(":%s CHGHOST %s %s" % (self.bot, target, self.gethost(target))
+						self.send(":%s CHGHOST %s %s" % (self.bot, target, self.gethost(target)))
 		else:
 			username = self.userhost(target).split("@")[0]
 			self.send(":%s CHGIDENT %s %s" % (self.bot, target, username))
