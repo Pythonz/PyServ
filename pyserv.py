@@ -1878,22 +1878,37 @@ class Command:
 		fulldomain = '.'.join(rawdomain)
 		return fulldomain
 
-	def flag(self, target):
+	def flag(self, target, channel = ""):
 		account = self.auth(target)
 		if account != 0:
-			for flag in self.query("select flag,channel from channels where user = '%s' order by channel" % account):
-				if flag["flag"] == "n" or flag["flag"] == "q":
-					self.mode(flag["channel"], "+qo " + target + " " + target)
-				elif flag["flag"] == "a":
-					self.mode(flag["channel"], "+ao " + target + " " + target)
-				elif flag["flag"] == "o":
-					self.mode(flag["channel"], "+o " + target)
-				elif flag["flag"] == "h":
-					self.mode(flag["channel"], "+h " + target)
-				elif flag["flag"] == "v":
-					self.mode(flag["channel"], "+v " + target)
-				elif flag["flag"] == "b":
-					self.kick(flag["channel"], target, "Banned.")
+			if channel != "":
+				for flag in self.query("select flag,channel from channels where user = '%s' and channel = '%s'" % (_mysql.escape_string(account), _mysql.escape_string(channel))):
+					if flag["flag"] == "n" or flag["flag"] == "q":
+						self.mode(flag["channel"], "+qo " + target + " " + target)
+					elif flag["flag"] == "a":
+						self.mode(flag["channel"], "+ao " + target + " " + target)
+					elif flag["flag"] == "o":
+						self.mode(flag["channel"], "+o " + target)
+					elif flag["flag"] == "h":
+						self.mode(flag["channel"], "+h " + target)
+					elif flag["flag"] == "v":
+						self.mode(flag["channel"], "+v " + target)
+					elif flag["flag"] == "b":
+						self.kick(flag["channel"], target, "Banned.")
+			else:
+				for flag in self.query("select flag,channel from channels where user = '%s' order by channel" % _mysql.escape_string(account)):
+					if flag["flag"] == "n" or flag["flag"] == "q":
+						self.mode(flag["channel"], "+qo " + target + " " + target)
+					elif flag["flag"] == "a":
+						self.mode(flag["channel"], "+ao " + target + " " + target)
+					elif flag["flag"] == "o":
+						self.mode(flag["channel"], "+o " + target)
+					elif flag["flag"] == "h":
+						self.mode(flag["channel"], "+h " + target)
+					elif flag["flag"] == "v":
+						self.mode(flag["channel"], "+v " + target)
+					elif flag["flag"] == "b":
+						self.kick(flag["channel"], target, "Banned.")
 
 	def autojoin(self, target):
 		user = self.auth(target)
