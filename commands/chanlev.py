@@ -1,7 +1,7 @@
 from pyserv import Command
 
 class chanlev(Command):
-	help = "Edits your channel records"
+	help = "Edit your channel records"
 	nauth = 1
 
 	def onCommand(self, source, args):
@@ -80,7 +80,7 @@ class chanlev(Command):
 									self.query("insert into channels values ('%s','%s','%s')" % (channel, username, arg[2][0]))
 									
 									for data in self.sid(username):
-										self.flag(data)
+										self.flag(data, channel)
 										uflag = self.getflag(data, arg[0])
 										
 										if uflag != "v" and not self.chanflag("v", arg[0]):
@@ -89,7 +89,7 @@ class chanlev(Command):
 										if uflag != "h":
 											self.mode(arg[0], "-h "+data)
 											
-										if uflag != "o":
+										if uflag != "o" and uflag != "a" and uflag != "q" and uflag != "n":
 											self.mode(arg[0], "-o "+data)
 											
 										if uflag != "a":
@@ -126,7 +126,7 @@ class chanlev(Command):
 										self.query("insert into channels values ('%s','%s','%s')" % (channel, username, arg[2][0]))
 										
 										for data in self.sid(username):
-											self.flag(data)
+											self.flag(data, channel)
 											uflag = self.getflag(data, arg[0])
 											
 											if uflag != "v" and not self.chanflag("v", arg[0]):
@@ -135,7 +135,7 @@ class chanlev(Command):
 											if uflag != "h":
 												self.mode(arg[0], "-h "+data)
 												
-											if uflag != "o":
+											if uflag != "o" and uflag != "a" and uflag != "q" and uflag != "n":
 												self.mode(arg[0], "-o "+data)
 												
 											if uflag != "a":
