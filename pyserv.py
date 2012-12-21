@@ -1103,7 +1103,7 @@ class ServiceThread:
 	def join(self, channel):
 		if self.chanexist(channel) and not self.suspended(channel):
 			self.send(":%s JOIN %s" % (self.bot, channel))
-			self.mode(channel, "+rqo {0} {0}".format(self.bot))
+			self.mode(channel, "+ryo {0} {0}".format(self.bot))
 
 	def statistics(self):
 		stats = dict()
@@ -1802,7 +1802,7 @@ class Command:
 	def join(self, channel):
 		if self.chanexist(channel) and not self.suspended(channel):
 			self.send(":%s JOIN %s" % (self.bot, channel))
-			self.mode(channel, "+rqo {0} {0}".format(self.bot))
+			self.mode(channel, "+ryo {0} {0}".format(self.bot))
 
 	def statistics(self):
 		stats = dict()

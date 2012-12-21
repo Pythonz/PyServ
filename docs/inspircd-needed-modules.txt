@@ -1,0 +1,23 @@
+Following modules have to be loaded:
+	- m_spanningtree.so
+	- m_services_account.so
+	- m_servprotect.so
+	- m_password_hash.so
+	- m_namesx.so
+	- m_dnsbl.so
+	
+	- m_customprefix.so with following (or similar but +y have to be for services AND the highest) configuration:
+		<customprefix name="service" letter="y" prefix="*" rank="60000" ranktoset="60000">
+		<customprefix name="founder" letter="q" prefix="~" rank="50000" ranktoset="60000">
+		<customprefix name="admin" letter="a" prefix="&amp;" rank="40000" ranktoset="50000">
+		<customprefix name="halfop" letter="h" prefix="%" rank="20000" ranktoset="30000">
+	
+	- m_chgname.so
+	- m_chgident.so
+	- m_chghost.so
+	- m_cap.so
+	- m_botmode.so
+
+Following modules mustn't be loaded!
+	- m_chanprotect.so
+	- m_halfop.so

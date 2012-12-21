@@ -1,8 +1,8 @@
-HOWTO cefa3f84161084771f536773d7713e6d
+HOWTO b973410836d9ce74fdcb837a99db5bca
 README.md ff30f05bd646c192e7c4798066290502
 config.cfg.dist fda11158a5d1c0bb69d53956361b1028
 pyserv 6a78d77663b5623ffaf2eeb9d56527d3
-pyserv.py 5fa9bf29f842600e58aa4f289e8b989f
+pyserv.py 3f93d70a2fa8a5a7853560e7d705737e
 commands/__init__.py 91f5e2b4ee7c7b1e74893bc8b1287691
 commands/accban.py e6d5d4991b9595d512d3aed0444975de
 commands/auth.py 38fd0783ee0e1f35ae91ed2d57319bf5
@@ -66,6 +66,7 @@ commands/voice.py 74c7131c4646ba233acab52509610030
 commands/welcome.py bed7a88e9eeb45767c5ec91d66e68a6b
 commands/whoami.py 50b99f787483fc8d0125a83e8a2a420c
 commands/whois.py a0e9d1c5983121dd629a5be849446875
+docs/inspircd-needed-modules.txt ff4441098de066c2b47e95fbbbcffe1e
 sql/base/struct.sql bda11784f7b92cb7966584f5cbb3dbef
 sql/updates/10_02-12-2012.sql 01e17aaa106a9b8e173844791fc75655
 sql/updates/11_02-17-2012.sql 8871da6e53758f0c79c9944c6c42b106

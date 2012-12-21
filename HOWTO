@@ -5,7 +5,8 @@ Installing PyServ:
   4. rename "config.cfg.dist" to "config.cfg" and edit it
   5. create mysql database
   6. insert sql/base/struct.sql into the database
-  7. run "sh pyserv start" to start pyserv in background or "sh pyserv debug" to run it in foreground
+  7. configure your inspircd for pyserv (take a look at the example modules.conf under docs
+  8. run "sh pyserv start" to start pyserv in background or "sh pyserv debug" to run it in foreground
 
 Updating PyServ (method 1):
   1. run "sh pyserv update"
