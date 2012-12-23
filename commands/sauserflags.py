@@ -11,6 +11,8 @@ class sauserflags(Command):
 		desc.append("Q will answer with notices, instead of privmsgs.")
 		mode.append("a")
 		desc.append("Autojoin all channels where you have chanflag +v or higher.")
+		mode.append("x")
+		desc.append("Cloak your hostname.")
 		arg = args.split()
 		
 		if len(arg) == 1:
