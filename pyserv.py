@@ -1084,7 +1084,7 @@ class ServiceThread:
 		return nicks
 
 	def memo(self, user):
-		for data in self.query("select source,message from memo where user = '%s'" % user):
+		for data in self.query("select source,message from memo where user = '%s'" % _mysql.escape_string(user)):
 			online = False
 			
 			for source in self.sid(user):
@@ -1092,10 +1092,10 @@ class ServiceThread:
 				self.msg(source, "[Memo] From: %s, Message: %s" % (data["source"], data["message"]))
 				
 			if online:
-				self.query("delete from memo where user = '%s' and source = '%s' and message = '%s'" % (user, data["source"], _mysql.escape_string(data["message"])))
+				self.query("delete from memo where user = '%s' and source = '%s' and message = '%s'" % (_mysql.escape_string(user), _mysql.escape_string(data["source"]), _mysql.escape_string(data["message"])))
 
 	def chanexist(self, channel):
-		for data in self.query("select name from channelinfo where name = '%s'" % channel):
+		for data in self.query("select name from channelinfo where name = '%s'" % _mysql.escape_string(channel)):
 			return True
 			
 		return False
@@ -1798,7 +1798,7 @@ class Command:
 		return nicks
 
 	def memo(self, user):
-		for data in self.query("select source,message from memo where user = '%s'" % user):
+		for data in self.query("select source,message from memo where user = '%s'" % _mysql.escape_string(user)):
 			online = False
 			
 			for source in self.sid(user):
@@ -1806,10 +1806,10 @@ class Command:
 				self.msg(source, "[Memo] From: %s, Message: %s" % (data["source"], data["message"]))
 				
 			if online:
-				self.query("delete from memo where user = '%s' and source = '%s' and message = '%s'" % (user, data["source"], _mysql.escape_string(data["message"])))
+				self.query("delete from memo where user = '%s' and source = '%s' and message = '%s'" % (_mysql.escape_string(user), _mysql.escape_string(data["source"]), _mysql.escape_string(data["message"])))
 
 	def chanexist(self, channel):
-		for data in self.query("select name from channelinfo where name = '%s'" % channel):
+		for data in self.query("select name from channelinfo where name = '%s'" % _mysql.escape_string(channel)):
 			return True
 			
 		return False
