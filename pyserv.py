@@ -1078,7 +1078,7 @@ class ServiceThread:
 	def sid(self, nick):
 		nicks = list()
 		
-		for data in self.query("select nick from temp_nick where user = '%s'" % nick):
+		for data in self.query("select nick from temp_nick where user = '%s'" % _mysql.escape_string(nick)):
 			nicks.append(data["nick"])
 			
 		return nicks
@@ -1792,7 +1792,7 @@ class Command:
 	def sid(self, nick):
 		nicks = list()
 		
-		for data in self.query("select nick from temp_nick where user = '%s'" % nick):
+		for data in self.query("select nick from temp_nick where user = '%s'" % _mysql.escape_string(nick)):
 			nicks.append(data["nick"])
 			
 		return nicks

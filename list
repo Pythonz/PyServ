@@ -2,7 +2,7 @@ HOWTO b973410836d9ce74fdcb837a99db5bca
 README.md ff30f05bd646c192e7c4798066290502
 config.cfg.dist fda11158a5d1c0bb69d53956361b1028
 pyserv 6a78d77663b5623ffaf2eeb9d56527d3
-pyserv.py 269dabfb5a72573b776974af9efacc18
+pyserv.py 6344d60336d65151167eb02a5fc03d75
 commands/__init__.py 91f5e2b4ee7c7b1e74893bc8b1287691
 commands/accban.py e6d5d4991b9595d512d3aed0444975de
 commands/auth.py 38fd0783ee0e1f35ae91ed2d57319bf5
@@ -45,7 +45,7 @@ commands/sakick.py 2f488212f3a97ddac07fee35eb9ce2c2
 commands/samode.py a2821581df20985ad9eeb7119292803a
 commands/sapart.py de9ad14a337b56576da6ac3e5966cdab
 commands/saresetpass.py 6ef1b39f03a08905b881999a6da049cb
-commands/sauserflags.py c474d7db52a13960b92c30b6f1088b19
+commands/sauserflags.py a2c34875e979bc07b41217b31ef07996
 commands/savhost.py 72a23191b27fb33cf6caba27a2cc171d
 commands/scanport.py 4452e1e94c2644259508f7f214620940
 commands/settopic.py 8b0b3d707558e639022a8a8291745cd5
