@@ -28,7 +28,7 @@ commands/invite.py c44b2a23e2670b3b79452b0c554e7809
 commands/ipchan.py 30bc869ef63b12640ad3515b48cbf532
 commands/kick.py b61db9530f38a9f2cdc67941cd6d08fe
 commands/kill.py 00e562e33f2f7c48fd04bf172062b8fe
-commands/memo.py 3454c46ec920cc95fca567043aa5501d
+commands/memo.py 183891897298cef3e1165554191178a9
 commands/newpass.py cd6ab6b6e146643e0eb0f06284afc725
 commands/notify.py 80f939af007e406ee3b5715c2b065a2e
 commands/op.py 0912a7b0b1a1c5a020b5a1638e4dc444
