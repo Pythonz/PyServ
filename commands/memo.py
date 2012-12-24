@@ -21,9 +21,9 @@ class memo(Command):
 				else:
 					self.msg(source, "Can't find user %s." % arg[0])
 			else:
-				user = self.auth(self.uid(arg[0]))
+				user = self.auth(arg[0])
 				
-				if self.user(user) and self.ison(user):
+				if self.user(user):
 					sender = self.auth(source)
 					message = _mysql.escape_string(' '.join(arg[1:]))
 					self.query("insert into memo (`user`, `source`, `message`) values ('%s', '%s', '%s')" % (user, sender, message))
