@@ -197,7 +197,7 @@ class ServiceThread:
 		self.bot_real = config.get("BOT", "real")
 		self.con = con
 		
-	def shell(text):
+	def shell(self, text):
 		subprocess.Popen(text+" >> /dev/null", shell=True).wait()
 	
 	def onData(self, data):
@@ -615,7 +615,7 @@ class ServiceThread:
 						
 				for welcome in self.query("select name,welcome from channelinfo where name = '{0}'".format(_mysql.escape_string(fjoin_chan))):
 					if self.chanflag("w", fjoin_chan):
-						self.msg(fjoin_nick, "[{0}] {1}".format(welcome["name"], welcome["welcome"]))
+						self.msg(fjoin_nick, "[{0}] {1}".format(welcome["name"], welcome["welcome"].replace(":topic:", self.gettopic(fjoin_chan))))
 						
 				if self.isoper(fjoin_nick) and self.chanexist(fjoin_chan):
 					self.send(":%s NOTICE %s :Operator %s has joined" % (self.services_id, fjoin_chan, self.nick(fjoin_nick)))
@@ -1099,6 +1099,13 @@ class ServiceThread:
 			return True
 			
 		return False
+		
+	def gettopic(self, channel):
+		if self.chanexist(channel):
+			for data in self.query("select topic from channelinfo where name = '" + _mysql.escape_string(channel) + "'"):
+				return data["topic"]
+				
+		return ""
 
 	def join(self, channel):
 		if self.chanexist(channel) and not self.suspended(channel):
@@ -1813,6 +1820,13 @@ class Command:
 			return True
 			
 		return False
+		
+	def gettopic(self, channel):
+		if self.chanexist(channel):
+			for data in self.query("select topic from channelinfo where name = '" + _mysql.escape_string(channel) + "'"):
+				return data["topic"]
+				
+		return ""
 
 	def join(self, channel):
 		if self.chanexist(channel) and not self.suspended(channel):
