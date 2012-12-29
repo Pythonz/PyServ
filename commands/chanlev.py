@@ -98,13 +98,24 @@ class chanlev(Command):
 										if uflag != "q" and uflag != "n":
 											self.mode(arg[0], "-q "+data)
 								else:
-									for user in self.sid(username):
-										flag = self.getflag(user, arg[0])
+									for data in self.sid(username):
+										self.flag(data, channel)
+										uflag = self.getflag(data, arg[0])
 										
-										if not self.chanflag("v", arg[0]) and flag == "v":
-											self.mode(arg[0], "-v "+user)
-										else:
-											self.mode(arg[0], "-{0} {1}".format(flag, user))
+										if uflag != "v" and not self.chanflag("v", arg[0]):
+											self.mode(arg[0], "-v "+data)
+											
+										if uflag != "h":
+											self.mode(arg[0], "-h "+data)
+											
+										if uflag != "o" and uflag != "a" and uflag != "q" and uflag != "n":
+											self.mode(arg[0], "-o "+data)
+											
+										if uflag != "a":
+											self.mode(arg[0], "-a "+data)
+											
+										if uflag != "q" and uflag != "n":
+											self.mode(arg[0], "-q "+data)
 											
 									self.query("delete from channels where channel = '%s' and user = '%s'" % (arg[0], username))
 									
@@ -144,13 +155,24 @@ class chanlev(Command):
 											if uflag != "q" and uflag != "n":
 												self.mode(arg[0], "-q "+data)
 									else:
-										for user in self.sid(username):
-											flag = self.getflag(user, arg[0])
+										for data in self.sid(username):
+											self.flag(data, channel)
+											uflag = self.getflag(data, arg[0])
 											
-											if not self.chanflag("v", arg[0]) and flag == "v":
-												self.mode(arg[0], "-v "+user)
-											else:
-												self.mode(arg[0], "-{0} {1}".format(flag, user))
+											if uflag != "v" and not self.chanflag("v", arg[0]):
+												self.mode(arg[0], "-v "+data)
+												
+											if uflag != "h":
+												self.mode(arg[0], "-h "+data)
+												
+											if uflag != "o" and uflag != "a" and uflag != "q" and uflag != "n":
+												self.mode(arg[0], "-o "+data)
+												
+											if uflag != "a":
+												self.mode(arg[0], "-a "+data)
+												
+											if uflag != "q" and uflag != "n":
+												self.mode(arg[0], "-q "+data)
 												
 										self.query("delete from channels where channel = '%s' and user = '%s'" % (arg[0], username))
 										
