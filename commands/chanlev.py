@@ -1,4 +1,5 @@
 from pyserv import Command
+from _mysql import escape_string
 
 class chanlev(Command):
 	help = "Edit your channel records"
@@ -76,8 +77,8 @@ class chanlev(Command):
 						for data in self.query("select name from users where name = '%s'" % username):
 							if str(self.auth(source)).lower() != username.lower():
 								if arg[2][0] != "-":
-									self.query("delete from channels where channel = '%s' and user = '%s'" % (channel, username))
-									self.query("insert into channels values ('%s','%s','%s')" % (channel, username, arg[2][0]))
+									self.query("delete from channels where channel = '%s' and user = '%s'" % (escape_string(channel), escape_string(username)))
+									self.query("insert into channels values ('%s','%s','%s')" % (escape_string(channel), escape_string(username), escape_string(arg[2][0])))
 									
 									for data in self.sid(username):
 										self.flag(data, channel)
@@ -98,6 +99,8 @@ class chanlev(Command):
 										if uflag != "q" and uflag != "n":
 											self.mode(arg[0], "-q "+data)
 								else:
+									self.query("delete from channels where channel = '%s' and user = '%s'" % (escape_string(arg[0]), escape_string(username)))
+									
 									for data in self.sid(username):
 										self.flag(data, channel)
 										uflag = self.getflag(data, arg[0])
@@ -116,8 +119,6 @@ class chanlev(Command):
 											
 										if uflag != "q" and uflag != "n":
 											self.mode(arg[0], "-q "+data)
-											
-									self.query("delete from channels where channel = '%s' and user = '%s'" % (arg[0], username))
 									
 								self.msg(source, "Done.")
 							else:
@@ -133,8 +134,8 @@ class chanlev(Command):
 							for data in self.query("select name from users where name = '%s'" % username):
 								if str(self.auth(source)).lower() != username.lower():
 									if arg[2][0] != "-":
-										self.query("delete from channels where channel = '%s' and user = '%s'" % (channel, username))
-										self.query("insert into channels values ('%s','%s','%s')" % (channel, username, arg[2][0]))
+										self.query("delete from channels where channel = '%s' and user = '%s'" % (escape_string(channel), escape_string(username)))
+										self.query("insert into channels values ('%s','%s','%s')" % (escape_string(channel), escape_string(username), escape_string(arg[2][0])))
 										
 										for data in self.sid(username):
 											self.flag(data, channel)
@@ -155,6 +156,8 @@ class chanlev(Command):
 											if uflag != "q" and uflag != "n":
 												self.mode(arg[0], "-q "+data)
 									else:
+										self.query("delete from channels where channel = '%s' and user = '%s'" % (escape_string(arg[0]), escape_string(username)))
+										
 										for data in self.sid(username):
 											self.flag(data, channel)
 											uflag = self.getflag(data, arg[0])
@@ -173,8 +176,6 @@ class chanlev(Command):
 												
 											if uflag != "q" and uflag != "n":
 												self.mode(arg[0], "-q "+data)
-												
-										self.query("delete from channels where channel = '%s' and user = '%s'" % (arg[0], username))
 										
 									self.msg(source, "Done.")
 								else:
