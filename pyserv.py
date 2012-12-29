@@ -1424,6 +1424,9 @@ class ServiceThread:
 				else:
 					masks.append(nick+"!"+username+"@"+data["vhost"])
 					
+			if self.userflag(uid, "x"):
+				masks.append(nick + "!" + username + "@" + target + ".users." + self.getservicedomain())
+					
 		return masks
 
 	def enforceban(self, channel, target):
@@ -1447,6 +1450,7 @@ class ServiceThread:
 				for user in self.userlist(channel):
 					if self.gateway(user):
 						crypthost = self.encode_md5(user + ":" + self.nick(user) + "!" + self.userhost(user))+".gateway."+'.'.join(self.services_name.split(".")[-2:])
+						
 						
 						if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, data["ban"]):
 							self.mode(channel, "+b "+data["ban"])
@@ -2129,6 +2133,9 @@ class Command:
 					masks.append(nick+"!"+data["vhost"])
 				else:
 					masks.append(nick+"!"+username+"@"+data["vhost"])
+					
+			if self.userflag(uid, "x"):
+				masks.append(nick + "!" + username + "@" + target + ".users." + self.getservicedomain())
 					
 		return masks
 
