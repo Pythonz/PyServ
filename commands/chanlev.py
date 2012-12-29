@@ -70,6 +70,10 @@ class chanlev(Command):
 						channel = str(channels["channel"])
 						
 				if entry:
+					if arg[2].lower() != "q" and arg[2].lower() != "a" and arg[2].lower() != "o" and arg[2] != "h" and arg[2] != "v":
+						self.msg(source, "Invalid flag: " + arg[2])
+						return 0
+						
 					if arg[1].startswith("#"):
 						username = arg[1][1:]
 						entry = False

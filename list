@@ -9,7 +9,7 @@ commands/auth.py 38fd0783ee0e1f35ae91ed2d57319bf5
 commands/ban.py c3fd27151fcb52774ea105e56de9e597
 commands/banlist.py 15c94cd325c45beb60c5b88e66b0801e
 commands/chanflags.py 8ad11bce55ba302803b3ced47fc82559
-commands/chanlev.py b24fa8b60c7044ffa65cf6d2e2f1820a
+commands/chanlev.py 074a4616895cc666d218b9a4e2ab9d6e
 commands/chanmode.py 89872b77d2498b22bea359ea4a0c5e7f
 commands/dehalfop.py 8491804d3522e95cc4c9509e0e7c6389
 commands/deop.py c242b8e6b015972fbb4b05b337a060cc
