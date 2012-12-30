@@ -36,7 +36,7 @@ class ban(Command):
 									entry = False
 									
 									if self.userflag(user, "x"):
-											ban = "*!*@" + user + ".users." + self.getservicedomain()
+										ban = "*!*@" + user + ".users." + self.getservicedomain()
 									elif self.gethost(user) == self.getip(user):
 										elif self.getip(user).find(":") != -1:
 											ban = "*!*"+self.userhost(user).split("@")[0]+"@"+':'.join(self.getip(user).split(":")[:-2])+":*"
