@@ -2,11 +2,11 @@ HOWTO b973410836d9ce74fdcb837a99db5bca
 README.md ff30f05bd646c192e7c4798066290502
 config.cfg.dist fda11158a5d1c0bb69d53956361b1028
 pyserv 6a78d77663b5623ffaf2eeb9d56527d3
-pyserv.py 8306b7b80b605e6afd26b9d705bfd3f7
+pyserv.py 1a67f722452eb988cd7a29d14085dfb6
 commands/__init__.py 91f5e2b4ee7c7b1e74893bc8b1287691
 commands/accban.py e6d5d4991b9595d512d3aed0444975de
 commands/auth.py 38fd0783ee0e1f35ae91ed2d57319bf5
-commands/ban.py f474cf039f100a727d446cb82e67867c
+commands/ban.py c25b1817a7f08f6a5f8dbaf7736b7edd
 commands/banlist.py 15c94cd325c45beb60c5b88e66b0801e
 commands/chanflags.py 8ad11bce55ba302803b3ced47fc82559
 commands/chanlev.py 074a4616895cc666d218b9a4e2ab9d6e

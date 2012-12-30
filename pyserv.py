@@ -2143,7 +2143,7 @@ class Command:
 		if target != "*!*@*":
 			for user in self.userlist(channel):
 				if self.gateway(user):
-					crypthost = self.encode_md5(user + ":" + self.nick(user) + "!" + self.userhost(user))+".gateway."+'.'.join(self.services_name.split(".")[-2:])
+					crypthost = self.encode_md5(user + ":" + self.nick(user) + "!" + self.userhost(user))+".gateway."+self.getservicedomain()
 					
 					if fnmatch.fnmatch(self.nick(user)+"!"+self.userhost(user).split("@")[0]+"@"+crypthost, target):
 						self.mode(channel, "+b "+target)
