@@ -6,7 +6,7 @@ pyserv.py 8306b7b80b605e6afd26b9d705bfd3f7
 commands/__init__.py 91f5e2b4ee7c7b1e74893bc8b1287691
 commands/accban.py e6d5d4991b9595d512d3aed0444975de
 commands/auth.py 38fd0783ee0e1f35ae91ed2d57319bf5
-commands/ban.py 264158add6a6c716b637595946ab7ea5
+commands/ban.py 618604fbdded40a3fb17b2e98460748a
 commands/banlist.py 15c94cd325c45beb60c5b88e66b0801e
 commands/chanflags.py 8ad11bce55ba302803b3ced47fc82559
 commands/chanlev.py 074a4616895cc666d218b9a4e2ab9d6e
