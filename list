@@ -1,8 +1,8 @@
 HOWTO b973410836d9ce74fdcb837a99db5bca
-README.md ff30f05bd646c192e7c4798066290502
+README.md 2b09ff18478afea8f5b6503072e92be0
 config.cfg.dist fda11158a5d1c0bb69d53956361b1028
 pyserv 6a78d77663b5623ffaf2eeb9d56527d3
-pyserv.py d62ec19f34cb019e71eb78b4aaaff789
+pyserv.py da6ab7fbd2a50bbefd8a3012689e6d67
 commands/__init__.py 91f5e2b4ee7c7b1e74893bc8b1287691
 commands/accban.py e6d5d4991b9595d512d3aed0444975de
 commands/auth.py 38fd0783ee0e1f35ae91ed2d57319bf5

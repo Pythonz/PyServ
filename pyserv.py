@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# Copyright by PyServ 2012-2013
+
 import sys
 import socket
 import os
